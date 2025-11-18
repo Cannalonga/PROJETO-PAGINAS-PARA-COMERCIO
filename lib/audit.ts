@@ -11,6 +11,44 @@ export interface AuditLogInput {
   metadata?: Record<string, unknown>;
   ipAddress?: string;
   userAgent?: string;
+  maskPii?: boolean; // Default: true
+}
+
+/**
+ * Mask Personally Identifiable Information (PII) in audit logs
+ * Required for LGPD/GDPR compliance
+ */
+export function maskPii(data: Record<string, unknown>): Record<string, unknown> {
+  if (!data) return data;
+
+  const masked = { ...data };
+  const piiFields = ['email', 'phone', 'cpf', 'cnpj', 'password', 'ssn', 'creditCard'];
+
+  for (const field of piiFields) {
+    if (field in masked) {
+      const value = masked[field];
+      
+      if (typeof value === 'string') {
+        if (field === 'email') {
+          // email@example.com → e**@example.com
+          const [localPart, domain] = value.split('@');
+          masked[field] = `${localPart.charAt(0)}***@${domain}`;
+        } else if (field === 'phone') {
+          // +55 11 98765-4321 → +55 11 9876****
+          masked[field] = value.replace(/(\d{2,4})(\d{2,4})(\d+)/g, '$1 $2 ****');
+        } else if (field === 'cpf' || field === 'cnpj') {
+          // 123.456.789-00 → 123.***.***-**
+          masked[field] = value.replace(/\d(?=\d{2,})/g, '*');
+        } else if (field === 'password' || field === 'creditCard') {
+          masked[field] = '***REDACTED***';
+        } else {
+          masked[field] = `***${value.slice(-3)}`;
+        }
+      }
+    }
+  }
+
+  return masked;
 }
 
 /**
@@ -18,6 +56,9 @@ export interface AuditLogInput {
  */
 export async function logAuditEvent(input: AuditLogInput): Promise<void> {
   try {
+    // Apply PII masking by default
+    const shouldMask = input.maskPii !== false;
+    
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const jsonData: any = {
       userId: input.userId,
@@ -25,9 +66,9 @@ export async function logAuditEvent(input: AuditLogInput): Promise<void> {
       action: input.action,
       entity: input.entity,
       entityId: input.entityId,
-      oldValues: input.oldValues || {},
-      newValues: input.newValues || {},
-      metadata: input.metadata || {},
+      oldValues: shouldMask && input.oldValues ? maskPii(input.oldValues) : input.oldValues || {},
+      newValues: shouldMask && input.newValues ? maskPii(input.newValues) : input.newValues || {},
+      metadata: shouldMask && input.metadata ? maskPii(input.metadata) : input.metadata || {},
       ipAddress: input.ipAddress,
       userAgent: input.userAgent,
       timestamp: new Date(),

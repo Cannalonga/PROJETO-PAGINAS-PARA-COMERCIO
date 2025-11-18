@@ -72,13 +72,22 @@ export function withRole(allowedRoles: string[]) {
 }
 
 /**
- * Middleware: IDOR Prevention
- * Validates user can only access their tenant's data
+ * Middleware: IDOR Prevention + Tenant Scoping
+ * CRITICAL: Validates user can only access their tenant's data
+ * Never trust client-provided tenantId - use session tenantId only
  */
 export function withTenantIsolation(request: NextRequest) {
   try {
     const userTenantId = request.headers.get('x-tenant-id');
     const userRole = request.headers.get('x-user-role');
+    
+    // Must have tenant context
+    if (!userTenantId || userTenantId === 'null' || userTenantId === 'undefined') {
+      return NextResponse.json(
+        errorResponse('Tenant context missing - IDOR violation detected'),
+        { status: 403 }
+      );
+    }
     
     // SUPERADMIN can access all tenants
     if (userRole === 'SUPERADMIN') {
@@ -89,22 +98,44 @@ export function withTenantIsolation(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const urlTenantId = searchParams.get('tenantId');
     
-    // Validate tenant isolation
+    // CRITICAL: If client explicitly provides different tenantId, REJECT (IDOR)
     if (urlTenantId && urlTenantId !== userTenantId) {
+      console.warn(`[SECURITY] IDOR attempt detected: user=${request.headers.get('x-user-id')} tried to access tenantId=${urlTenantId} but owns=${userTenantId}`);
       return NextResponse.json(
-        errorResponse('Acesso não permitido a este tenant'),
+        errorResponse('Access denied - tenant mismatch'),
         { status: 403 }
       );
     }
 
-    return NextResponse.next();
+    // Force tenantId in headers for downstream use
+    const headers = new Headers(request.headers);
+    headers.set('x-tenant-id-validated', 'true');
+
+    return NextResponse.next({
+      request: { headers },
+    });
   } catch (error) {
     console.error('Tenant isolation middleware error:', error);
     return NextResponse.json(
-      errorResponse('Erro ao validar isolamento de tenant'),
+      errorResponse('Tenant validation failed'),
       { status: 500 }
     );
   }
+}
+
+/**
+ * Helper: Enforce strict tenant-scoping in endpoint handlers
+ * Use this pattern in EVERY endpoint to ensure IDOR prevention
+ */
+export function getTenantIdFromSession(request: NextRequest): string {
+  const tenantId = request.headers.get('x-tenant-id');
+  const validated = request.headers.get('x-tenant-id-validated');
+  
+  if (!tenantId || !validated) {
+    throw new Error('Tenant not properly validated - middleware must run first');
+  }
+  
+  return tenantId;
 }
 
 /**
