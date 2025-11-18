@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { logAuditEvent } from '@/lib/audit';
 
 // ============================================================================
@@ -199,7 +199,6 @@ const SAFE_FIELDS = {
 async function auditLog(
   authenticatedUser: { id: string; tenantId: string },
   targetUserId: string,
-  success: boolean,
   error?: string
 ) {
   // Non-blocking audit - fire and forget
@@ -207,9 +206,8 @@ async function auditLog(
     userId: authenticatedUser.id,
     tenantId: authenticatedUser.tenantId,
     action: 'VIEW_USER_DETAIL',
-    resource: 'user',
-    resourceId: targetUserId,
-    status: success ? 'SUCCESS' : 'FAILED',
+    entity: 'user',
+    entityId: targetUserId,
     metadata: {
       endpoint: 'GET /api/users/:id',
       targetUserId, // Masked in audit serialization
@@ -237,7 +235,6 @@ export async function GET(
       await auditLog(
         { id: 'unknown', tenantId: 'unknown' },
         resolvedParams.id,
-        false,
         'Authentication failed'
       );
       return NextResponse.json(
@@ -249,9 +246,14 @@ export async function GET(
     const { authenticatedUser, userRole } = auth;
 
     // LAYER 3: AUTHORIZATION
-    const authz = authorizeRequest(userRole);
+    const authz = authorizeRequest(userRole!);
     if (!authz.authorized) {
-      await auditLog(authenticatedUser!, resolvedParams.id, false, authz.error);
+      // Type guard: authenticatedUser.tenantId is non-null after authentication
+      await auditLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        resolvedParams.id,
+        authz.error || undefined
+      );
       return NextResponse.json(
         { error: authz.error, timestamp: new Date().toISOString() },
         { status: authz.status }
@@ -262,9 +264,8 @@ export async function GET(
     const paramValidation = validateParams({ id: resolvedParams.id });
     if ('valid' in paramValidation && !paramValidation.valid) {
       await auditLog(
-        authenticatedUser!,
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
         resolvedParams.id,
-        false,
         paramValidation.error
       );
       return NextResponse.json(
@@ -273,19 +274,27 @@ export async function GET(
       );
     }
 
-    const { id: targetUserId } = paramValidation;
+    const { id: targetUserId } = paramValidation as { id: string };
 
     // LAYER 5: TENANT VALIDATION
+    // Type guard: ensure tenantId is non-null (should be guaranteed by authentication)
+    if (!authenticatedUser!.tenantId) {
+      throw new Error('Invalid authenticated user state: tenantId is null');
+    }
+
     const tenantCheck = await validateTenantAccess(
       targetUserId,
-      authenticatedUser!
+      {
+        id: authenticatedUser!.id,
+        tenantId: authenticatedUser!.tenantId,
+        role: authenticatedUser!.role as string,
+      }
     );
     if (!tenantCheck.authorized) {
       await auditLog(
-        authenticatedUser!,
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
         targetUserId,
-        false,
-        tenantCheck.error
+        tenantCheck.error || undefined
       );
       return NextResponse.json(
         {
@@ -302,7 +311,11 @@ export async function GET(
     }
 
     // LAYER 6: SAFE QUERY CONSTRUCTION
-    const whereClause = buildSafeQuery(targetUserId, authenticatedUser!);
+    const whereClause = buildSafeQuery(targetUserId, {
+      id: authenticatedUser!.id,
+      tenantId: authenticatedUser!.tenantId!,
+      role: authenticatedUser!.role as string,
+    });
 
     // LAYER 7: SAFE FIELD SELECTION + Execute Query
     const user = await prisma.user.findUnique({
@@ -312,9 +325,8 @@ export async function GET(
 
     if (!user) {
       await auditLog(
-        authenticatedUser!,
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
         targetUserId,
-        false,
         'User not found'
       );
       return NextResponse.json(
@@ -327,7 +339,10 @@ export async function GET(
     const validatedUser = UserDetailSchema.parse(user);
 
     // LAYER 8: AUDIT LOGGING (Success)
-    await auditLog(authenticatedUser!, targetUserId, true);
+    await auditLog(
+      { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+      targetUserId
+    );
 
     return NextResponse.json(
       {
@@ -345,7 +360,6 @@ export async function GET(
     await auditLog(
       { id: 'unknown', tenantId: 'unknown' },
       'unknown',
-      false,
       errorMessage
     );
 
