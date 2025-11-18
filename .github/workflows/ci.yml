@@ -41,7 +41,7 @@ jobs:
 
       # CodeQL - Static analysis
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: 'typescript'
           queries: security-and-quality
@@ -51,7 +51,7 @@ jobs:
         run: npm run build
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
 
   # ========== LINTING & TYPE CHECK ==========
   lint-and-types:

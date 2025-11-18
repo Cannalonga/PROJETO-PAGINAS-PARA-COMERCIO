@@ -1,0 +1,17 @@
+# CodeQL Configuration for Security & Quality Analysis
+# See: https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning
+
+# Queries to run (security-and-quality includes all built-in security queries)
+queries:
+  - security-and-quality
+
+# Optional: Customize scanned paths
+# paths:
+#   - src
+#   - app
+
+# Optional: Exclude paths
+# paths-ignore:
+#   - node_modules
+#   - .next
+#   - coverage
