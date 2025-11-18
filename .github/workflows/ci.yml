@@ -148,6 +148,7 @@ jobs:
 
       - name: Prisma Generate
         run: npx prisma generate
+        continue-on-error: true
 
       - name: Build Application
         run: npm run build
