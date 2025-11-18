@@ -1,0 +1,17 @@
+/node_modules
+/.next
+/out
+*.log
+.DS_Store
+.env.local
+.env.*.local
+.vercel
+.eslintcache
+dist/
+build/
+coverage/
+.idea/
+*.swp
+*.swo
+*~
+.vscode/settings.json

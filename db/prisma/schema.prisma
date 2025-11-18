@@ -1,0 +1,285 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  SUPERADMIN
+  OPERADOR
+  CLIENTE_ADMIN
+  CLIENTE_USER
+}
+
+enum TenantStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+  DELETED
+}
+
+enum PageStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PageTemplate {
+  LOJA
+  RESTAURANTE
+  SERVICOS
+  CONSULTORIO
+  SALON
+  CUSTOM
+}
+
+enum BillingStatus {
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  TRIALING
+}
+
+enum BillingPlan {
+  FREE
+  STARTER
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum EventType {
+  PAGE_VIEW
+  BUTTON_CLICK
+  FORM_SUBMISSION
+  PHONE_CALL
+  WHATSAPP_CLICK
+}
+
+// ============================================================================
+// TENANT & AUTH
+// ============================================================================
+
+model Tenant {
+  id        String   @id @default(cuid())
+  slug      String   @unique @db.VarChar(255)
+  name      String   @db.VarChar(255)
+  cnpj      String?  @unique @db.VarChar(18)
+  status    TenantStatus @default(ACTIVE)
+  
+  // Contact & Location
+  email     String   @db.VarChar(255)
+  phone     String?  @db.VarChar(20)
+  address   String?  @db.Text
+  city      String?  @db.VarChar(100)
+  state     String?  @db.VarChar(2)
+  zipCode   String?  @db.VarChar(10)
+  
+  // Domain & Branding
+  customDomain String? @unique @db.VarChar(255)
+  logoUrl   String?  @db.VarChar(500)
+  faviconUrl String?  @db.VarChar(500)
+  
+  // Billing
+  billingStatus BillingStatus @default(TRIALING)
+  billingPlan BillingPlan @default(FREE)
+  stripeCustomerId String? @unique @db.VarChar(255)
+  
+  // Metadata
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  pages     Page[]
+  users     User[]
+  payments  Payment[]
+  analytics AnalyticsEvent[]
+  
+  @@index([slug])
+  @@index([status])
+  @@index([billingStatus])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  firstName String?  @db.VarChar(100)
+  lastName  String?  @db.VarChar(100)
+  role      UserRole @default(CLIENTE_USER)
+  
+  // Account Status
+  isActive  Boolean  @default(true)
+  emailVerified Boolean @default(false)
+  
+  // Tenant Association
+  tenantId  String?
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  // Audit
+  lastLoginAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([role])
+}
+
+// ============================================================================
+// PAGES & CONTENT
+// ============================================================================
+
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @db.VarChar(255)
+  title     String   @db.VarChar(255)
+  description String? @db.Text
+  
+  // Content
+  template  PageTemplate @default(CUSTOM)
+  status    PageStatus @default(DRAFT)
+  content   Json? // Flexible schema for page sections
+  
+  // SEO
+  seoTitle  String?  @db.VarChar(255)
+  seoDescription String? @db.VarChar(500)
+  seoKeywords String? @db.VarChar(500)
+  seoImage  String?  @db.VarChar(500)
+  
+  // Contact & Location (denormalized from tenant)
+  phone     String?  @db.VarChar(20)
+  whatsapp  String?  @db.VarChar(20)
+  address   String?  @db.Text
+  
+  // Business Hours
+  hours     Json? // { "monday": { "open": "09:00", "close": "18:00" }, ... }
+  
+  // CTA & Links
+  ctaText   String?  @db.VarChar(100)
+  ctaUrl    String?  @db.VarChar(500)
+  
+  // Images & Media
+  heroImage String?  @db.VarChar(500)
+  gallery   String[] @db.VarChar(500)
+  
+  // Publishing
+  publishedAt DateTime?
+  scheduledPublishAt DateTime?
+  
+  // Tenant
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  images    PageImage[]
+  
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+  @@index([status])
+  @@index([template])
+}
+
+model PageImage {
+  id        String   @id @default(cuid())
+  pageId    String
+  page      Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  
+  url       String   @db.VarChar(500)
+  alt       String?  @db.VarChar(255)
+  order     Int      @default(0)
+  
+  createdAt DateTime @default(now())
+  
+  @@index([pageId])
+}
+
+// ============================================================================
+// BILLING & PAYMENTS
+// ============================================================================
+
+model Payment {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  stripePaymentIntentId String? @unique @db.VarChar(255)
+  amount    Int // in cents
+  currency  String   @default("BRL") @db.VarChar(3)
+  
+  status    PaymentStatus @default(PENDING)
+  
+  // Metadata
+  description String? @db.VarChar(500)
+  metadata  Json?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([tenantId])
+  @@index([status])
+}
+
+// ============================================================================
+// ANALYTICS
+// ============================================================================
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  eventType EventType
+  metadata  Json?
+  
+  userAgent String?  @db.Text
+  ipAddress String?  @db.VarChar(45)
+  
+  createdAt DateTime @default(now())
+  
+  @@index([tenantId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// AUDIT LOG
+// ============================================================================
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  
+  action    String   @db.VarChar(255)
+  entity    String   @db.VarChar(100)
+  entityId  String   @db.VarChar(255)
+  
+  changes   Json?
+  userId    String?  @db.VarChar(255)
+  
+  createdAt DateTime @default(now())
+  
+  @@index([entityId])
+  @@index([createdAt])
+}
