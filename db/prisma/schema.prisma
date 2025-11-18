@@ -113,6 +113,7 @@ model Tenant {
   users     User[]
   payments  Payment[]
   analytics AnalyticsEvent[]
+  auditLogs AuditLog[]
   
   @@index([slug])
   @@index([status])
@@ -139,6 +140,9 @@ model User {
   lastLoginAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // Relations
+  auditLogs AuditLog[]
   
   @@index([tenantId])
   @@index([role])
@@ -271,15 +275,27 @@ model AnalyticsEvent {
 model AuditLog {
   id        String   @id @default(cuid())
   
+  userId    String
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  tenantId  String
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
   action    String   @db.VarChar(255)
   entity    String   @db.VarChar(100)
   entityId  String   @db.VarChar(255)
   
-  changes   Json?
-  userId    String?  @db.VarChar(255)
+  oldValues Json?
+  newValues Json?
+  metadata  Json?
   
-  createdAt DateTime @default(now())
+  ipAddress String?  @db.VarChar(45)
+  userAgent String?  @db.Text
   
-  @@index([entityId])
-  @@index([createdAt])
+  timestamp DateTime @default(now())
+  
+  @@index([tenantId])
+  @@index([userId])
+  @@index([entity])
+  @@index([timestamp])
 }
