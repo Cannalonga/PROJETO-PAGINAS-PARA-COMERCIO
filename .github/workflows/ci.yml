@@ -28,6 +28,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - run: npm ci --legacy-peer-deps
+
       # Detect secrets in code and history
       - name: Secret Scanner
         run: |
@@ -66,7 +68,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
 
       - name: Run ESLint
         run: npm run lint || echo "Linting issues found - review above"
@@ -107,7 +109,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
 
       # Prisma setup for testing
       - name: Prisma Generate
@@ -142,7 +144,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - run: npm ci
+      - run: npm ci --legacy-peer-deps
 
       - name: Prisma Generate
         run: npx prisma generate
