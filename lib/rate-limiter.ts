@@ -98,6 +98,7 @@ if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const cleaned = cleanupRateLimiter();
     if (cleaned > 0 && process.env.NODE_ENV !== 'production') {
+      // eslint-disable-next-line no-console
       console.log(`[RateLimit] Cleaned ${cleaned} expired entries`);
     }
   }, 5 * 60 * 1000);

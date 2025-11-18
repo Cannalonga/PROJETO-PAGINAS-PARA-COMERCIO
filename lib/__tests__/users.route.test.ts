@@ -295,7 +295,7 @@ describe('GET /api/users - Audit Logging', () => {
     let responseBlocked = false;
     try {
       throw new Error('Audit failed');
-    } catch (err) {
+    } catch {
       // Catch audit error, don't block
       responseBlocked = false;
     }
