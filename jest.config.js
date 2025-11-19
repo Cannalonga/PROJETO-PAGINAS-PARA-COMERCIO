@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 const config = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   roots: ['<rootDir>'],
   testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
@@ -21,6 +21,10 @@ const config = {
   },
   setupFilesAfterEnv: [],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  extensionsToTreatAsEsm: ['.ts'],
+  // ts-jest configuration (modern way without globals)
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
 };
 
 module.exports = config;
