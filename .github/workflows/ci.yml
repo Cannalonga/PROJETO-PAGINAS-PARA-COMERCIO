@@ -114,9 +114,6 @@ jobs:
       - name: Prisma Generate
         run: npx prisma generate
 
-      - name: Prisma Push (shadow DB)
-        run: npx prisma db push --force-reset --skip-generate
-
       - name: Run Tests
         run: npm test 2>&1
         continue-on-error: false
