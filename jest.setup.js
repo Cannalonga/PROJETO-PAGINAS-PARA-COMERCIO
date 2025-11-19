@@ -1,4 +1,7 @@
 // jest.setup.js
+// This file only runs for jsdom tests (unit/component)
+// API tests run in node environment without this setup
+
 require('@testing-library/jest-dom')
 
 // Mock next/router
