@@ -1,6 +1,6 @@
 // app/api/pages/__tests__/blocks-move.route.test.ts
 import { PATCH } from '../[id]/blocks/[blockId]/move/route';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { moveBlockToPosition } from '@/lib/page-editor';

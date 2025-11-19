@@ -136,7 +136,7 @@ describe('GET /api/deploy/status', () => {
     (prisma.deploymentRecord.findMany as jest.Mock).mockResolvedValue([]);
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1'));
-    const response = await GET(request);
+    await GET(request);
 
     expect(prisma.deploymentRecord.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

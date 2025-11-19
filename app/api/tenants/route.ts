@@ -6,11 +6,9 @@ import {
   requireAuth,
   requireRole,
   allowMethods,
-  extractContext,
   safeHandler,
 } from '@/lib/api-helpers';
 import { verifyCsrfToken } from '@/lib/csrf';
-import { getTenantScopedDb } from '@/lib/tenant-isolation';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { CreateTenantSchema, TenantQuerySchema } from '@/lib/validations';
@@ -41,8 +39,6 @@ export const GET = safeHandler(async (req: NextRequest, ctx): Promise<NextRespon
   if (roleError) return roleError;
 
   try {
-    const searchParams = req.nextUrl.searchParams;
-    
     // Valida query parameters
     const queryValidation = await validateInput(
       new NextRequest(req.url, {
