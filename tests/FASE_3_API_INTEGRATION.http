@@ -1,0 +1,269 @@
+# Fase 3 Sprint 1 - Integration Test Suite
+# All endpoints for the complete feature set
+
+@baseUrl = http://localhost:3000
+@contentType = application/json
+
+### ============================================================================
+### AUTHENTICATION TESTS
+### ============================================================================
+
+### 1.1 POST Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "admin@example.com",
+  "password": "SecurePass123!",
+  "tenantId": "tenant-1"
+}
+
+### 1.2 POST Verify Token
+POST {{baseUrl}}/api/auth/verify
+Content-Type: {{contentType}}
+
+{
+  "token": "eyJhbGc..."
+}
+
+### 1.3 POST Refresh Token
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "token": "{{token}}"
+}
+
+### 1.4 POST Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### USER MANAGEMENT TESTS
+### ============================================================================
+
+### 2.1 GET All Users
+GET {{baseUrl}}/api/protected/users
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+### 2.2 POST Create User
+POST {{baseUrl}}/api/protected/users
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+{
+  "email": "newuser@example.com",
+  "firstName": "João",
+  "lastName": "Silva",
+  "password": "SecurePass123!",
+  "role": "CLIENTE_USER"
+}
+
+### ============================================================================
+### TENANT MANAGEMENT TESTS
+### ============================================================================
+
+### 3.1 GET All Tenants
+GET {{baseUrl}}/api/protected/tenants
+Authorization: Bearer {{token}}
+x-user-id: user-1
+
+### 3.2 POST Create Tenant
+POST {{baseUrl}}/api/protected/tenants
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+x-user-id: user-1
+
+{
+  "name": "Minha Loja",
+  "slug": "minha-loja",
+  "email": "contact@minha-loja.com",
+  "phone": "(11) 9999-9999"
+}
+
+### 3.3 GET Tenant Details
+GET {{baseUrl}}/api/protected/tenants/tenant-1
+Authorization: Bearer {{token}}
+x-user-id: user-1
+
+### 3.4 PUT Update Tenant
+PUT {{baseUrl}}/api/protected/tenants/tenant-1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "name": "Minha Loja Atualizada",
+  "email": "newemail@example.com",
+  "phone": "(11) 9999-9998"
+}
+
+### 3.5 DELETE Tenant
+DELETE {{baseUrl}}/api/protected/tenants/tenant-1
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### PAGE MANAGEMENT TESTS
+### ============================================================================
+
+### 4.1 GET All Pages
+GET {{baseUrl}}/api/protected/pages
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+### 4.2 POST Create Page
+POST {{baseUrl}}/api/protected/pages
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+{
+  "title": "Página Inicial",
+  "slug": "pagina-inicial",
+  "template": "loja",
+  "description": "Home page da minha loja"
+}
+
+### 4.3 GET Page Details
+GET {{baseUrl}}/api/protected/pages/page-1
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+### 4.4 PUT Update Page
+PUT {{baseUrl}}/api/protected/pages/page-1
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "title": "Página Inicial Atualizada",
+  "description": "Updated description",
+  "content": [
+    {
+      "id": "block-1",
+      "type": "heading",
+      "content": { "text": "Welcome!" },
+      "order": 0
+    },
+    {
+      "id": "block-2",
+      "type": "paragraph",
+      "content": { "text": "Welcome to our store!" },
+      "order": 1
+    }
+  ]
+}
+
+### 4.5 POST Publish Page
+POST {{baseUrl}}/api/protected/pages/page-1/publish
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+
+{
+  "message": "Publishing v1.0"
+}
+
+### 4.6 DELETE Page
+DELETE {{baseUrl}}/api/protected/pages/page-1
+Authorization: Bearer {{token}}
+
+### ============================================================================
+### TEMPLATE MANAGEMENT TESTS
+### ============================================================================
+
+### 5.1 GET All Templates
+GET {{baseUrl}}/api/protected/templates
+Authorization: Bearer {{token}}
+
+### 5.2 GET Templates by Category
+GET {{baseUrl}}/api/protected/templates?category=loja
+Authorization: Bearer {{token}}
+
+### 5.3 POST Create Template
+POST {{baseUrl}}/api/protected/templates
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+x-user-role: OPERADOR
+
+{
+  "name": "Store Template",
+  "category": "loja",
+  "description": "Template for retail stores",
+  "html": "<div class='store'><h1>{{storeName}}</h1><p>{{description}}</p></div>",
+  "css": "body { font-family: Arial; } .store { padding: 20px; }",
+  "variables": [
+    {
+      "name": "storeName",
+      "type": "string",
+      "required": true,
+      "description": "Name of the store"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "required": false,
+      "description": "Store description"
+    }
+  ]
+}
+
+### ============================================================================
+### ANALYTICS TESTS
+### ============================================================================
+
+### 6.1 GET Analytics Data
+GET {{baseUrl}}/api/protected/analytics?pageId=page-1&days=7
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+### 6.2 POST Record Event
+POST {{baseUrl}}/api/protected/analytics
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+{
+  "pageId": "page-1",
+  "eventType": "BUTTON_CLICK",
+  "eventData": {
+    "buttonId": "cta-button",
+    "buttonText": "View Products"
+  }
+}
+
+### ============================================================================
+### ERROR HANDLING TESTS
+### ============================================================================
+
+### Error: Missing tenant ID
+GET {{baseUrl}}/api/protected/pages
+Authorization: Bearer {{token}}
+
+### Error: Invalid credentials
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "wrong@example.com",
+  "password": "wrongpass",
+  "tenantId": "tenant-1"
+}
+
+### Error: Duplicate slug
+POST {{baseUrl}}/api/protected/pages
+Content-Type: {{contentType}}
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1
+
+{
+  "title": "Duplicate Page",
+  "slug": "pagina-inicial",
+  "template": "loja"
+}
+
+### Error: Not found
+GET {{baseUrl}}/api/protected/pages/invalid-id
+Authorization: Bearer {{token}}
+x-tenant-id: tenant-1

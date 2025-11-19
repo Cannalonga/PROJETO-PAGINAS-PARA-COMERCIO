@@ -101,6 +101,47 @@ export interface AnalyticsEvent {
   createdAt: Date;
 }
 
+// Interfaces para Page Editor (Blocks)
+export type BlockType =
+  | 'HEADING'
+  | 'PARAGRAPH'
+  | 'IMAGE'
+  | 'BUTTON'
+  | 'DIVIDER'
+  | 'FORM'
+  | 'GALLERY'
+  | 'VIDEO'
+  | 'TESTIMONIAL'
+  | 'CTA'
+  | 'HERO'
+  | 'CUSTOM';
+
+export interface PageBlock {
+  id: string;
+  pageId: string;
+  type: BlockType;
+  position: number;
+  content: Record<string, any>;
+  settings?: Record<string, any>;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  description?: string;
+  category: 'LOJA' | 'RESTAURANTE' | 'SERVICOS' | 'CONSULTORIO' | 'SALON' | 'GENERIC';
+  preview?: string;
+  blocks: PageBlock[];
+  variables: string[];
+  tenantId?: string;
+  isPublic: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // DTOs para requisições
 export interface CreateTenantDTO {
   name: string;

@@ -1,0 +1,270 @@
+@name P1 Observability & Rate Limiting Tests
+@baseUrl http://localhost:3000
+
+### Test 1: Verificar Correlation ID
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "name": "Test Item 1"
+}
+
+> {%
+  // Verificar se response tem correlation ID
+  const correlationId = response.headers.get('x-correlation-id');
+  tests['Has correlation ID'] = correlationId !== null && correlationId.length > 0;
+  tests['Correlation ID is UUID'] = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(correlationId);
+  
+  // Guardar correlation ID para testes futuros
+  client.global.set('correlationId', correlationId);
+  
+  console.log('✓ Correlation ID:', correlationId);
+%}
+
+### Test 2: Correlation ID persiste em requisição com header
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+X-Correlation-Id: my-custom-correlation-id-12345
+
+{
+  "name": "Test Item 2"
+}
+
+> {%
+  const correlationId = response.headers.get('x-correlation-id');
+  tests['Uses provided correlation ID'] = correlationId === 'my-custom-correlation-id-12345';
+  console.log('✓ Correlation ID preserved:', correlationId);
+%}
+
+### Test 3: Request Logging - GET request
+GET http://{{baseUrl}}/api/example
+X-Tenant-Id: tenant-test-1
+
+> {%
+  tests['GET request succeeds'] = response.status === 200;
+  tests['GET returns array'] = Array.isArray(response.json().data);
+  console.log('✓ GET request logged successfully');
+  console.log('✓ Items count:', response.json().data.length);
+%}
+
+### Test 4: Request Logging - POST request
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "name": "Logged Item"
+}
+
+> {%
+  tests['POST request succeeds'] = response.status === 201;
+  tests['POST returns created data'] = response.json().data && response.json().data.id;
+  client.global.set('itemId', response.json().data.id);
+  console.log('✓ POST request logged');
+  console.log('✓ Created item ID:', response.json().data.id);
+%}
+
+### Test 5: Error Logging - Invalid JSON
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  invalid json here
+
+> {%
+  tests['Invalid JSON returns 400'] = response.status === 400;
+  console.log('✓ Invalid JSON error logged');
+%}
+
+### Test 6: Error Logging - Missing required field
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+}
+
+> {%
+  tests['Missing field returns 400'] = response.status === 400;
+  tests['Error message present'] = response.json().error !== undefined;
+  console.log('✓ Missing field error logged');
+%}
+
+### Test 7: Sentry - Exception capture
+POST http://{{baseUrl}}/api/example/error
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "trigger": true
+}
+
+> {%
+  tests['Error endpoint returns 500'] = response.status === 500;
+  tests['Error response has correlationId'] = response.json().correlationId !== undefined;
+  console.log('✓ Error captured and correlation ID provided');
+  console.log('✓ Correlation ID:', response.json().correlationId);
+%}
+
+### Test 8: Rate Limit - IP-based (first requests should succeed)
+@repeatCount=10
+
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "name": "Rate Limit Test {{$randomInt}}"
+}
+
+> {%
+  const remaining = parseInt(response.headers.get('x-ratelimit-remaining') || '-1');
+  tests['Request accepted'] = response.status === 201 || response.status === 429;
+  
+  if (response.status === 201) {
+    console.log('✓ Request #' + request.variables.count + ' accepted');
+    console.log('  Remaining points:', remaining);
+  } else if (response.status === 429) {
+    console.log('⚠ Rate limit reached at request #' + request.variables.count);
+    const retryAfter = response.headers.get('retry-after');
+    console.log('  Retry after:', retryAfter, 'seconds');
+  }
+%}
+
+### Test 9: Rate Limit - Retry-After header
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "name": "Should hit rate limit"
+}
+
+> {%
+  if (response.status === 429) {
+    const retryAfter = response.headers.get('retry-after');
+    tests['429 has Retry-After header'] = retryAfter !== null;
+    tests['Retry-After is numeric'] = /^\d+$/.test(retryAfter || '');
+    console.log('✓ Rate limit returns 429 with Retry-After:', retryAfter);
+  } else {
+    tests['Rate limit not yet hit'] = response.status === 201;
+  }
+%}
+
+### Test 10: Rate Limit - Rate limit info headers
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "name": "Check rate limit headers"
+}
+
+> {%
+  if (response.status !== 429) {
+    const limit = response.headers.get('x-ratelimit-limit');
+    const remaining = response.headers.get('x-ratelimit-remaining');
+    const reset = response.headers.get('x-ratelimit-reset');
+    
+    tests['Has rate limit headers'] = limit && remaining && reset;
+    tests['Limit is numeric'] = /^\d+$/.test(limit || '');
+    tests['Remaining is numeric'] = /^-?\d+$/.test(remaining || '');
+    tests['Reset is ISO date'] = /^\d{4}-\d{2}-\d{2}/.test(reset || '');
+    
+    console.log('✓ Rate limit headers present');
+    console.log('  Limit:', limit);
+    console.log('  Remaining:', remaining);
+    console.log('  Reset:', reset);
+  }
+%}
+
+### Test 11: Context propagation - Tenant ID in logs
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-xyz-123
+X-User-Id: user-456
+
+{
+  "name": "Context propagation test"
+}
+
+> {%
+  const { correlationId, data } = response.json();
+  tests['Request succeeds'] = response.status === 201;
+  tests['Correlation ID in response'] = correlationId !== undefined;
+  // Nota: Verificar logs para confirmar tenant-xyz-123 está sendo registrado
+  console.log('✓ Context propagation test');
+  console.log('  Correlation ID:', correlationId);
+  console.log('  Check logs for: tenant-xyz-123 and user-456');
+%}
+
+### Test 12: Error response format
+POST http://{{baseUrl}}/api/example
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+}
+
+> {%
+  const { error, message, correlationId } = response.json();
+  tests['Error response has structure'] = error !== undefined && correlationId !== undefined;
+  tests['Error status 400'] = response.status === 400;
+  console.log('✓ Error response format valid');
+  console.log('  Error:', error);
+  console.log('  Message:', message);
+  console.log('  CorrelationId:', correlationId);
+%}
+
+### Test 13: Multiple requests with same correlation ID
+@name Get items and verify correlation ID consistency
+
+GET http://{{baseUrl}}/api/example
+X-Tenant-Id: tenant-test-1
+X-Correlation-Id: consistent-id-9999
+
+> {%
+  const cid = response.headers.get('x-correlation-id');
+  tests['Correlation ID matches request'] = cid === 'consistent-id-9999';
+  console.log('✓ Correlation ID consistent:', cid);
+%}
+
+### Test 14: PUT request with rate limit
+@name Update item with rate limiting
+
+PUT http://{{baseUrl}}/api/example?id={{itemId}}
+Content-Type: application/json
+X-Tenant-Id: tenant-test-1
+
+{
+  "name": "Updated Item Name"
+}
+
+> {%
+  if (response.status === 200) {
+    tests['PUT succeeds'] = true;
+    console.log('✓ PUT request succeeded with logging');
+  } else if (response.status === 429) {
+    tests['Rate limit response valid'] = response.json().error === 'Too Many Requests';
+    console.log('⚠ Rate limit hit on PUT');
+  }
+%}
+
+### Test 15: DELETE request with logging
+@name Delete item with logging
+
+DELETE http://{{baseUrl}}/api/example?id={{itemId}}
+X-Tenant-Id: tenant-test-1
+
+> {%
+  if (response.status === 200) {
+    tests['DELETE succeeds'] = true;
+    console.log('✓ DELETE request logged and executed');
+  } else if (response.status === 429) {
+    tests['Rate limit on DELETE'] = true;
+    console.log('⚠ Rate limit hit on DELETE');
+  }
+%}
