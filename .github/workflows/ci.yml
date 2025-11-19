@@ -95,6 +95,7 @@ jobs:
 
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/paginas_test
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/paginas_test
       NEXTAUTH_SECRET: test-secret-do-not-use-in-production
       NEXTAUTH_URL: http://localhost:3000
 
