@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { getTenantScopedDb } from '@/lib/tenant-isolation';
 
 export interface AuditLogInput {
   userId: string;
@@ -12,7 +13,30 @@ export interface AuditLogInput {
   ipAddress?: string;
   userAgent?: string;
   maskPii?: boolean; // Default: true
+  requestId?: string; // Para correlacionar requisições
 }
+
+/**
+ * Lista de campos SENSÍVEIS que NUNCA devem ser loggados
+ */
+const SENSITIVE_FIELDS = new Set([
+  'password',
+  'passwordHash',
+  'passwordSalt',
+  'token',
+  'accessToken',
+  'refreshToken',
+  'apiKey',
+  'apiSecret',
+  'secret',
+  'ssn',
+  'creditCard',
+  'cardNumber',
+  'cvv',
+  'pin',
+  'otp',
+  'totpSecret',
+]);
 
 /**
  * Mask Personally Identifiable Information (PII) in audit logs
@@ -49,6 +73,40 @@ export function maskPii(data: Record<string, unknown>): Record<string, unknown> 
   }
 
   return masked;
+}
+
+/**
+ * Remove campos sensíveis de um objeto (não inclui no log)
+ */
+function sanitizeForAudit(obj: Record<string, unknown>): Record<string, unknown> {
+  if (!obj || typeof obj !== 'object') return obj;
+
+  const sanitized: Record<string, unknown> = {};
+
+  for (const [key, value] of Object.entries(obj)) {
+    // Pula campos sensíveis completamente
+    if (SENSITIVE_FIELDS.has(key.toLowerCase())) {
+      sanitized[key] = '***REDACTED***';
+      continue;
+    }
+
+    // Recursivamente sanitiza objetos aninhados
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      sanitized[key] = sanitizeForAudit(value as Record<string, unknown>);
+    } else if (Array.isArray(value)) {
+      sanitized[key] = value.map((item) => {
+        if (typeof item === 'object') {
+          return sanitizeForAudit(item as Record<string, unknown>);
+        }
+        return item;
+      });
+    } else {
+      sanitized[key] = value;
+    }
+  }
+
+  return sanitized;
+}  return masked;
 }
 
 /**
@@ -177,4 +235,63 @@ export function formatAuditLog(
   }
   
   return message;
+}
+
+/**
+ * Export Audit Logs como CSV para compliance/auditoria externa
+ * Útil para: LGPD, GDPR, conformidade regulatória
+ */
+export async function exportAuditLogsAsCSV(
+  tenantId: string,
+  filters?: {
+    fromDate?: Date;
+    toDate?: Date;
+    action?: string;
+    entity?: string;
+  }
+): Promise<string> {
+  try {
+    const auditLogs = await getAuditLogs(tenantId, {
+      startDate: filters?.fromDate,
+      endDate: filters?.toDate,
+      limit: 10000, // Max export
+    });
+
+    // Cabeçalhos CSV
+    const headers = [
+      'Timestamp',
+      'User ID',
+      'Action',
+      'Entity',
+      'Entity ID',
+      'Old Values',
+      'New Values',
+      'IP Address',
+      'User Agent',
+      'Request ID',
+    ];
+
+    const rows = auditLogs.logs.map((log) => [
+      log.timestamp.toISOString(),
+      log.userId,
+      log.action,
+      log.entity,
+      log.entityId,
+      log.oldValues ? JSON.stringify(log.oldValues) : '',
+      log.newValues ? JSON.stringify(log.newValues) : '',
+      log.ipAddress || '-',
+      log.userAgent || '-',
+      log.requestId || '-',
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
+    ].join('\n');
+
+    return csvContent;
+  } catch (error) {
+    console.error('[AUDIT-EXPORT-ERROR]', error);
+    throw error;
+  }
 }
