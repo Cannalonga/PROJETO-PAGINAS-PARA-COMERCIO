@@ -117,8 +117,8 @@ jobs:
         run: npx prisma db push --force-reset --skip-generate
 
       - name: Run Tests
-        run: npm test -- --coverage 2>&1 || echo "Tests not configured yet - skipping"
-        continue-on-error: true
+        run: npm test 2>&1
+        continue-on-error: false
 
       - name: Upload Coverage (if exists)
         uses: codecov/codecov-action@v3
