@@ -1,10 +1,10 @@
-name: CI/CD - Security Gates
+name: CI — Full Test & Build (BLOCO 6)
 
 on:
   push:
-    branches: [ main, develop, 'feature/**' ]
+    branches: [ main, develop, feature/* ]
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    branches: [ main, develop ]
 
 env:
   NODE_VERSION: '20'

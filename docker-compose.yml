@@ -1,0 +1,112 @@
+version: '3.9'
+
+services:
+  # ===== PostgreSQL Database =====
+  db:
+    image: postgres:15-alpine
+    container_name: paginas_comercio_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-app}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-app_password}
+      POSTGRES_DB: ${DB_NAME:-paginas_comercio}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-app}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # ===== Redis Cache (Optional) =====
+  redis:
+    image: redis:7-alpine
+    container_name: paginas_comercio_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+    command: redis-server --appendonly yes
+
+  # ===== Next.js Application =====
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: paginas_comercio_app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: ${PORT:-3000}
+      
+      # Database
+      DATABASE_URL: postgresql://${DB_USER:-app}:${DB_PASSWORD:-app_password}@db:5432/${DB_NAME:-paginas_comercio}?schema=public
+      
+      # NextAuth
+      NEXTAUTH_URL: ${NEXTAUTH_URL:-http://localhost:3000}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-change_me_in_production}
+      
+      # JWT
+      JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
+      
+      # Redis
+      REDIS_URL: redis://redis:6379
+      
+      # Cloudflare R2 (Deploy)
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-paginas-comercio}
+      R2_PUBLIC_BASE_URL: ${R2_PUBLIC_BASE_URL}
+      
+      # SEO
+      SEO_DEFAULT_LOCALE: ${SEO_DEFAULT_LOCALE:-pt-BR}
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:3000}
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    
+    ports:
+      - "${PORT:-3000}:3000"
+    
+    volumes:
+      - app_logs:/app/logs
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    networks:
+      - app-network
+    
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    driver: local
+  redis_data:
+    driver: local
+  app_logs:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
