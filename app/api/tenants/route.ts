@@ -54,7 +54,8 @@ export const GET = safeHandler(async (req: NextRequest, ctx): Promise<NextRespon
       return queryValidation.error;
     }
 
-    const { page, pageSize, status, search } = queryValidation.data;
+    const data = queryValidation.data as { page: number; pageSize: number; status?: string; search?: string };
+    const { page, pageSize, status, search } = data;
     const skip = (page - 1) * pageSize;
 
     // ✅ OTIMIZAÇÃO: Construir where dinamicamente
@@ -162,7 +163,8 @@ export const POST = safeHandler(async (req: NextRequest, ctx) => {
       return validation.error;
     }
 
-    const { name, email, phone, address, city, state, zipCode, cnpj } = validation.data;
+    const createData = validation.data as { name: string; email: string; phone?: string; address?: string; city?: string; state?: string; zipCode?: string; cnpj?: string };
+    const { name, email, phone, address, city, state, zipCode, cnpj } = createData;
 
     // ✅ SEGURANÇA: Gerar slug seguro (sanitizado)
     const slug = generateSecureSlug(name);
