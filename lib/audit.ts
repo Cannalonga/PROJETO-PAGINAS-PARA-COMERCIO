@@ -106,7 +106,6 @@ function sanitizeForAudit(obj: Record<string, unknown>): Record<string, unknown>
   }
 
   return sanitized;
-}  return masked;
 }
 
 /**

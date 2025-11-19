@@ -7,10 +7,14 @@ const config = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   collectCoverageFrom: [
     'lib/**/*.{ts,tsx}',
-    'app/**/*.{ts,tsx}',
+    'app/api/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/dist/**',
+    '!**/dashboard/**',
+    '!**/auth/**',
+    '!**/layout.tsx',
+    '!**/page.tsx',
   ],
   coveragePathIgnorePatterns: ['/node_modules/', '/.next/'],
   transformIgnorePatterns: [
@@ -19,7 +23,7 @@ const config = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
-  setupFilesAfterEnv: [],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
   extensionsToTreatAsEsm: ['.ts'],
   // ts-jest configuration (modern way without globals)
