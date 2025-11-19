@@ -1,6 +1,13 @@
 import { z } from 'zod';
 
 /**
+ * PAGE ID VALIDATION
+ */
+export const validatePageId = (pageId: string): boolean => {
+  return /^[a-z0-9]{10,}$/i.test(pageId);
+};
+
+/**
  * TENANT VALIDATIONS
  */
 export const CreateTenantSchema = z.object({

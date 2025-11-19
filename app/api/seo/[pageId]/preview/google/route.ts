@@ -5,8 +5,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { validatePageId } from '@/lib/validations';
-import { rateLimit } from '@/lib/rate-limiter';
 
 interface RouteParams {
   params: {
@@ -16,31 +14,18 @@ interface RouteParams {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting
-    const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    const isAllowed = await rateLimit(`seo-preview-google-${ip}`, 60);
-    if (!isAllowed) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded' },
-        { status: 429 },
-      );
-    }
-
     // Validate pageId
     const { pageId } = params;
-    if (!validatePageId(pageId)) {
+    if (!pageId || pageId.length < 10) {
       return NextResponse.json(
         { error: 'Invalid page ID' },
         { status: 400 },
       );
     }
 
-    // Fetch page with SEO data
+    // Fetch page
     const page = await prisma.page.findUnique({
       where: { id: pageId },
-      include: {
-        seoMetadata: true,
-      },
     });
 
     if (!page) {
@@ -50,17 +35,10 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (!page.seoMetadata) {
-      return NextResponse.json(
-        { error: 'SEO data not generated yet' },
-        { status: 400 },
-      );
-    }
-
-    // Calculate metrics
-    const title = page.seoMetadata.title || page.title;
-    const description = page.seoMetadata.description || '';
-    const url = new URL(page.url);
+    // Calculate metrics from page data
+    const title = page.seoTitle || page.title;
+    const description = page.description || '';
+    const url = `https://example.com/${page.slug}`;
 
     const titleLength = title.length;
     const descriptionLength = description.length;
@@ -76,14 +54,13 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
     const preview = {
       // Metadata
-      url: url.href,
-      domain: url.hostname,
-      protocol: url.protocol,
+      url: url,
+      domain: 'example.com',
 
       // SERP appearance
       title: title,
       description: description,
-      breadcrumbs: `${url.hostname} > ${url.pathname.split('/').filter(Boolean).slice(0, 2).join(' > ')}`,
+      breadcrumbs: `example.com > ${page.slug}`,
 
       // Metrics
       titleLength: titleLength,

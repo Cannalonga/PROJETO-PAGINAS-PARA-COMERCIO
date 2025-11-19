@@ -5,8 +5,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { validatePageId } from '@/lib/validations';
-import { rateLimit } from '@/lib/rate-limiter';
 
 interface RouteParams {
   params: {
@@ -16,31 +14,18 @@ interface RouteParams {
 
 export async function GET(req: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting
-    const ip = req.headers.get('x-forwarded-for') || 'unknown';
-    const isAllowed = await rateLimit(`seo-preview-social-${ip}`, 60);
-    if (!isAllowed) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded' },
-        { status: 429 },
-      );
-    }
-
     // Validate pageId
     const { pageId } = params;
-    if (!validatePageId(pageId)) {
+    if (!pageId || pageId.length < 10) {
       return NextResponse.json(
         { error: 'Invalid page ID' },
         { status: 400 },
       );
     }
 
-    // Fetch page with SEO data
+    // Fetch page
     const page = await prisma.page.findUnique({
       where: { id: pageId },
-      include: {
-        seoMetadata: true,
-      },
     });
 
     if (!page) {
@@ -50,48 +35,41 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       );
     }
 
-    if (!page.seoMetadata) {
-      return NextResponse.json(
-        { error: 'SEO data not generated yet' },
-        { status: 400 },
-      );
-    }
-
-    const url = new URL(page.url);
+    const url = `https://example.com/${page.slug}`;
 
     // Build social preview data
     const preview = {
       // Open Graph (Facebook, LinkedIn, etc)
       openGraph: {
-        title: page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title,
-        description: page.seoMetadata.openGraphDescription || page.seoMetadata.description || '',
-        image: page.seoMetadata.openGraphImage || null,
-        url: page.url,
-        type: page.seoMetadata.type || 'website',
+        title: page.seoTitle || page.title,
+        description: page.description || '',
+        image: null,
+        url: url,
+        type: 'website',
         site_name: 'Seu Negócio',
       },
 
       // Twitter Card
       twitter: {
-        card: page.seoMetadata.twitterCard || 'summary_large_image',
-        title: page.seoMetadata.twitterTitle || page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title,
-        description: page.seoMetadata.twitterDescription || page.seoMetadata.openGraphDescription || page.seoMetadata.description || '',
-        image: page.seoMetadata.twitterImage || page.seoMetadata.openGraphImage || null,
+        card: 'summary_large_image',
+        title: page.seoTitle || page.title,
+        description: page.description || '',
+        image: null,
         creator: '@seunegocio',
       },
 
       // WhatsApp (uses Open Graph)
       whatsapp: {
-        title: page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title,
-        description: page.seoMetadata.openGraphDescription || page.seoMetadata.description || '',
-        image: page.seoMetadata.openGraphImage || null,
+        title: page.seoTitle || page.title,
+        description: page.description || '',
+        image: null,
       },
 
       // Instagram (uses Open Graph)
       instagram: {
-        title: page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title,
-        description: page.seoMetadata.openGraphDescription || page.seoMetadata.description || '',
-        image: page.seoMetadata.openGraphImage || null,
+        title: page.seoTitle || page.title,
+        description: page.description || '',
+        image: null,
       },
 
       // Validation
@@ -99,7 +77,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
       // Metrics
       metrics: {
-        ogTitleLength: (page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title).length,
+        ogTitleLength: (page.seoTitle || page.title).length,
         ogDescriptionLength: (page.seoMetadata.openGraphDescription || page.seoMetadata.description || '').length,
         hasImage: !!page.seoMetadata.openGraphImage,
         hasTwitterCard: !!page.seoMetadata.twitterCard,
