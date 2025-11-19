@@ -13,18 +13,18 @@ interface DashboardStats {
 }
 
 export default function DashboardPage() {
-  const [stats, setStats] = useState<DashboardStats>({
+  const [stats /* , setStats */] = useState<DashboardStats>({
     totalPages: 12,
     publishedPages: 8,
     totalUsers: 5,
     monthlyViews: 1250,
   });
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     // Load dashboard stats
-    setIsLoading(false);
+    // setIsLoading(false);
   }, []);
 
   return (
