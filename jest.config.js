@@ -3,11 +3,17 @@ const config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
   roots: ['<rootDir>'],
-  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: [
+    '**/__tests__/**/*.test.ts',
+    '**/__tests__/**/*.test.tsx',
+    '**/?(*.)+(spec|test).ts',
+    '**/?(*.)+(spec|test).tsx',
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   collectCoverageFrom: [
     'lib/**/*.{ts,tsx}',
     'app/api/**/*.{ts,tsx}',
+    'components/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
     '!**/dist/**',
@@ -15,20 +21,24 @@ const config = {
     '!**/auth/**',
     '!**/layout.tsx',
     '!**/page.tsx',
+    '!**/__tests__/**',
   ],
   coveragePathIgnorePatterns: ['/node_modules/', '/.next/'],
-  transformIgnorePatterns: [
-    'node_modules/(?!(uuid)/)',
-  ],
+  transformIgnorePatterns: ['node_modules/(?!(uuid)/)'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
-  extensionsToTreatAsEsm: ['.ts'],
-  // ts-jest configuration (modern way without globals)
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        jsx: 'react-jsx',
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      },
+    },
+  },
 };
 
 module.exports = config;
