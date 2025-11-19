@@ -2,9 +2,9 @@ import React, { useState, useCallback } from 'react';
 import { PageBlock, BlockType, Page } from '@/types';
 import { useDragAndDrop, useUndo, useBlockSelection } from '@/lib/hooks';
 import {
-  moveBlockToPosition,
+  // moveBlockToPosition,
   duplicatePageBlock,
-  deleteMultipleBlocks,
+  // deleteMultipleBlocks,
   addPageBlock,
   removePageBlock,
   updatePageBlock,
@@ -22,7 +22,7 @@ interface EditorProps {
 
 const Editor: React.FC<EditorProps> = ({ page, onSave, onPreview }) => {
   const initialBlocks = page.content || [];
-  const { blocks, recordChange, undo, redo, canUndo, canRedo, clearHistory } = useUndo(
+  const { blocks, recordChange, undo, redo, canUndo, canRedo /* clearHistory */ } = useUndo(
     initialBlocks as PageBlock[]
   );
   const {
@@ -30,18 +30,18 @@ const Editor: React.FC<EditorProps> = ({ page, onSave, onPreview }) => {
     selectedBlockIds,
     selectBlock,
     deselectBlock,
-    deselectAll,
-    deleteSelected,
+    // deselectAll,
+    // deleteSelected,
   } = useBlockSelection();
 
   const {
     isDragging,
     dragOverIndex,
-    handleDragStart,
-    handleDragOver,
-    handleDragLeave,
-    handleDrop,
-    handleDragEnd,
+    // handleDragStart,
+    // handleDragOver,
+    // handleDragLeave,
+    // handleDrop,
+    // handleDragEnd,
   } = useDragAndDrop(blocks, recordChange);
 
   const [isSaving, setIsSaving] = useState(false);
@@ -89,19 +89,19 @@ const Editor: React.FC<EditorProps> = ({ page, onSave, onPreview }) => {
   );
 
   // Handle block movement (drag-drop)
-  const handleBlockDrop = useCallback(
-    (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
-      handleDrop(e, targetIndex);
-
-      // If block was moved, find its new index and update
-      const draggedBlockType = e.dataTransfer.getData('blockType') as BlockType;
-      if (draggedBlockType && !blocks.some((b) => b.type === draggedBlockType)) {
-        // New block from library
-        handleBlockAdd(draggedBlockType);
-      }
-    },
-    [blocks, handleDrop, handleBlockAdd]
-  );
+  // const handleBlockDrop = useCallback(
+  //   (e: React.DragEvent<HTMLDivElement>, targetIndex: number) => {
+  //     handleDrop(e, targetIndex);
+  //
+  //     // If block was moved, find its new index and update
+  //     const draggedBlockType = e.dataTransfer.getData('blockType') as BlockType;
+  //     if (draggedBlockType && !blocks.some((b) => b.type === draggedBlockType)) {
+  //       // New block from library
+  //       handleBlockAdd(draggedBlockType);
+  //     }
+  //   },
+  //   [blocks, handleDrop, handleBlockAdd]
+  // );
 
   // Handle duplicate
   const handleDuplicate = useCallback(() => {
