@@ -1,56 +1,86 @@
 // components/deploy/DeployButton.tsx
-'use client'
+"use client";
 
-import React, { useState } from 'react'
-import { Button } from '@/components/Button'
+import { useState } from "react";
 
 interface DeployButtonProps {
-  pageId: string
-  pageName: string
-  isLoading?: boolean
-  onDeploy?: () => Promise<void>
+  pageId: string;
+  slug: string;
 }
 
-export function DeployButton({
-  pageId,
-  pageName,
-  isLoading = false,
-  onDeploy,
-}: DeployButtonProps) {
-  const [error, setError] = useState<string | null>(null)
+export function DeployButton({ pageId, slug }: DeployButtonProps) {
+  const [isDeploying, setIsDeploying] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleClick = async () => {
+  async function handleDeploy() {
+    setIsDeploying(true);
+    setMessage(null);
+    setIsSuccess(false);
+
     try {
-      setError(null)
-      if (onDeploy) {
-        await onDeploy()
-      } else {
-        const response = await fetch('/api/deploy/publish', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pageId, pageName }),
-        })
+      const res = await fetch("/api/deploy/publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pageId, slug }),
+      });
 
-        if (!response.ok) {
-          const data = await response.json()
-          throw new Error(data.error || 'Falha ao publicar')
-        }
+      const data = await res.json();
+
+      if (!res.ok) {
+        setMessage(
+          `Erro: ${data.error ?? "Falha no deploy"} - ${data.details || ""}`
+        );
+        setIsSuccess(false);
+        return;
       }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro desconhecido')
+
+      setMessage(
+        `✅ Deploy OK! Versão ${data.version}\n📍 URL: ${data.deployedUrl || "em processamento"}`
+      );
+      setIsSuccess(true);
+    } catch (err: unknown) {
+      const errorMsg =
+        err instanceof Error ? err.message : "Erro inesperado";
+      setMessage(`❌ Erro: ${errorMsg}`);
+      setIsSuccess(false);
+    } finally {
+      setIsDeploying(false);
     }
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <Button
-        onClick={handleClick}
-        disabled={isLoading}
-        className="bg-brand-500 hover:bg-brand-600"
+    <div className="flex flex-col gap-3">
+      <button
+        onClick={handleDeploy}
+        disabled={isDeploying}
+        className={`px-4 py-2 rounded-md font-medium text-sm text-white transition-colors ${
+          isDeploying
+            ? "bg-slate-600 cursor-not-allowed opacity-60"
+            : "bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700"
+        }`}
       >
-        {isLoading ? 'Deploying...' : 'Publish Page'}
-      </Button>
-      {error && <span className="text-red-600 text-sm">{error}</span>}
+        {isDeploying ? (
+          <span className="flex items-center gap-2">
+            <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-white" />
+            Publicando...
+          </span>
+        ) : (
+          "Publicar página"
+        )}
+      </button>
+
+      {message && (
+        <p
+          className={`text-xs whitespace-pre-wrap rounded-md p-2.5 border ${
+            isSuccess
+              ? "border-emerald-700/50 bg-emerald-950/30 text-emerald-200"
+              : "border-red-700/50 bg-red-950/30 text-red-200"
+          }`}
+        >
+          {message}
+        </p>
+      )}
     </div>
-  )
+  );
 }

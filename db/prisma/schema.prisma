@@ -109,11 +109,13 @@ model Tenant {
   updatedAt DateTime @updatedAt
   
   // Relations
-  pages     Page[]
-  users     User[]
-  payments  Payment[]
-  analytics AnalyticsEvent[]
-  auditLogs AuditLog[]
+  pages              Page[]
+  users              User[]
+  payments           Payment[]
+  analytics          AnalyticsEvent[]
+  auditLogs          AuditLog[]
+  deployments        DeploymentRecord[]
+  deploymentMetrics  DeploymentMetrics[]
   
   @@index([slug])
   @@index([status])
@@ -298,4 +300,97 @@ model AuditLog {
   @@index([userId])
   @@index([entity])
   @@index([timestamp])
+}
+
+// ============================================================================
+// DEPLOYMENT MODELS (Feature 6 — Static Page Deployment)
+// ============================================================================
+
+enum DeploymentStatus {
+  PENDING
+  GENERATING
+  UPLOADING
+  COMPLETED
+  FAILED
+  ROLLING_BACK
+}
+
+model DeploymentRecord {
+  id          String            @id @default(cuid())
+  tenantId    String
+  pageId      String
+  slug        String
+
+  // Version identifier: v-YYYYMMDDHHmm-tenant-page-hash
+  version     String            @db.VarChar(100)
+
+  // Deployment status
+  status      DeploymentStatus  @default(PENDING)
+
+  // Provider used for deployment (cloudflare-r2, aws-s3, etc)
+  provider    String            @default("cloudflare-r2")
+
+  // URLs after deployment
+  deployedUrl String?           @db.Text
+  previewUrl  String?           @db.Text
+
+  // Structured logs and metadata
+  metadata    Json?             // { artifactCount, totalSize, cacheControl, etc }
+  logs        Json?             // Structured deployment logs
+
+  // Timestamps
+  createdAt   DateTime          @default(now())
+  startedAt   DateTime?
+  finishedAt  DateTime?
+
+  // Error tracking
+  error       String?           @db.Text
+  errorStack  String?           @db.Text
+
+  // Relations
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  errors      DeploymentError[]
+
+  // Indexes for common queries
+  @@index([tenantId, pageId])
+  @@index([tenantId, createdAt])
+  @@index([status])
+  @@index([version])
+  @@fulltext([slug])
+}
+
+model DeploymentError {
+  id          String            @id @default(cuid())
+  deploymentId String
+  message     String            @db.Text
+  stack       String?           @db.Text
+  context     Json?             // Additional error context
+  createdAt   DateTime          @default(now())
+
+  deployment  DeploymentRecord  @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+
+  @@index([deploymentId])
+  @@index([createdAt])
+}
+
+model DeploymentMetrics {
+  id          String            @id @default(cuid())
+  tenantId    String
+  pageId      String
+
+  // Metrics
+  totalDeploys    Int             @default(0)
+  successfulDeploys Int           @default(0)
+  failedDeploys   Int             @default(0)
+  averageDuration Float           @default(0) // in seconds
+
+  // Timestamps
+  lastDeployedAt  DateTime?
+  recordedAt      DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  tenant      Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, pageId])
+  @@index([tenantId])
 }

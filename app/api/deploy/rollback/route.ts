@@ -1,106 +1,144 @@
 // app/api/deploy/rollback/route.ts
+/**
+ * POST /api/deploy/rollback
+ * Initiates rollback to a previous stable deployment
+ * Finds the last successful deployment for a page
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { getTenantFromSession } from "@/lib/tenant-session";
-import { prisma } from "@/lib/prisma";
-import { logAuditEvent } from "@/lib/audit";
+import { prisma } from "@/lib/prisma.js";
+import { rollbackDeployment } from "@/lib/deploy/deploy-manager-real.js";
 
 /**
- * POST /api/deploy/rollback
- * Faz rollback de uma página para versão anterior
- * 
- * @body { pageId: string, targetVersion?: string }
- * @returns { success: boolean, version?: string, deployedUrl?: string, error?: string }
+ * Get tenant ID from session
  */
+async function getTenantFromSession(session: any): Promise<string> {
+  if (!session?.user?.tenantId) {
+    throw new Error("No tenant found in session");
+  }
+  return session.user.tenantId;
+}
+
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { pageId, targetVersion } = await req.json();
-  if (!pageId) {
-    return NextResponse.json({ error: "Missing pageId" }, { status: 400 });
-  }
-
-  const tenantId = await getTenantFromSession(session);
-  if (!tenantId) {
-    return NextResponse.json({ error: "Tenant not found" }, { status: 403 });
-  }
-
   try {
-    // Buscar última versão bem-sucedida
-    const lastSuccessfulDeployment = await prisma.deployment.findFirst({
+    // Authentication check
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: "Unauthorized: No active session" },
+        { status: 401 }
+      );
+    }
+
+    // Tenant resolution
+    const tenantId = await getTenantFromSession(session);
+    if (!tenantId) {
+      return NextResponse.json(
+        { error: "Forbidden: Tenant not found for user" },
+        { status: 403 }
+      );
+    }
+
+    // Parse request body
+    let body: { pageId?: string } | null = null;
+    try {
+      body = await req.json();
+    } catch {
+      return NextResponse.json(
+        { error: "Invalid JSON in request body" },
+        { status: 400 }
+      );
+    }
+
+    // Validate required fields
+    if (!body?.pageId) {
+      return NextResponse.json(
+        {
+          error: "Missing required field",
+          required: ["pageId"],
+        },
+        { status: 400 }
+      );
+    }
+
+    console.log(
+      `[Rollback] Initiating rollback for page ${body.pageId} (tenant: ${tenantId})`
+    );
+
+    // Find last successful deployment
+    const lastSuccess = await prisma.deploymentRecord.findFirst({
       where: {
         tenantId,
-        pageId,
-        status: "SUCCESS",
+        pageId: body.pageId,
+        status: 'COMPLETED',
       },
-      orderBy: { finishedAt: "desc" },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      skip: 1, // Skip the current latest
     });
 
-    if (!lastSuccessfulDeployment || !lastSuccessfulDeployment.deployedUrl) {
+    if (!lastSuccess) {
       return NextResponse.json(
-        { error: "No previous deployment found" },
+        { error: "No successful deployments to rollback to" },
         { status: 404 }
       );
     }
 
-    // Registrar rollback
-    const rollbackDeployment = await prisma.deployment.create({
-      data: {
-        tenantId,
-        pageId,
-        version: `rollback-${Date.now()}`,
-        status: "ROLLED_BACK",
-        provider: lastSuccessfulDeployment.provider,
-        deployedUrl: lastSuccessfulDeployment.deployedUrl,
-        previewUrl: lastSuccessfulDeployment.previewUrl,
-        startedAt: new Date(),
-        finishedAt: new Date(),
-        metadata: {
-          rollbackFrom: lastSuccessfulDeployment.version,
-        },
-      },
-    });
+    console.log(
+      `[Rollback] Found candidate: ${lastSuccess.version} (${lastSuccess.id})`
+    );
 
-    // Log de auditoria
-    await logAuditEvent({
-      tenantId,
-      action: "deployment_rolled_back",
-      entity: "deployment",
-      entityId: rollbackDeployment.id,
-      metadata: {
-        pageId,
-        version: lastSuccessfulDeployment.version,
-        deployedUrl: lastSuccessfulDeployment.deployedUrl,
-      },
-    });
+    // Execute rollback using deploy-manager
+    try {
+      const rollbackResult = await rollbackDeployment(
+        tenantId,
+        body.pageId,
+        body.slug || lastSuccess.slug,
+        body.targetVersion
+      );
+
+      return NextResponse.json(
+        {
+          success: true,
+          message: 'Rollback initiated successfully',
+          targetDeployment: {
+            id: rollbackResult.id,
+            version: rollbackResult.version,
+            status: rollbackResult.status,
+            deployedUrl: rollbackResult.deployedUrl,
+          },
+          nextSteps: [
+            'Rollback is being processed',
+            'CDN will be updated shortly',
+            'Check status with GET /api/deploy/status',
+          ],
+        },
+        { status: 200 }
+      );
+    } catch (rollbackErr) {
+      const msg = rollbackErr instanceof Error ? rollbackErr.message : 'Unknown error';
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Rollback execution failed',
+          details: msg,
+        },
+        { status: 500 }
+      );
+    }
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Unknown error occurred";
+    console.error("[Rollback] Error:", message);
 
     return NextResponse.json(
       {
-        success: true,
-        version: lastSuccessfulDeployment.version,
-        deployedUrl: lastSuccessfulDeployment.deployedUrl,
-        message: "Rollback successful",
+        error: "Rollback initiation failed",
+        details: message,
       },
-      { status: 200 }
-    );
-  } catch (err: any) {
-    console.error("[/api/deploy/rollback]", err);
-
-    // Log de erro
-    await logAuditEvent({
-      tenantId,
-      action: "deployment_rollback_failed",
-      entity: "deployment",
-      entityId: pageId,
-      metadata: { error: err?.message ?? "Unknown error" },
-    });
-
-    return NextResponse.json(
-      { error: err?.message ?? "Rollback failed" },
       { status: 500 }
     );
   }
