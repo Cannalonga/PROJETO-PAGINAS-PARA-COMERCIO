@@ -21,15 +21,10 @@ const config = {
   },
   setupFilesAfterEnv: [],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        jsx: 'react',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
-      },
-    },
-  },
+  extensionsToTreatAsEsm: ['.ts'],
+  // ts-jest configuration (modern way without globals)
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
 };
 
 module.exports = config;
