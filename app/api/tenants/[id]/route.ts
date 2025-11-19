@@ -48,8 +48,8 @@ export async function PUT(
     });
 
     return NextResponse.json(successResponse(tenant, 'Tenant updated successfully'));
-  } catch (error: any) {
-    if (error.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(errorResponse('NOT_FOUND', 'Tenant not found'), {
         status: 404,
       });
@@ -74,8 +74,8 @@ export async function DELETE(
     });
 
     return NextResponse.json(successResponse(null, 'Tenant deleted successfully'));
-  } catch (error: any) {
-    if (error.code === 'P2025') {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
       return NextResponse.json(errorResponse('NOT_FOUND', 'Tenant not found'), {
         status: 404,
       });
