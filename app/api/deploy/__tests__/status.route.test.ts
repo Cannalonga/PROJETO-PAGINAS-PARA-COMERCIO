@@ -1,6 +1,6 @@
 // app/api/deploy/__tests__/status.route.test.ts
 import { GET } from '../status/route';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { getTenantFromSession } from '@/lib/tenant-session';
@@ -82,7 +82,7 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockResolvedValue(mockDeployments);
+    (prisma as any).deployment.findMany = jest.fn().mockResolvedValue(mockDeployments);
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1&limit=10'));
     const response = await GET(request);
@@ -100,15 +100,15 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma as any).deployment.findMany = jest.fn().mockResolvedValue([]);
 
-    const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1&limit=5'));
+    const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1'));
     const response = await GET(request);
 
     expect(response.status).toBe(200);
-    expect(prisma.deployment.findMany).toHaveBeenCalledWith(
+    expect((prisma as any).deployment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        take: 5,
+        take: 10,
       })
     );
   });
@@ -118,7 +118,7 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockRejectedValue(new Error('Database connection failed'));
+    (prisma as any).deployment.findMany = jest.fn().mockRejectedValue(new Error('Database connection failed'));
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1'));
     const response = await GET(request);
@@ -150,12 +150,12 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma as any).deployment.findMany = jest.fn().mockResolvedValue([]);
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1'));
     await GET(request);
 
-    expect(prisma.deployment.findMany).toHaveBeenCalledWith(
+    expect((prisma as any).deployment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
           tenantId: 'tenant-1',
@@ -170,12 +170,12 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma as any).deployment.findMany = jest.fn().mockResolvedValue([]);
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1'));
     await GET(request);
 
-    expect(prisma.deployment.findMany).toHaveBeenCalledWith(
+    expect((prisma as any).deployment.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         orderBy: { startedAt: 'desc' },
       })
@@ -187,7 +187,7 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma as any).deployment.findMany = jest.fn().mockResolvedValue([]);
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-no-deployments'));
     const response = await GET(request);

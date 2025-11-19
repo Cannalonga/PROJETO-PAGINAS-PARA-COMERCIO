@@ -40,26 +40,34 @@
       "@/*": [
         "./*"
       ],
+      "@/src/*": [
+        "./src/*"
+      ],
       "@/app/*": [
         "./app/*"
       ],
       "@/components/*": [
-        "./components/*"
+        "./components/*",
+        "./src/components/*"
       ],
       "@/lib/*": [
+        "./src/lib/*",
         "./lib/*"
       ],
       "@/utils/*": [
-        "./utils/*"
+        "./utils/*",
+        "./src/utils/*"
       ],
       "@/hooks/*": [
+        "./src/hooks/*",
         "./hooks/*"
       ],
       "@/styles/*": [
         "./styles/*"
       ],
       "@/types/*": [
-        "./types/*"
+        "./types/*",
+        "./src/types/*"
       ],
       "@/services/*": [
         "./services/*"

@@ -43,13 +43,15 @@ export async function GET(req: NextRequest) {
     // Extract query parameters
     const { searchParams } = new URL(req.url);
     const pageId = searchParams.get("pageId");
+    const pageParam = parseInt(searchParams.get("page") || "1", 10);
     const limitParam = parseInt(searchParams.get("limit") || "20", 10);
     const limit = Math.min(limitParam, 100); // Max 100 records
+    const offset = (pageParam - 1) * limit;
 
     console.log(
       `[DeployHistory] Fetching history for tenant ${tenantId}${
         pageId ? ` page ${pageId}` : ""
-      } (limit: ${limit})`
+      } (limit: ${limit}, offset: ${offset})`
     );
 
     // Fetch deployment history from Prisma

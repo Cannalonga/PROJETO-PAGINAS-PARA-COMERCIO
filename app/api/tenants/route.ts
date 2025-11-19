@@ -27,7 +27,7 @@ import { CreateTenantSchema, TenantQuerySchema } from '@/lib/validations';
  * 
  * Requer autenticação + role SUPERADMIN ou OPERADOR
  */
-export const GET = safeHandler(async (req: NextRequest, ctx) => {
+export const GET = safeHandler(async (req: NextRequest, ctx): Promise<NextResponse> => {
   // ✅ Verificação 1: HTTP Method
   const methodError = allowMethods('GET')(req);
   if (methodError) return methodError;

@@ -13,7 +13,7 @@ interface RouteParams {
   };
 }
 
-export async function GET(req: NextRequest, { params }: RouteParams) {
+export async function GET(_req: NextRequest, { params }: RouteParams) {
   try {
     const { tenantSlug } = params;
 

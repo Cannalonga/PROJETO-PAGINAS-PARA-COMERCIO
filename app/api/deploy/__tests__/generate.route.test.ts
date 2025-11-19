@@ -21,9 +21,20 @@ describe('POST /api/deploy/generate', () => {
     version: 'v1.0.0-20251119100000',
     html: '<html>...</html>',
     previewHtml: '<html>...</html>',
+    sitemapEntry: '<url><loc>https://pages.example.com/tenant-1/my-page</loc></url>',
     assets: [
-      { name: 'style.css', size: 2048 },
-      { name: 'script.js', size: 4096 },
+      { 
+        path: '/style.css', 
+        contentType: 'text/css',
+        size: 2048, 
+        buffer: Buffer.from('/* css */') 
+      },
+      { 
+        path: '/script.js', 
+        contentType: 'application/javascript',
+        size: 4096, 
+        buffer: Buffer.from('// js') 
+      },
     ],
     previewUrl: 'https://preview.example.com/page-1',
     deployedUrl: 'https://deploy.example.com/page-1',
@@ -287,8 +298,10 @@ describe('POST /api/deploy/generate', () => {
 
   it('should handle large asset counts', async () => {
     const largeAssets = Array.from({ length: 50 }, (_, i) => ({
-      name: `asset-${i}.js`,
+      path: `/asset-${i}.js`,
+      contentType: 'application/javascript',
       size: 1024 * (i + 1),
+      buffer: Buffer.from(`// asset ${i}`),
     }));
 
     const artifactsLarge = {
