@@ -133,12 +133,12 @@ describe('GET /api/deploy/status', () => {
       user: { email: 'test@example.com' },
     } as any);
     mockGetTenantFromSession.mockResolvedValue('tenant-1');
-    (prisma.deployment.findMany as jest.Mock).mockResolvedValue([]);
+    (prisma.deploymentRecord.findMany as jest.Mock).mockResolvedValue([]);
 
     const request = new NextRequest(new URL('http://localhost:3000/api/deploy/status?pageId=page-1'));
     const response = await GET(request);
 
-    expect(prisma.deployment.findMany).toHaveBeenCalledWith(
+    expect(prisma.deploymentRecord.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
         take: 10,
       })

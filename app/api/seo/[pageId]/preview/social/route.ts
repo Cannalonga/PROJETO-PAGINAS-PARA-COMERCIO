@@ -38,11 +38,14 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
     const url = `https://example.com/${page.slug}`;
 
     // Build social preview data
+    const ogTitle = page.seoTitle || page.title;
+    const ogDescription = page.description || '';
+
     const preview = {
       // Open Graph (Facebook, LinkedIn, etc)
       openGraph: {
-        title: page.seoTitle || page.title,
-        description: page.description || '',
+        title: ogTitle,
+        description: ogDescription,
         image: null,
         url: url,
         type: 'website',
@@ -52,23 +55,23 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       // Twitter Card
       twitter: {
         card: 'summary_large_image',
-        title: page.seoTitle || page.title,
-        description: page.description || '',
+        title: ogTitle,
+        description: ogDescription,
         image: null,
         creator: '@seunegocio',
       },
 
       // WhatsApp (uses Open Graph)
       whatsapp: {
-        title: page.seoTitle || page.title,
-        description: page.description || '',
+        title: ogTitle,
+        description: ogDescription,
         image: null,
       },
 
       // Instagram (uses Open Graph)
       instagram: {
-        title: page.seoTitle || page.title,
-        description: page.description || '',
+        title: ogTitle,
+        description: ogDescription,
         image: null,
       },
 
@@ -77,41 +80,41 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
 
       // Metrics
       metrics: {
-        ogTitleLength: (page.seoTitle || page.title).length,
-        ogDescriptionLength: (page.seoMetadata.openGraphDescription || page.seoMetadata.description || '').length,
-        hasImage: !!page.seoMetadata.openGraphImage,
-        hasTwitterCard: !!page.seoMetadata.twitterCard,
+        ogTitleLength: ogTitle.length,
+        ogDescriptionLength: ogDescription.length,
+        hasImage: false,
+        hasTwitterCard: false,
       },
 
       // Tags for reference
       tags: {
         openGraph: [
-          { name: 'og:title', content: page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title },
-          { name: 'og:description', content: page.seoMetadata.openGraphDescription || page.seoMetadata.description || '' },
-          { name: 'og:image', content: page.seoMetadata.openGraphImage || '' },
-          { name: 'og:url', content: page.url },
-          { name: 'og:type', content: page.seoMetadata.type || 'website' },
+          { name: 'og:title', content: ogTitle },
+          { name: 'og:description', content: ogDescription },
+          { name: 'og:image', content: '' },
+          { name: 'og:url', content: url },
+          { name: 'og:type', content: 'website' },
         ],
         twitter: [
-          { name: 'twitter:card', content: page.seoMetadata.twitterCard || 'summary_large_image' },
-          { name: 'twitter:title', content: page.seoMetadata.twitterTitle || page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title },
-          { name: 'twitter:description', content: page.seoMetadata.twitterDescription || page.seoMetadata.openGraphDescription || page.seoMetadata.description || '' },
-          { name: 'twitter:image', content: page.seoMetadata.twitterImage || page.seoMetadata.openGraphImage || '' },
+          { name: 'twitter:card', content: 'summary_large_image' },
+          { name: 'twitter:title', content: ogTitle },
+          { name: 'twitter:description', content: ogDescription },
+          { name: 'twitter:image', content: '' },
         ],
       },
     };
 
     // Validation
-    if (!page.seoMetadata.openGraphImage) {
+    if (ogDescription.length < 20) {
       preview.issues.push({
         platform: 'all',
         type: 'missing_image',
-        message: 'Imagem Open Graph não definida. Use 1200x630px para melhor qualidade',
+        message: 'Descrição muito curta. Mínimo 20 caracteres recomendado',
         severity: 'warning',
       });
     }
 
-    const ogTitleLen = (page.seoMetadata.openGraphTitle || page.seoMetadata.title || page.title).length;
+    const ogTitleLen = ogTitle.length;
     if (ogTitleLen < 20) {
       preview.issues.push({
         platform: 'facebook',
@@ -129,7 +132,7 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
       });
     }
 
-    const ogDescLen = (page.seoMetadata.openGraphDescription || page.seoMetadata.description || '').length;
+    const ogDescLen = ogDescription.length;
     if (ogDescLen < 20) {
       preview.issues.push({
         platform: 'facebook',
@@ -143,15 +146,6 @@ export async function GET(req: NextRequest, { params }: RouteParams) {
         platform: 'facebook',
         type: 'og_desc_long',
         message: `Descrição OG pode ser truncada (${ogDescLen}/200)`,
-        severity: 'warning',
-      });
-    }
-
-    if (!page.seoMetadata.twitterCard) {
-      preview.issues.push({
-        platform: 'twitter',
-        type: 'missing_twitter_card',
-        message: 'Twitter Card não configurado',
         severity: 'warning',
       });
     }

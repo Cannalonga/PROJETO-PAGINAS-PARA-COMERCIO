@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Parse request body
-    let body: { pageId?: string } | null = null;
+    let body: { pageId?: string; slug?: string; targetVersion?: string } | null = null;
     try {
       body = await req.json();
     } catch {
