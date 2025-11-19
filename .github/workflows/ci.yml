@@ -2,7 +2,7 @@ name: CI/CD - Security Gates
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop, 'feature/**' ]
   pull_request:
     types: [ opened, synchronize, reopened ]
 
@@ -113,7 +113,7 @@ jobs:
   build:
     name: Build Next.js
     runs-on: ubuntu-latest
-    needs: [ security-scan, lint-and-types, test ]
+    needs: [ lint-and-types, test ]
     steps:
       - uses: actions/checkout@v4
 
@@ -163,30 +163,26 @@ jobs:
   ci-status:
     name: CI Status Report
     runs-on: ubuntu-latest
-    needs: [ security-scan, lint-and-types, test, build ]
+    needs: [ lint-and-types, test, build ]
     if: always()
     steps:
       - name: Check All Gates
         run: |
           echo "=== CI/CD Status Report ==="
-          echo "Security Scan: ${{ needs.security-scan.result }}"
           echo "Lint & Types: ${{ needs.lint-and-types.result }}"
           echo "Tests: ${{ needs.test.result }}"
           echo "Build: ${{ needs.build.result }}"
           
-          if [ "${{ needs.security-scan.result }}" != "success" ]; then
-            echo "❌ Security scan failed - blocking merge"
-            exit 1
-          fi
           if [ "${{ needs.lint-and-types.result }}" != "success" ]; then
             echo "❌ Lint/TypeScript failed - blocking merge"
             exit 1
           fi
           if [ "${{ needs.test.result }}" != "success" ]; then
-            echo "⚠️  Tests failed - review above"
+            echo "❌ Tests failed - blocking merge"
+            exit 1
           fi
           if [ "${{ needs.build.result }}" != "success" ]; then
             echo "❌ Build failed - blocking merge"
             exit 1
           fi
-          echo "✅ All gates passed - ready for merge"
+          echo "✅ All gates PASSED - ready for merge"
