@@ -1,10 +1,10 @@
 import {
   PutObjectCommand,
   DeleteObjectCommand,
-  GetObjectCommand,
+  ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 import { createR2Client, getR2PublicDomain, getR2BucketName } from '../r2-client.js';
-import type { DeployProvider, DeployFile } from './base-provider.js';
+import type { DeployProvider, DeployFile, DeployProviderUploadResult, CacheInvalidationResult } from './base-provider.js';
 
 export interface CloudflareR2DeployContext {
   tenantId: string;
@@ -26,16 +26,19 @@ export const cloudflareR2Provider: DeployProvider = {
    * Each file is stored with tenant/slug/filename structure
    *
    * @param files Array of files to upload
-   * @param ctx Deployment context (tenant, page, slug, version)
-   * @returns Public URL where files are accessible
+   * @param options Upload metadata (tenantId, pageId, version)
+   * @returns Upload result with deployed URLs
    */
-  async uploadFiles(files: DeployFile[], ctx: CloudflareR2DeployContext) {
+  async uploadFiles(
+    files: DeployFile[],
+    options: { tenantId: string; pageId: string; version: string }
+  ): Promise<DeployProviderUploadResult> {
     const client = createR2Client();
     const bucket = getR2BucketName();
     const publicDomain = getR2PublicDomain();
 
-    // Construct base path: /tenant-slug/page-slug/
-    const basePath = `${ctx.tenantId}/${ctx.slug}`;
+    // Construct base path: /tenant-id/page-id/
+    const basePath = `${options.tenantId}/${options.pageId}`;
 
     try {
       for (const file of files) {
@@ -50,9 +53,9 @@ export const cloudflareR2Provider: DeployProvider = {
           CacheControl: 'public, max-age=31536000, immutable',
           // Add custom headers for security
           Metadata: {
-            'x-tenant-id': ctx.tenantId,
-            'x-page-id': ctx.pageId,
-            'x-version': ctx.version,
+            'x-tenant-id': options.tenantId,
+            'x-page-id': options.pageId,
+            'x-version': options.version,
           },
         });
 
@@ -67,11 +70,9 @@ export const cloudflareR2Provider: DeployProvider = {
       );
 
       return {
-        url: deployedUrl,
-        bucket,
-        basePath,
-        filesCount: files.length,
-        uploadedAt: new Date().toISOString(),
+        deployedUrl,
+        success: true,
+        deployedAt: new Date(),
       };
     } catch (error) {
       console.error('[Cloudflare R2] Upload failed:', error);
@@ -82,78 +83,60 @@ export const cloudflareR2Provider: DeployProvider = {
   },
 
   /**
-   * Delete files from Cloudflare R2
-   * Used for cleanup and removing old versions
-   *
-   * @param keys Array of file keys to delete
-   * @param ctx Deployment context
-   */
-  async deleteFiles(keys: string[], ctx: CloudflareR2DeployContext) {
-    const client = createR2Client();
-    const bucket = getR2BucketName();
-    const basePath = `${ctx.tenantId}/${ctx.slug}`;
-
-    try {
-      for (const key of keys) {
-        const fullKey = `${basePath}/${key}`;
-
-        const command = new DeleteObjectCommand({
-          Bucket: bucket,
-          Key: fullKey,
-        });
-
-        await client.send(command);
-      }
-
-      console.log(`[Cloudflare R2] Successfully deleted ${keys.length} files`);
-    } catch (error) {
-      console.error('[Cloudflare R2] Delete failed:', error);
-      throw new Error(
-        `Failed to delete files from Cloudflare R2: ${error instanceof Error ? error.message : 'unknown error'}`
-      );
-    }
-  },
-
-  /**
    * Invalidate cache for deployment
    * R2 doesn't require explicit cache invalidation
    * (Cache-Control headers handle it automatically)
    *
-   * @param ctx Deployment context
-   * @returns Success indicator
+   * @param paths Paths to invalidate
+   * @returns Cache invalidation result
    */
-  async invalidateCache(ctx: CloudflareR2DeployContext) {
+  async invalidateCache(paths: string[]): Promise<CacheInvalidationResult> {
     // R2 respects Cache-Control headers automatically
     // No explicit purge needed like CloudFlare CDN
     console.log(
       `[Cloudflare R2] Cache invalidation not needed (uses Cache-Control headers)`
     );
-    return { success: true, method: 'automatic' };
+
+    return {
+      success: true,
+      invalidatedPaths: paths,
+      timestamp: new Date(),
+    };
   },
 
   /**
-   * Get file from R2
-   * Useful for rollback and version management
+   * Delete specific version from storage
+   * @param version Version identifier to delete
    */
-  async getFile(key: string, ctx: CloudflareR2DeployContext) {
+  async deleteVersion(version: string): Promise<void> {
     const client = createR2Client();
     const bucket = getR2BucketName();
-    const fullKey = `${ctx.tenantId}/${ctx.slug}/${key}`;
 
     try {
-      const command = new GetObjectCommand({
+      // List and delete all objects with version prefix
+      const listCommand = new ListObjectsV2Command({
         Bucket: bucket,
-        Key: fullKey,
+        Prefix: `${version}/`,
       });
 
-      const response = await client.send(command);
-      const body = await response.Body?.transformToByteArray();
+      const response = await client.send(listCommand);
+      if (response.Contents) {
+        for (const obj of response.Contents) {
+          if (obj.Key) {
+            const deleteCommand = new DeleteObjectCommand({
+              Bucket: bucket,
+              Key: obj.Key,
+            });
+            await client.send(deleteCommand);
+          }
+        }
+      }
 
-      return body;
+      console.log(`[Cloudflare R2] Successfully deleted version ${version}`);
     } catch (error) {
-      console.error('[Cloudflare R2] Get file failed:', error);
+      console.error('[Cloudflare R2] Delete version failed:', error);
       throw new Error(
-        `Failed to retrieve file from Cloudflare R2: ${error instanceof Error ? error.message : 'unknown error'}`
+        `Failed to delete version from Cloudflare R2: ${error instanceof Error ? error.message : 'unknown error'}`
       );
     }
   },

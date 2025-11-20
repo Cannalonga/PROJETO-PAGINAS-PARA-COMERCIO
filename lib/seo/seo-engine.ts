@@ -202,7 +202,7 @@ function generateMetaTags(
   const keywords = formatKeywords(input.keywords, 10);
   const canonical = buildCanonicalUrl(config.domain, input.slug, input.language);
 
-  const tags: string[] = [
+  const tags: (string | false)[] = [
     `<meta charset="utf-8" />`,
     `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
     `<title>${title}</title>`,
