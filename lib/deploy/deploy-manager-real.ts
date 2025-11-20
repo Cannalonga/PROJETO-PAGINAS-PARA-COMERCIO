@@ -126,7 +126,7 @@ export async function executeDeployment(
           artifacts,
           duration,
           uploadedAt: finishedAt.toISOString(),
-        },
+        } as any,
         logs: {
           step: 'COMPLETED',
           status: 'SUCCESS',

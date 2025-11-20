@@ -42,7 +42,7 @@ export function initSentry() {
     Sentry.init({
       dsn,
       environment,
-      integrations: [nodeProfilingIntegration()],
+      integrations: [nodeProfilingIntegration() as any],
 
       // Sampling rates
       tracesSampleRate:
