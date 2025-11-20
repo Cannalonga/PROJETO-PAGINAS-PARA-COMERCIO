@@ -71,7 +71,8 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as CreateTemplateRequest;
-    const { name, category, description, html, css = '', variables = [] } = body;
+    const { name, category: categoryStr, description, html, css = '', variables = [] } = body;
+    const category = categoryStr as 'loja' | 'restaurante' | 'servicos' | 'consultorio' | 'salon' | 'custom';
 
     // Validate input
     const validation = validateTemplate({ name, category, html });

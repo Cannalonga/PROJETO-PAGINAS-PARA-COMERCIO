@@ -87,7 +87,7 @@ describe('DeployStatus Component', () => {
   it('should auto-refresh deployments', async () => {
     jest.useFakeTimers()
     
-    render(<DeployStatus pageId="page-123" autoRefresh={5} />)
+    render(<DeployStatus pageId="page-123" />)
     
     expect(global.fetch).toHaveBeenCalledTimes(1)
     
