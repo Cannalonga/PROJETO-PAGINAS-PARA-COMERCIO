@@ -153,9 +153,6 @@ test.describe('Template Marketplace', () => {
     const isVisible = await nextPageBtn.isVisible({ timeout: 1000 }).catch(() => false);
 
     if (isVisible) {
-      const initialCards = page.locator('[data-testid="template-card"]');
-      // const initialCount = await initialCards.count();
-
       // Go to next page
       await nextPageBtn.click();
       await page.waitForTimeout(300);

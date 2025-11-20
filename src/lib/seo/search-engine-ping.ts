@@ -184,7 +184,7 @@ export async function pingSearchEngines(
  */
 export async function testPingEngine(
   engine: "google" | "bing" | "yandex",
-  sitemapUrl: string
+  _sitemapUrl: string
 ): Promise<PingResult> {
   const testUrl = "https://example.com/sitemap.xml";
 

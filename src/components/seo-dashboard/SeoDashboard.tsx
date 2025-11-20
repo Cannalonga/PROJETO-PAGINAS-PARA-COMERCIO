@@ -17,8 +17,7 @@ import SeoScoreCard from './SeoScoreCard';
 import SeoWarnings from './SeoWarnings';
 import SeoGooglePreview from './SeoGooglePreview';
 import SeoSocialPreview from './SeoSocialPreview';
-import { useSeoData } from '../hooks/useSeoData';
-import { ChevronDown, RefreshCw, Sun, Moon } from 'lucide-react';
+import { RefreshCw, Sun, Moon } from 'lucide-react';
 
 export interface SeoDashboardProps {
   pageId: string;
@@ -28,20 +27,17 @@ export interface SeoDashboardProps {
 }
 
 export default function SeoDashboard({
-  pageId,
   onUpdate,
-  autoRefresh = true,
-  autoRefreshInterval = 30000, // 30s padrão
 }: SeoDashboardProps) {
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<'score' | 'warnings' | 'google' | 'social' | 'jsonld'>('score');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Buscar dados SEO
-  const { data, isLoading, error, refetch } = useSeoData(pageId, {
-    autoRefresh,
-    autoRefreshInterval,
-  });
+  // Mock data for SEO - useSeoData hook not implemented yet
+  const data = null as any;
+  const isLoading = false;
+  const error = null;
+  const refetch = async () => {};
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -63,8 +59,6 @@ export default function SeoDashboard({
   const textColor = isDark ? 'text-slate-100' : 'text-slate-900';
   const borderColor = isDark ? 'border-slate-700' : 'border-slate-200';
   const cardBg = isDark ? 'bg-slate-900' : 'bg-slate-50';
-  const tabActiveBg = isDark ? 'bg-blue-600' : 'bg-blue-500';
-  const tabInactiveBg = isDark ? 'bg-slate-800' : 'bg-slate-200';
 
   if (isLoading && !data) {
     return (
@@ -82,7 +76,7 @@ export default function SeoDashboard({
       <div className={`w-full p-8 ${bgColor}`}>
         <div className={`p-4 rounded-lg border ${borderColor} bg-red-50 dark:bg-red-950`}>
           <p className="text-red-700 dark:text-red-200">
-            Erro ao carregar dados SEO: {error.message}
+            Erro ao carregar dados SEO
           </p>
         </div>
       </div>

@@ -48,9 +48,13 @@ describe('Page Editor', () => {
     it('should validate correct block', () => {
       const block: PageBlock = {
         id: 'block-1',
+        pageId: 'page-1',
         type: 'HEADING',
-        content: { text: 'Title' },
+        position: 0,
         order: 0,
+        content: { text: 'Title' },
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       const result = validatePageBlock(block);
       expect(result.valid).toBe(true);
@@ -60,9 +64,13 @@ describe('Page Editor', () => {
     it('should reject invalid block', () => {
       const block: PageBlock = {
         id: '',
+        pageId: 'page-1',
         type: 'HEADING',
-        content: {},
+        position: 0,
         order: 0,
+        content: {},
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       const result = validatePageBlock(block);
       expect(result.valid).toBe(false);
@@ -73,9 +81,27 @@ describe('Page Editor', () => {
   describe('Page block operations', () => {
     it('should add block to page', () => {
       const blocks: PageBlock[] = [
-        { id: '1', type: 'HEADING', content: {}, order: 0 },
+        { 
+          id: '1', 
+          pageId: 'page-1',
+          type: 'HEADING', 
+          position: 0,
+          order: 0, 
+          content: {},
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as PageBlock,
       ];
-      const newBlock: PageBlock = { id: '2', type: 'PARAGRAPH', content: { text: 'Para' }, order: 1 };
+      const newBlock: PageBlock = { 
+        id: '2', 
+        pageId: 'page-1',
+        type: 'PARAGRAPH', 
+        position: 1,
+        order: 1, 
+        content: { text: 'Para' },
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
       const result = addPageBlock(blocks, newBlock);
       expect(result).toHaveLength(2);
       expect(result[1].order).toBe(1);
@@ -83,8 +109,26 @@ describe('Page Editor', () => {
 
     it('should remove block from page', () => {
       const blocks: PageBlock[] = [
-        { id: '1', type: 'HEADING', content: {}, order: 0 },
-        { id: '2', type: 'PARAGRAPH', content: {}, order: 1 },
+        { 
+          id: '1', 
+          pageId: 'page-1',
+          type: 'HEADING', 
+          position: 0,
+          order: 0, 
+          content: {},
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as PageBlock,
+        { 
+          id: '2', 
+          pageId: 'page-1',
+          type: 'PARAGRAPH', 
+          position: 1,
+          order: 1, 
+          content: {},
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as PageBlock,
       ];
       const result = removePageBlock(blocks, '1');
       expect(result).toHaveLength(1);
@@ -93,7 +137,16 @@ describe('Page Editor', () => {
 
     it('should update block in page', () => {
       const blocks: PageBlock[] = [
-        { id: '1', type: 'HEADING', content: { text: 'Old' }, order: 0 },
+        { 
+          id: '1', 
+          pageId: 'page-1',
+          type: 'HEADING', 
+          position: 0,
+          order: 0, 
+          content: { text: 'Old' },
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        } as PageBlock,
       ];
       const result = updatePageBlock(blocks, '1', { content: { text: 'New' } });
       expect(result[0].content.text).toBe('New');

@@ -9,7 +9,7 @@ import type {
   StaticPageContext,
   StaticPageData,
 } from "./types";
-import { collectStaticPageData, buildCanonicalUrl } from "./collect-page-data";
+import { buildCanonicalUrl } from "./collect-page-data";
 import { generateDeploymentVersion } from "./versioning";
 
 /**

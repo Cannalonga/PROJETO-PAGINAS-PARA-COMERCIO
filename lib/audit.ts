@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { getTenantScopedDb } from '@/lib/tenant-isolation';
 
 export interface AuditLogInput {
   userId: string;
@@ -15,28 +14,6 @@ export interface AuditLogInput {
   maskPii?: boolean; // Default: true
   requestId?: string; // Para correlacionar requisições
 }
-
-/**
- * Lista de campos SENSÍVEIS que NUNCA devem ser loggados
- */
-const SENSITIVE_FIELDS = new Set([
-  'password',
-  'passwordHash',
-  'passwordSalt',
-  'token',
-  'accessToken',
-  'refreshToken',
-  'apiKey',
-  'apiSecret',
-  'secret',
-  'ssn',
-  'creditCard',
-  'cardNumber',
-  'cvv',
-  'pin',
-  'otp',
-  'totpSecret',
-]);
 
 /**
  * Mask Personally Identifiable Information (PII) in audit logs
@@ -73,39 +50,6 @@ export function maskPii(data: Record<string, unknown>): Record<string, unknown> 
   }
 
   return masked;
-}
-
-/**
- * Remove campos sensíveis de um objeto (não inclui no log)
- */
-function sanitizeForAudit(obj: Record<string, unknown>): Record<string, unknown> {
-  if (!obj || typeof obj !== 'object') return obj;
-
-  const sanitized: Record<string, unknown> = {};
-
-  for (const [key, value] of Object.entries(obj)) {
-    // Pula campos sensíveis completamente
-    if (SENSITIVE_FIELDS.has(key.toLowerCase())) {
-      sanitized[key] = '***REDACTED***';
-      continue;
-    }
-
-    // Recursivamente sanitiza objetos aninhados
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      sanitized[key] = sanitizeForAudit(value as Record<string, unknown>);
-    } else if (Array.isArray(value)) {
-      sanitized[key] = value.map((item) => {
-        if (typeof item === 'object') {
-          return sanitizeForAudit(item as Record<string, unknown>);
-        }
-        return item;
-      });
-    } else {
-      sanitized[key] = value;
-    }
-  }
-
-  return sanitized;
 }
 
 /**

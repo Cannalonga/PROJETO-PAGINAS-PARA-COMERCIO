@@ -1,6 +1,6 @@
 // lib/static-export/generate-static-html.ts
 import type { StaticPageContext, StaticPageArtifacts } from "./types";
-import { generateDeploymentVersion } from "./versioning";
+import { generateVersion } from "./versioning";
 
 /**
  * Gera artefatos estáticos HTML a partir do contexto de página
@@ -29,7 +29,7 @@ export async function generateStaticPageArtifacts(
   </body>
 </html>`;
 
-  const version = generateDeploymentVersion(ctx.tenantId, ctx.pageId);
+  const version = generateVersion();
 
   return {
     html,

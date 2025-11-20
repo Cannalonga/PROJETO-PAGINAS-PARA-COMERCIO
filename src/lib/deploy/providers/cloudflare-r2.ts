@@ -108,7 +108,7 @@ export const CloudflareR2Provider: DeployProvider = {
    * @param params - URLs to invalidate (not needed for R2)
    * @returns Success message
    */
-  async invalidateCache(params: {
+  async invalidateCache(_params: {
     tenantId: string;
     pageId: string;
     urls: string[];
@@ -128,7 +128,7 @@ export const CloudflareR2Provider: DeployProvider = {
    * @param params - Version to delete
    * @returns Deletion result
    */
-  async deleteVersion?(params: {
+  async deleteVersion(params: {
     tenantId: string;
     pageId: string;
     version: string;

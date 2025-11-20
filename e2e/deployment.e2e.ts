@@ -196,9 +196,10 @@ test.describe('Deployment Workflow', () => {
     const isDisabled = await deployBtn.isDisabled().catch(() => false);
 
     // Button should be disabled or show loading state
+    const classAttr = await deployBtn.getAttribute('class');
     const hasLoadingClass =
-      (await deployBtn.getAttribute('class')).includes('loading') ||
-      (await deployBtn.getAttribute('class')).includes('disabled');
+      (classAttr?.includes('loading') || false) ||
+      (classAttr?.includes('disabled') || false);
 
     expect(isDisabled || hasLoadingClass).toBeTruthy();
   });

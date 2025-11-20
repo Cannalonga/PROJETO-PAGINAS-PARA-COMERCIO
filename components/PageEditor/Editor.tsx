@@ -57,6 +57,7 @@ const Editor: React.FC<EditorProps> = ({ page, onSave, onPreview }) => {
         pageId: page.id,
         type: blockType,
         position: blocks.length,
+        order: blocks.length,
         content: getDefaultContent(blockType),
         settings: {},
         createdAt: new Date(),

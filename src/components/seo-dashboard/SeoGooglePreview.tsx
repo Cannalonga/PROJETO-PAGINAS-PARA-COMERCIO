@@ -18,7 +18,7 @@ export default function SeoGooglePreview({ data }: SeoGooglePreviewProps) {
   const title = data.title || 'Título não informado';
   const description = data.description || 'Descrição não informada';
   const canonicalUrl = data.canonicalUrl || 'https://site.com/pagina';
-  const slug = data.slug || 'pagina';
+  // const _slug = data.slug || 'pagina';
 
   // Truncar em limites recomendados
   const displayTitle = title.length > 60 ? `${title.substring(0, 57)}...` : title;

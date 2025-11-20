@@ -9,8 +9,7 @@ import {
   safeHandler,
 } from '@/lib/api-helpers';
 import { verifyCsrfToken } from '@/lib/csrf';
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { CreateTenantSchema, TenantQuerySchema } from '@/lib/validations';
 
 /**

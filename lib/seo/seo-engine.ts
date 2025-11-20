@@ -26,19 +26,15 @@ import {
 
 import {
   calculateSeoScoreBreakdown,
-  scoreToGrade,
-  isHealthyScore,
 } from "./seo-score";
 
 import {
   buildAdvancedMetaTags,
   integrateAdvancedTags,
-  type AdvancedMetaResult,
 } from "./seo-advanced-tags";
 
 import {
   buildJsonLdFromSeo,
-  type JsonLdResult,
 } from "./seo-jsonld-orchestrator";
 
 /**
@@ -50,7 +46,7 @@ import {
  */
 function generateRecommendations(
   input: Partial<SeoInput>,
-  breakdown: any
+  _breakdown: any
 ): SeoRecommendation[] {
   const recommendations: SeoRecommendation[] = [];
 

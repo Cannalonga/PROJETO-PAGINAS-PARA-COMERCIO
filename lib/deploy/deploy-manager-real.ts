@@ -40,7 +40,7 @@ export interface DeploymentResult {
 export async function executeDeployment(
   input: ExecuteDeploymentInput
 ): Promise<DeploymentResult> {
-  const { tenantId, pageId, slug, pageTitle, pageDescription } = input;
+  const { tenantId, pageId, slug } = input;
 
   const startTime = Date.now();
 
@@ -72,7 +72,7 @@ export async function executeDeployment(
     });
 
     // Generate version string
-    const version = generateDeploymentVersion(tenantId, slug, pageId);
+    const version = generateDeploymentVersion(tenantId, pageId);
 
     // Update deployment record with version and status
     await prisma.deploymentRecord.update({
@@ -150,7 +150,7 @@ export async function executeDeployment(
     console.error(`[Deploy] ❌ Deployment failed:`, error);
 
     // Update deployment record with failure
-    const failedRecord = await prisma.deploymentRecord.update({
+    await prisma.deploymentRecord.update({
       where: { id: deployment.id },
       data: {
         status: 'FAILED',

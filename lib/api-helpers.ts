@@ -35,7 +35,7 @@ export interface RequestContext {
  */
 export function successResponse<T>(
   data: T,
-  message?: string,
+  _message?: string,
   requestId?: string
 ): ApiResponse<T> {
   return {

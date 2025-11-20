@@ -5,7 +5,6 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { moveBlockToPosition } from '@/lib/page-editor';
 import { logAuditEvent } from '@/lib/audit';
-import { PageBlock } from '@/types/index';
 
 // Mock dependencies
 jest.mock('next-auth');

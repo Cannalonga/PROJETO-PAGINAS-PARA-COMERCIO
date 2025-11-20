@@ -7,7 +7,7 @@
  * - Rate Limiting
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 // TODO: Ajuste os imports conforme os caminhos reais do projeto
 // import { validateCsrfToken, createCsrfToken } from '@/lib/csrf';
@@ -19,8 +19,8 @@ describe('Security Suite — P0', () => {
   describe('CSRF Protection', () => {
     it('deve aceitar um token válido (double submit cookie)', async () => {
       // Mock até que a função real esteja disponível
-      const secret = 'test-secret-key';
-      const sessionId = 'session-123';
+      // const secret = 'test-secret-key';
+      // const sessionId = 'session-123';
 
       // TODO: Uncomment quando tiver a função real importada
       // const token = await createCsrfToken({ secret, sessionId });
@@ -32,8 +32,8 @@ describe('Security Suite — P0', () => {
     });
 
     it('deve rejeitar token inválido', async () => {
-      const secret = 'test-secret-key';
-      const sessionId = 'session-123';
+      // const secret = 'test-secret-key';
+      // const sessionId = 'session-123';
 
       // TODO: Uncomment quando tiver a função real
       // const isValid = await validateCsrfToken({
@@ -54,7 +54,7 @@ describe('Security Suite — P0', () => {
 
   describe('Tenant Isolation', () => {
     it('deve restringir queries ao tenant correto', async () => {
-      const tenantId = 'tenant-a';
+      // const tenantId = 'tenant-a';
 
       // TODO: Mock do Prisma ou função real
       // const db = getTenantScopedDb({ tenantId });
@@ -188,7 +188,7 @@ describe('Security Suite — P0', () => {
   describe('SQL Injection Prevention', () => {
     it('deve escapar strings em queries Prisma', async () => {
       // Prisma faz isso por padrão, mas podemos testar
-      const maliciousInput = "'; DROP TABLE pages; --";
+      // const maliciousInput = "'; DROP TABLE pages; --";
       
       // TODO: Testar que query com Prisma não executa SQL injection
       // const result = await db.page.findMany({

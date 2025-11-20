@@ -169,7 +169,7 @@ export function generateTwitterCards(
  * Generate JSON-LD structured data
  */
 export function generateJsonLd(
-  pageTitle: string,
+  _pageTitle: string,
   pageDescription: string,
   pageUrl: string,
   imageUrl: string,

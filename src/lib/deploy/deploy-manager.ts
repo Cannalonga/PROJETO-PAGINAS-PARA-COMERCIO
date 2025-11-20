@@ -5,7 +5,6 @@
  * Integrates BLOCO 1 (generation) with BLOCO 2 (deployment)
  */
 
-import type { StaticPageContext } from "@/lib/static-export/types";
 import type { DeployFile } from "./providers/base-provider";
 import { CloudflareR2Provider } from "./providers/cloudflare-r2";
 import { logDeploymentActivity, updateDeploymentStatus, logDeploymentError } from "./activity-log";
@@ -29,13 +28,19 @@ export async function executeDeployment(ctx: {
   slug: string;
 }) {
   // Step 1: Create deployment record and start logging
-  const deploymentRecord = await logDeploymentActivity({
-    tenantId: ctx.tenantId,
-    pageId: ctx.pageId,
-    version: "PENDING", // Will be updated with real version
-    status: "RUNNING",
-    provider: "cloudflare-r2",
-  });
+  const deploymentRecord = await logDeploymentActivity(
+    "deployment-" + ctx.pageId,
+    ctx.pageId,
+    ctx.tenantId,
+    {
+      tenantId: ctx.tenantId,
+      pageId: ctx.pageId,
+      slug: ctx.slug,
+      version: "PENDING",
+      status: "PENDING" as any,
+      provider: "cloudflare-r2",
+    } as any
+  );
 
   console.log(
     `[Deploy ${deploymentRecord.id}] Starting deployment for ${ctx.tenantId}/${ctx.pageId}`
@@ -120,7 +125,7 @@ export async function executeDeployment(ctx: {
  * @param deploymentId - Deployment record ID
  * @returns Current deployment status
  */
-export async function checkDeploymentStatus(deploymentId: string) {
+export async function checkDeploymentStatus(_deploymentId: string) {
   // TODO: Uncomment when Prisma is configured
   // const record = await getDeploymentById(deploymentId);
   // if (!record) {
@@ -147,7 +152,7 @@ export async function checkDeploymentStatus(deploymentId: string) {
  * @param tenantId - Tenant identifier
  * @returns Array of past deployments, newest first
  */
-export async function getDeploymentHistory(pageId: string, tenantId: string) {
+export async function getDeploymentHistory(_pageId: string, _tenantId: string) {
   // TODO: Uncomment when Prisma is configured
   // return getDeploymentHistory(pageId, tenantId, 10);
 

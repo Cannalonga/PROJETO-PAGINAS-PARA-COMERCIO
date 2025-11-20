@@ -184,7 +184,6 @@ export function withApiKeyRateLimit(
   apiKeyHeader: string = 'x-api-key'
 ) {
   return async (req: NextRequest): Promise<Response> => {
-    const ctx = getRequestContext();
     const apiKey = req.headers.get(apiKeyHeader);
 
     // Se tem API key, usar api-key rate limit em vez de IP

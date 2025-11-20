@@ -28,7 +28,6 @@ import Redis from 'ioredis';
 import {
   RateLimiterRedis,
   RateLimiterRes,
-  RateLimiterAbstract,
 } from 'rate-limiter-flexible';
 
 /**
