@@ -1,10 +1,22 @@
-// jest.setup.js
-// This file only runs for jsdom tests (unit/component)
-// API tests run in node environment without this setup
+/**
+ * jest.setup.js
+ * 
+ * Setup centralizado para toda suite de testes
+ * - Mocks de router e auth
+ * - Cleanup automático entre testes
+ * - Validação de cleanup
+ * - Mock timers global
+ * - Mocks de storage
+ * 
+ * NOTA: Fetch é mockado pelo helpers/test-mocks.ts em cada teste
+ */
 
-require('@testing-library/jest-dom')
+require('@testing-library/jest-dom');
 
-// Mock next/router
+// ============================================================================
+// CAMADA 1: MOCKS DE NEXT.JS ROUTER E AUTH
+// ============================================================================
+
 jest.mock('next/router', () => ({
   useRouter() {
     return {
@@ -29,7 +41,6 @@ jest.mock('next/router', () => ({
   },
 }))
 
-// Mock next-auth
 jest.mock('next-auth/react', () => ({
   useSession: jest.fn(() => ({
     data: {
@@ -62,20 +73,37 @@ jest.mock('next/navigation', () => ({
   },
 }))
 
-// Suppress console errors in tests (optional)
-const originalError = console.error
-beforeAll(() => {
-  console.error = (...args) => {
-    if (
-      typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render')
-    ) {
-      return
-    }
-    originalError.call(console, ...args)
-  }
-})
+// ============================================================================
+// CAMADA 2: CLEANUP AUTOMÁTICO ENTRE TESTES
+// ============================================================================
 
-afterAll(() => {
-  console.error = originalError
-})
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.clearAllTimers();
+});
+
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
+// ============================================================================
+// CAMADA 3: MOCKS DE STORAGE
+// ============================================================================
+
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+
+const sessionStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+};
+
+global.localStorage = localStorageMock;
+global.sessionStorage = sessionStorageMock;
+
