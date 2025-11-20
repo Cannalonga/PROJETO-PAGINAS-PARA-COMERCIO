@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { PageBlock } from '@/types';
 
 interface PropertiesPanelProps {
@@ -14,7 +14,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
   onDuplicate,
   onDelete,
 }) => {
-  const [editingField, setEditingField] = useState<string | null>(null);
+  // const [editingField, setEditingField] = useState<string | null>(null);
 
   if (!selectedBlock) {
     return (

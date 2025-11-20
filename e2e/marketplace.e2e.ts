@@ -154,7 +154,7 @@ test.describe('Template Marketplace', () => {
 
     if (isVisible) {
       const initialCards = page.locator('[data-testid="template-card"]');
-      const initialCount = await initialCards.count();
+      // const initialCount = await initialCards.count();
 
       // Go to next page
       await nextPageBtn.click();

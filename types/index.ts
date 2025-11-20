@@ -121,6 +121,7 @@ export interface PageBlock {
   pageId: string;
   type: BlockType;
   position: number;
+  order: number;
   content: Record<string, any>;
   settings?: Record<string, any>;
   metadata?: Record<string, any>;

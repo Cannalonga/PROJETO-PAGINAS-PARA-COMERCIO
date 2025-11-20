@@ -5,9 +5,15 @@
 
 export interface PageBlock {
   id: string;
+  pageId: string;
   type: 'heading' | 'paragraph' | 'image' | 'button' | 'form' | 'gallery';
-  content: Record<string, any>;
+  position: number;
   order: number;
+  content: Record<string, any>;
+  settings?: Record<string, any>;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface Page {

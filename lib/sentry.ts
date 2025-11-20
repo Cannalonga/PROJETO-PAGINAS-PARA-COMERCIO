@@ -71,7 +71,7 @@ export function initSentry() {
       ],
 
       // Before send — adicionar contexto antes de enviar
-      beforeSend(event, hint) {
+      beforeSend(event, _hint) {
         const ctx = getRequestContext();
 
         if (ctx) {

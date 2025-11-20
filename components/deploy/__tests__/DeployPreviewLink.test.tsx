@@ -30,13 +30,13 @@ describe('DeployPreviewLink Component', () => {
   })
 
   it('should render preview link component', () => {
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     expect(screen.getByText(/preview|generate/i)).toBeInTheDocument()
   })
 
   it('should generate preview on button click', async () => {
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -50,7 +50,7 @@ describe('DeployPreviewLink Component', () => {
   })
 
   it('should display preview link after generation', async () => {
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -68,7 +68,7 @@ describe('DeployPreviewLink Component', () => {
       }), 100))
     )
 
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -82,7 +82,7 @@ describe('DeployPreviewLink Component', () => {
       json: async () => ({ error: 'Failed to generate preview' }),
     })
 
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -100,7 +100,7 @@ describe('DeployPreviewLink Component', () => {
       },
     })
 
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -117,7 +117,7 @@ describe('DeployPreviewLink Component', () => {
   it('should open preview in new tab', async () => {
     window.open = jest.fn()
 
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -131,7 +131,7 @@ describe('DeployPreviewLink Component', () => {
   })
 
   it('should display version in preview', async () => {
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -142,7 +142,7 @@ describe('DeployPreviewLink Component', () => {
   })
 
   it('should maintain preview state on re-render', async () => {
-    const { rerender } = render(<DeployPreviewLink pageId="page-123" />)
+    const { rerender } = render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -151,7 +151,7 @@ describe('DeployPreviewLink Component', () => {
       expect(global.fetch).toHaveBeenCalled()
     })
     
-    rerender(<DeployPreviewLink pageId="page-123" />)
+    rerender(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     // Should maintain the preview link
     expect(screen.getByText(/preview|https/i)).toBeInTheDocument()
@@ -160,7 +160,7 @@ describe('DeployPreviewLink Component', () => {
   it('should handle network errors gracefully', async () => {
     ;(global.fetch as jest.Mock).mockRejectedValue(new Error('Network error'))
 
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
@@ -183,7 +183,7 @@ describe('DeployPreviewLink Component', () => {
       })
     })
 
-    render(<DeployPreviewLink pageId="page-123" />)
+    render(<DeployPreviewLink pageId="page-123" slug="my-page" />)
     
     const button = screen.getByRole('button')
     fireEvent.click(button)
