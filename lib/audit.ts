@@ -267,7 +267,6 @@ export async function exportAuditLogsAsCSV(
       'New Values',
       'IP Address',
       'User Agent',
-      'Request ID',
     ];
 
     const rows = auditLogs.logs.map((log) => [
@@ -280,7 +279,6 @@ export async function exportAuditLogsAsCSV(
       log.newValues ? JSON.stringify(log.newValues) : '',
       log.ipAddress || '-',
       log.userAgent || '-',
-      log.requestId || '-',
     ]);
 
     const csvContent = [

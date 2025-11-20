@@ -39,12 +39,12 @@ export const cloudflareR2Provider: DeployProvider = {
 
     try {
       for (const file of files) {
-        const key = `${basePath}/${file.filename}`;
+        const key = `${basePath}/${file.path}`;
 
         const command = new PutObjectCommand({
           Bucket: bucket,
           Key: key,
-          Body: file.contents,
+          Body: file.buffer,
           ContentType: file.contentType,
           // Cache immutable assets for 1 year
           CacheControl: 'public, max-age=31536000, immutable',

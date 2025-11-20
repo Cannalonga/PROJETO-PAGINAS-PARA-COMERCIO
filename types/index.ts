@@ -136,7 +136,7 @@ export interface Template {
   category: 'LOJA' | 'RESTAURANTE' | 'SERVICOS' | 'CONSULTORIO' | 'SALON' | 'GENERIC';
   preview?: string;
   blocks: PageBlock[];
-  variables: string[];
+  variables: (string | { name: string; description?: string; type?: string; required?: boolean })[];
   tenantId?: string;
   isPublic: boolean;
   createdAt: Date;

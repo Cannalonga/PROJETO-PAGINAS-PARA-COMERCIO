@@ -118,8 +118,8 @@ export async function executeDeployment(
       where: { id: deployment.id },
       data: {
         status: 'COMPLETED',
-        deployedUrl: uploadResult.url,
-        previewUrl: artifacts.previewUrl,
+        deployedUrl: uploadResult.deployedUrl,
+        previewUrl: uploadResult.previewUrl || artifacts.previewUrl,
         finishedAt,
         metadata: {
           provider: uploadResult,
@@ -132,7 +132,7 @@ export async function executeDeployment(
           status: 'SUCCESS',
           completedAt: finishedAt.toISOString(),
           duration,
-          uploadedUrl: uploadResult.url,
+          uploadedUrl: uploadResult.deployedUrl,
         },
       },
     });

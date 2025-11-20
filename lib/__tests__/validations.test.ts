@@ -347,7 +347,7 @@ describe('Validation Schemas', () => {
 
       const result = CreateTenantSchema.safeParse(dataWithExtra)
       expect(result.success).toBe(true)
-      expect(result.data?.unknownField).toBeUndefined()
+      expect((result.data as any)?.unknownField).toBeUndefined()
     })
 
     it('should provide detailed error messages', () => {
