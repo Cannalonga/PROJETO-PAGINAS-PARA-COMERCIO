@@ -69,8 +69,6 @@ export async function executeDeployment(
       tenantId,
       pageId,
       slug,
-      title: pageTitle,
-      description: pageDescription,
     });
 
     // Generate version string
@@ -97,15 +95,14 @@ export async function executeDeployment(
     const uploadResult = await cloudflareR2Provider.uploadFiles(
       [
         {
-          filename: 'index.html',
+          path: 'index.html',
           contentType: 'text/html; charset=utf-8',
-          contents: Buffer.from(artifacts.html, 'utf-8'),
+          buffer: Buffer.from(artifacts.html, 'utf-8'),
         },
       ],
       {
         tenantId,
         pageId,
-        slug,
         version,
       }
     );

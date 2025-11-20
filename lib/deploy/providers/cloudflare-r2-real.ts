@@ -19,7 +19,6 @@ export interface CloudflareR2DeployContext {
  */
 export const cloudflareR2Provider: DeployProvider = {
   name: 'cloudflare-r2',
-  displayName: 'Cloudflare R2',
 
   /**
    * Upload files to Cloudflare R2 bucket

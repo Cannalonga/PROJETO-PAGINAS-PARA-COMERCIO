@@ -12,8 +12,9 @@ import {
   addPageBlock,
   removePageBlock,
   updatePageBlock,
-  type PageBlock,
 } from '@/lib/page-editor';
+
+import type { PageBlock } from '@/types/index';
 
 describe('Page Editor', () => {
   describe('validateSlug', () => {
@@ -47,7 +48,7 @@ describe('Page Editor', () => {
     it('should validate correct block', () => {
       const block: PageBlock = {
         id: 'block-1',
-        type: 'heading',
+        type: 'HEADING',
         content: { text: 'Title' },
         order: 0,
       };
@@ -59,7 +60,7 @@ describe('Page Editor', () => {
     it('should reject invalid block', () => {
       const block: PageBlock = {
         id: '',
-        type: 'heading',
+        type: 'HEADING',
         content: {},
         order: 0,
       };
@@ -72,9 +73,9 @@ describe('Page Editor', () => {
   describe('Page block operations', () => {
     it('should add block to page', () => {
       const blocks: PageBlock[] = [
-        { id: '1', type: 'heading', content: {}, order: 0 },
+        { id: '1', type: 'HEADING', content: {}, order: 0 },
       ];
-      const newBlock: PageBlock = { id: '2', type: 'paragraph', content: { text: 'Para' }, order: 1 };
+      const newBlock: PageBlock = { id: '2', type: 'PARAGRAPH', content: { text: 'Para' }, order: 1 };
       const result = addPageBlock(blocks, newBlock);
       expect(result).toHaveLength(2);
       expect(result[1].order).toBe(1);
@@ -82,8 +83,8 @@ describe('Page Editor', () => {
 
     it('should remove block from page', () => {
       const blocks: PageBlock[] = [
-        { id: '1', type: 'heading', content: {}, order: 0 },
-        { id: '2', type: 'paragraph', content: {}, order: 1 },
+        { id: '1', type: 'HEADING', content: {}, order: 0 },
+        { id: '2', type: 'PARAGRAPH', content: {}, order: 1 },
       ];
       const result = removePageBlock(blocks, '1');
       expect(result).toHaveLength(1);
@@ -92,7 +93,7 @@ describe('Page Editor', () => {
 
     it('should update block in page', () => {
       const blocks: PageBlock[] = [
-        { id: '1', type: 'heading', content: { text: 'Old' }, order: 0 },
+        { id: '1', type: 'HEADING', content: { text: 'Old' }, order: 0 },
       ];
       const result = updatePageBlock(blocks, '1', { content: { text: 'New' } });
       expect(result[0].content.text).toBe('New');
