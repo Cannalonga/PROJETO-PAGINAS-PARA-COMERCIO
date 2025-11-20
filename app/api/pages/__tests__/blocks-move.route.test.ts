@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { moveBlockToPosition } from '@/lib/page-editor';
 import { logAuditEvent } from '@/lib/audit';
+import { PageBlock } from '@/types/index';
 
 // Mock dependencies
 jest.mock('next-auth');
@@ -161,7 +162,7 @@ describe('PATCH /api/pages/[id]/blocks/[blockId]/move', () => {
       { id: 'block-2', position: 0, type: 'PARAGRAPH' },
       { id: 'block-1', position: 1, type: 'HEADING' },
       { id: 'block-3', position: 2, type: 'IMAGE' },
-    ];
+    ] as any[];
 
     mockGetServerSession.mockResolvedValue({
       user: { email: 'test@example.com' },
@@ -197,7 +198,7 @@ describe('PATCH /api/pages/[id]/blocks/[blockId]/move', () => {
     } as any);
     (prisma.page.findUnique as jest.Mock).mockResolvedValue(mockPage);
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-    mockMoveBlockToPosition.mockReturnValue(mockPage.content);
+    mockMoveBlockToPosition.mockReturnValue(mockPage.content as any);
     (prisma.page.update as jest.Mock).mockResolvedValue(mockPage);
     mockLogAuditEvent.mockResolvedValue(undefined);
 
@@ -258,7 +259,7 @@ describe('PATCH /api/pages/[id]/blocks/[blockId]/move', () => {
     } as any);
     (prisma.page.findUnique as jest.Mock).mockResolvedValue(mockPage);
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-    mockMoveBlockToPosition.mockReturnValue(mockPage.content);
+    mockMoveBlockToPosition.mockReturnValue(mockPage.content as any);
     (prisma.page.update as jest.Mock).mockResolvedValue(mockPage);
     mockLogAuditEvent.mockResolvedValue(undefined);
 

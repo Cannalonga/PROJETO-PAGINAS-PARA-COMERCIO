@@ -3,18 +3,7 @@
  * Handles page creation, editing, and management logic
  */
 
-export interface PageBlock {
-  id: string;
-  pageId: string;
-  type: 'heading' | 'paragraph' | 'image' | 'button' | 'form' | 'gallery';
-  position: number;
-  order: number;
-  content: Record<string, any>;
-  settings?: Record<string, any>;
-  metadata?: Record<string, any>;
-  createdAt: Date;
-  updatedAt: Date;
-}
+import { PageBlock } from '../types/index';
 
 export interface Page {
   id: string;

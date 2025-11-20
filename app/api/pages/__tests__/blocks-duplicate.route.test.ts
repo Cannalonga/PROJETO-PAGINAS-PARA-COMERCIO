@@ -5,6 +5,7 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { duplicatePageBlock } from '@/lib/page-editor';
 import { logAuditEvent } from '@/lib/audit';
+import { PageBlock } from '@/types/index';
 
 // Mock dependencies
 jest.mock('next-auth');
@@ -117,9 +118,9 @@ describe('POST /api/pages/[id]/blocks/[blockId]/duplicate', () => {
     const newBlockId = 'block-1-copy';
     const duplicatedBlocks = [
       mockPage.content[0],
-      { id: newBlockId, position: 1, type: 'HEADING', content: { text: 'Title' } },
+      { id: newBlockId, position: 1, type: 'HEADING', content: { text: 'Title' }, pageId: 'page-1', order: 1, createdAt: new Date(), updatedAt: new Date() } as PageBlock,
       { ...mockPage.content[1], position: 2 },
-    ];
+    ] as PageBlock[];
 
     mockGetServerSession.mockResolvedValue({
       user: { email: 'test@example.com' },
@@ -156,7 +157,7 @@ describe('POST /api/pages/[id]/blocks/[blockId]/duplicate', () => {
     } as any);
     (prisma.page.findUnique as jest.Mock).mockResolvedValue(mockPage);
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-    mockDuplicatePageBlock.mockReturnValue(duplicatedBlocks);
+    mockDuplicatePageBlock.mockReturnValue(duplicatedBlocks as any);
     (prisma.page.update as jest.Mock).mockResolvedValue({
       ...mockPage,
       content: duplicatedBlocks,
@@ -187,7 +188,7 @@ describe('POST /api/pages/[id]/blocks/[blockId]/duplicate', () => {
     const duplicatedBlocks = [
       blockToDuplicate,
       { ...blockToDuplicate, id: 'block-1-copy', position: 1 },
-    ];
+    ] as any;
 
     mockGetServerSession.mockResolvedValue({
       user: { email: 'test@example.com' },
@@ -253,7 +254,7 @@ describe('POST /api/pages/[id]/blocks/[blockId]/duplicate', () => {
     } as any);
     (prisma.page.findUnique as jest.Mock).mockResolvedValue(mockPage);
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
-    mockDuplicatePageBlock.mockReturnValue(duplicatedBlocks);
+    mockDuplicatePageBlock.mockReturnValue(duplicatedBlocks as any);
     (prisma.page.update as jest.Mock).mockResolvedValue(updatedPage);
     mockLogAuditEvent.mockResolvedValue(undefined);
 
@@ -298,8 +299,8 @@ describe('POST /api/pages/[id]/blocks/[blockId]/duplicate', () => {
     (prisma.page.findUnique as jest.Mock).mockResolvedValue(mockPage);
     (prisma.user.findUnique as jest.Mock).mockResolvedValue(mockUser);
     mockDuplicatePageBlock
-      .mockReturnValueOnce(firstDuplicate)
-      .mockReturnValueOnce(secondDuplicate);
+      .mockReturnValueOnce(firstDuplicate as any)
+      .mockReturnValueOnce(secondDuplicate as any);
     (prisma.page.update as jest.Mock)
       .mockResolvedValueOnce({ ...mockPage, content: firstDuplicate })
       .mockResolvedValueOnce({ ...mockPage, content: secondDuplicate });
