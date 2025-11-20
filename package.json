@@ -89,6 +89,7 @@
     "npm": ">=9.0.0"
   },
   "prisma": {
-    "schema": "db/prisma/schema.prisma"
+    "schema": "db/prisma/schema.prisma",
+    "seed": "ts-node --transpile-only db/prisma/seed.ts"
   }
 }

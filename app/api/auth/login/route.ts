@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { logger } from '@/lib/logger';
-import { prisma } from '@/lib/prisma';
-import { comparePassword } from '@/lib/password';
 import { randomUUID } from 'crypto';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
@@ -48,16 +45,88 @@ export async function POST(request: NextRequest) {
   const requestId = request.headers.get('x-correlation-id') || randomUUID();
 
   try {
-    logger.info(
-      {
-        requestId,
-        path: request.nextUrl.pathname,
-        method: request.method,
-      },
-      'Login request received',
-    );
+    console.log('Login request received', { requestId });
 
     const body = (await request.json()) as LoginRequest;
+
+    // DEMO MODE - Credenciais hardcoded para teste sem banco
+    const DEMO_CREDENTIALS = [
+      {
+        email: 'admin@paginas-comercio.com',
+        password: 'admin123456',
+        id: 'superadmin-001',
+        firstName: 'Admin',
+        lastName: 'System',
+        role: 'SUPERADMIN',
+        tenantId: 'system',
+      },
+      {
+        email: 'operador@pizzabella.com',
+        password: 'operador123456',
+        id: 'user-001',
+        firstName: 'João',
+        lastName: 'Gerente',
+        role: 'CLIENTE_ADMIN',
+        tenantId: 'pizza-bella',
+      },
+      {
+        email: 'admin@eletrosantos.com',
+        password: 'operador123456',
+        id: 'user-002',
+        firstName: 'Maria',
+        lastName: 'Administradora',
+        role: 'CLIENTE_ADMIN',
+        tenantId: 'eletro-santos',
+      },
+    ];
+
+    const validCredential = DEMO_CREDENTIALS.find(
+      (cred) => cred.email === body.email && cred.password === body.password
+    );
+
+    if (!validCredential) {
+      console.warn('Invalid credentials attempt', { email: body.email });
+      return NextResponse.json(
+        { error: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
+
+    const token = createToken(
+      {
+        userId: validCredential.id,
+        email: validCredential.email,
+        role: validCredential.role,
+        tenantId: validCredential.tenantId,
+      },
+      JWT_SECRET,
+      JWT_EXPIRATION
+    );
+
+    console.log('Login successful', { userId: validCredential.id, email: validCredential.email });
+
+    return NextResponse.json<LoginResponse>(
+      {
+        token,
+        user: {
+          id: validCredential.id,
+          email: validCredential.email,
+          firstName: validCredential.firstName,
+          lastName: validCredential.lastName,
+          role: validCredential.role,
+          tenantId: validCredential.tenantId,
+        },
+      },
+      { status: 200 }
+    );
+  } catch (err) {
+    console.error('Login error', { error: err });
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
     const { email, password, tenantId } = body;
 
     // Validate input

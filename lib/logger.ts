@@ -20,7 +20,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 /**
  * Base logger instance
- * - Development: Pretty-printed com cores
+ * - Development: Console logging simples
  * - Production: JSON estruturado para log aggregators (ELK, Datadog, etc)
  */
 export const logger: Logger = pino({
@@ -32,18 +32,7 @@ export const logger: Logger = pino({
       return { level: label };
     },
   },
-  transport: isDev
-    ? {
-        target: 'pino-pretty',
-        options: {
-          colorize: true,
-          translateTime: 'SYS:standard',
-          ignore: 'pid,hostname',
-          singleLine: false,
-          messageFormat: '{levelLabel} - {msg}',
-        },
-      }
-    : undefined, // Production: JSON puro para stdout
+  transport: undefined, // Simplificado para evitar thread-stream issues
 });
 
 /**
