@@ -3,8 +3,8 @@ import {
   DeleteObjectCommand,
   ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
-import { createR2Client, getR2PublicDomain, getR2BucketName } from '../r2-client.js';
-import type { DeployProvider, DeployFile, DeployProviderUploadResult, CacheInvalidationResult } from './base-provider.js';
+import { createR2Client, getR2PublicDomain, getR2BucketName } from '../r2-client';
+import type { DeployProvider, DeployFile, DeployProviderUploadResult, CacheInvalidationResult } from './base-provider';
 
 export interface CloudflareR2DeployContext {
   tenantId: string;

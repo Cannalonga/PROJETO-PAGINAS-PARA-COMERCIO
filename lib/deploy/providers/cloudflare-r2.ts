@@ -10,7 +10,7 @@ import type {
   DeployProvider,
   DeployProviderUploadResult,
   CacheInvalidationResult,
-} from "./base-provider.js";
+} from "./base-provider";
 
 // AWS SDK import - install with: npm install @aws-sdk/client-s3
 // import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";

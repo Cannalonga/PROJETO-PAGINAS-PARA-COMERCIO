@@ -1,7 +1,7 @@
-import { prisma } from '@/lib/prisma.js';
-import { cloudflareR2Provider } from './providers/cloudflare-r2-real.js';
-import { generateStaticPageArtifacts } from '@/lib/static-export/generate-static-page.js';
-import { generateDeploymentVersion } from '@/lib/static-export/versioning.js';
+import { prisma } from '@/lib/prisma';
+import { cloudflareR2Provider } from './providers/cloudflare-r2-real';
+import { generateStaticPageArtifacts } from '@/lib/static-export/generate-static-page';
+import { generateDeploymentVersion } from '@/lib/static-export/versioning';
 import type { DeploymentStatus } from '@prisma/client';
 
 export interface ExecuteDeploymentInput {

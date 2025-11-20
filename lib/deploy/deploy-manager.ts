@@ -6,7 +6,7 @@
  */
 
 import type { DeploymentRecord, StaticDeployStatus } from "@/lib/static-export/types";
-import { logDeploymentActivity, updateDeploymentStatus } from "./activity-log.js";
+import { logDeploymentActivity, updateDeploymentStatus } from "./activity-log";
 
 // TODO: Import from BLOCO 1 when available
 // import { generateStaticPageArtifacts } from "@/lib/static-export/generate-static-page";

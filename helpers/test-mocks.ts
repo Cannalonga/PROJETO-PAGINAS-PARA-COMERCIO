@@ -9,8 +9,6 @@
  * - Rastreia histórico de chamadas
  */
 
-import { waitFor } from '@testing-library/react';
-
 interface MockResponse {
   status: number;
   headers?: Record<string, string>;

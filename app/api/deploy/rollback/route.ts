@@ -8,8 +8,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma.js";
-import { rollbackDeployment } from "@/lib/deploy/deploy-manager-real.js";
+import { prisma } from "@/lib/prisma";
+import { rollbackDeployment } from "@/lib/deploy/deploy-manager-real";
 
 /**
  * Get tenant ID from session

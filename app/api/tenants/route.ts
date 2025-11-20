@@ -6,7 +6,6 @@ import {
   requireAuth,
   requireRole,
   allowMethods,
-  safeHandler,
 } from '@/lib/api-helpers';
 import { verifyCsrfToken } from '@/lib/csrf';
 import { NextResponse, NextRequest } from 'next/server';
@@ -24,7 +23,7 @@ import { CreateTenantSchema, TenantQuerySchema } from '@/lib/validations';
  * 
  * Requer autenticação + role SUPERADMIN ou OPERADOR
  */
-export const GET = safeHandler(async (req: NextRequest, ctx): Promise<NextResponse> => {
+export async function GET(req: NextRequest, ctx: any): Promise<NextResponse> {
   // ✅ Verificação 1: HTTP Method
   const methodError = allowMethods('GET')(req);
   if (methodError) return methodError;
@@ -114,7 +113,7 @@ export const GET = safeHandler(async (req: NextRequest, ctx): Promise<NextRespon
   } catch (error) {
     throw error;
   }
-});
+}
 
 /**
  * POST /api/tenants
@@ -138,7 +137,7 @@ export const GET = safeHandler(async (req: NextRequest, ctx): Promise<NextRespon
  * Requer autenticação + role SUPERADMIN ou OPERADOR
  * Requer CSRF token válido
  */
-export const POST = safeHandler(async (req: NextRequest, ctx) => {
+export async function POST(req: NextRequest, ctx: any): Promise<NextResponse> {
   // ✅ Verificação 1: HTTP Method
   const methodError = allowMethods('POST')(req);
   if (methodError) return methodError;
@@ -218,7 +217,7 @@ export const POST = safeHandler(async (req: NextRequest, ctx) => {
   } catch (error) {
     throw error;
   }
-});
+}
 
 /**
  * Gera slug seguro e único
