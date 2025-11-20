@@ -188,7 +188,7 @@ export default function SeoDashboard({
                           ></div>
                         </div>
                         <span className="text-sm font-medium w-8 text-right">
-                          {value}%
+                          {value as number}%
                         </span>
                       </div>
                     </div>

@@ -202,7 +202,7 @@ function generateMetaTags(
   const keywords = formatKeywords(input.keywords, 10);
   const canonical = buildCanonicalUrl(config.domain, input.slug, input.language);
 
-  const tags: (string | false)[] = [
+  const tags: (string | false | undefined)[] = [
     `<meta charset="utf-8" />`,
     `<meta name="viewport" content="width=device-width, initial-scale=1" />`,
     `<title>${title}</title>`,
@@ -236,7 +236,7 @@ function generateOpenGraphTags(
   const type = input.contentType ?? "website";
   const image = input.image || undefined;
 
-  const tags: string[] = [
+  const tags: (string | false | undefined)[] = [
     `<meta property="og:type" content="${type}" />`,
     `<meta property="og:url" content="${url}" />`,
     `<meta property="og:title" content="${title}" />`,
@@ -266,7 +266,7 @@ function generateTwitterCardTags(
   const description = truncate(escapeSeoText(input.description), 155);
   const image = input.image || undefined;
 
-  const tags: string[] = [
+  const tags: (string | false | undefined)[] = [
     `<meta name="twitter:card" content="${image ? "summary_large_image" : "summary"}" />`,
     config.twitterHandle && `<meta name="twitter:creator" content="${config.twitterHandle}" />`,
     `<meta name="twitter:title" content="${title}" />`,
