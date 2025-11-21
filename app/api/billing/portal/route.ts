@@ -1,0 +1,125 @@
+/**
+ * POST /api/billing/portal
+ * 
+ * Create a Stripe Customer Portal session for self-service billing management
+ * 
+ * ✅ SECURITY:
+ * - withAuthHandler enforces authentication
+ * - RBAC: Only OWNER/ADMIN can access
+ * - Uses tenant from session
+ * - Redirects to Stripe-hosted portal (secure)
+ * 
+ * Request body: {} (empty)
+ * 
+ * Response:
+ * {
+ *   "url": "https://billing.stripe.com/session/..."
+ * }
+ */
+
+import { NextResponse } from "next/server";
+import { withAuthHandler } from "@/lib/auth/with-auth-handler";
+import { BillingService } from "@/services/billing-service";
+import type { AuthContext } from "@/lib/auth/with-auth-handler";
+
+/**
+ * POST /api/billing/portal
+ * 
+ * Creates a Stripe Customer Portal session for tenant self-service billing
+ */
+export const POST = withAuthHandler(async (context: AuthContext) => {
+  const { session, tenant, req } = context;
+  try {
+    // ✅ SECURITY: RBAC Check - only OWNER/ADMIN can access billing portal
+    const userRole = session.role || "";
+    const isAdmin = userRole === "OWNER" || userRole === "ADMIN" || userRole === "CLIENTE_ADMIN";
+
+    if (!isAdmin) {
+      return NextResponse.json(
+        {
+          error: "Forbidden",
+          message: "Only tenant owners or admins can access billing portal",
+          code: "INSUFFICIENT_PERMISSIONS",
+        },
+        { status: 403 }
+      );
+    }
+
+    // ✅ SECURITY: Get return URL from request origin
+    const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL;
+    if (!origin) {
+      return NextResponse.json(
+        {
+          error: "Configuration Error",
+          message: "Cannot determine application URL",
+          code: "CONFIG_ERROR",
+        },
+        { status: 500 }
+      );
+    }
+
+    const returnUrl = `${origin}/billing`;
+
+    // Create portal session
+    const portalSession = await BillingService.createCustomerPortalSession(
+      tenant.id,
+      returnUrl
+    );
+
+    return NextResponse.json(
+      {
+        url: portalSession.url,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    // ✅ SECURITY: Don't expose internal error details in production
+    const isDev = process.env.NODE_ENV === "development";
+
+    console.error("[BILLING] Portal error:", error);
+
+    if (error.code === "VALIDATION_ERROR") {
+      return NextResponse.json(
+        {
+          error: "Validation Error",
+          message: error.message,
+          code: error.code,
+        },
+        { status: 400 }
+      );
+    }
+
+    if (error.code === "NOT_FOUND") {
+      return NextResponse.json(
+        {
+          error: "Not Found",
+          message: error.message,
+          code: error.code,
+        },
+        { status: 404 }
+      );
+    }
+
+    if (error.code === "STRIPE_ERROR") {
+      return NextResponse.json(
+        {
+          error: "Payment Service Error",
+          message: "Failed to create portal session",
+          code: "STRIPE_ERROR",
+          ...(isDev && { details: error.message }),
+        },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        error: "Internal Server Error",
+        message: "An unexpected error occurred",
+        code: "INTERNAL_ERROR",
+        ...(isDev && { details: error.message }),
+      },
+      { status: 500 }
+    );
+  }
+});
