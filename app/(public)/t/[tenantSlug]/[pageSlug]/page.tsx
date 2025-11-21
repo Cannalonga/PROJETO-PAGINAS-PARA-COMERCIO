@@ -31,6 +31,17 @@ import { prisma } from "@/lib/prisma";
 import { buildSeoForPage, buildSeoForErrorPage } from "@/lib/seo/seo-engine";
 import type { BuildSeoParams } from "@/types/seo";
 
+/**
+ * Incremental Static Regeneration (ISR)
+ * Revalidate cached pages every 3600 seconds (1 hour)
+ * 
+ * - Pages served from cache after first visit
+ * - Background regeneration triggered after 1 hour
+ * - Fallback: On-demand generation for cache misses
+ * - Scales infinitely without database overload
+ */
+export const revalidate = 3600; // 1 hour
+
 interface PageParams {
   tenantSlug: string;
   pageSlug: string;
@@ -228,42 +239,65 @@ export default async function PublicPage({ params }: { params: PageParams }) {
 /**
  * Generate static paths for common pages
  *
- * Pre-renders popular pages at build time for faster loading
- * Future optimization: Generate all pages, implement ISR (Incremental Static Regeneration)
- * 
- * TEMPORARILY DISABLED for production build (database not required at build time)
+ * Pre-renders popular pages at build time for faster loading.
+ * Uses Incremental Static Regeneration (ISR) for scalability:
+ *
+ * - Initial request to unseen pages: generates on-demand
+ * - Regenerates every 3600 seconds (1 hour) if requested
+ * - Reduces database queries during build
+ * - Improves Time to First Byte (TTFB) for popular pages
+ *
+ * Strategy:
+ * 1. Generate top 100 most recently published pages at build time
+ * 2. Fallback: On-demand generation for pages not in initial set
+ * 3. Revalidate: Background regeneration every hour if requested
  */
 export async function generateStaticParams(): Promise<PageParams[]> {
-  // Return empty array for production build
-  // In staging/prod with database, this will generate static params for popular pages
-  return [];
-  
-  /* ORIGINAL CODE (commented out for build):
-  // Fetch published pages and their tenants
-  const pages = await prisma.page.findMany({
-    where: {
-      status: "PUBLISHED",
-    },
-    select: {
-      slug: true,
-      tenantId: true,
-    },
-    take: 100, // Limit to 100 pages for build time
-  });
+  try {
+    // Fetch recently published pages (top 100)
+    const pages = await prisma.page.findMany({
+      where: {
+        status: "PUBLISHED",
+      },
+      select: {
+        slug: true,
+        tenantId: true,
+      },
+      orderBy: {
+        updatedAt: "desc", // Most recently updated first
+      },
+      take: 100, // Limit to 100 pages for build time
+    });
 
-  // Fetch tenant slugs
-  const tenants = await prisma.tenant.findMany({
-    select: {
-      id: true,
-      slug: true,
-    },
-  });
+    // Fetch tenant slugs
+    const tenants = await prisma.tenant.findMany({
+      select: {
+        id: true,
+        slug: true,
+      },
+    });
 
-  const tenantMap = Object.fromEntries(tenants.map((t) => [t.id, t.slug]));
+    const tenantMap = Object.fromEntries(
+      tenants.map((t) => [t.id, t.slug])
+    );
 
-  return pages.map((page) => ({
-    tenantSlug: tenantMap[page.tenantId] || "",
-    pageSlug: page.slug,
-  }));
-  */
+    // Map to [tenantSlug]/[pageSlug] format
+    const params = pages.map((page) => ({
+      tenantSlug: tenantMap[page.tenantId] || "",
+      pageSlug: page.slug,
+    }));
+
+    console.info(
+      `[generateStaticParams] Generated ${params.length} static page routes`
+    );
+
+    return params;
+  } catch (error) {
+    console.warn(
+      "[generateStaticParams] Failed to generate static params",
+      error
+    );
+    // Fail gracefully - fallback to on-demand generation
+    return [];
+  }
 }
