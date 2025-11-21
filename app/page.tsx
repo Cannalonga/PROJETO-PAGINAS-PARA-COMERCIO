@@ -4,6 +4,7 @@ import React from 'react'
 import Link from 'next/link'
 import { Logo, LogoSmall } from '@/components/Logo'
 import { VButton, VCard } from '@/components/ui'
+import { AdSpace } from '@/components/AdSpace'
 
 export default function Home() {
   return (
@@ -28,6 +29,13 @@ export default function Home() {
           </div>
         </div>
       </nav>
+
+      {/* Ad Space - Top */}
+      <div className="bg-white border-b border-borderLight">
+        <div className="container mx-auto px-6 py-2">
+          <AdSpace position="top" />
+        </div>
+      </div>
 
       {/* Hero Section */}
       <section className="py-20 sm:py-32">
@@ -130,6 +138,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Ad Space - Middle */}
+      <div className="bg-white border-y border-borderLight">
+        <div className="container mx-auto px-6 py-4">
+          <AdSpace position="middle" />
+        </div>
+      </div>
 
       {/* Pricing Section */}
       <section id="pricing" className="py-20">
@@ -321,6 +336,9 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Ad Space - Footer (Sticky) */}
+      <AdSpace position="footer" />
     </div>
   )
 }
