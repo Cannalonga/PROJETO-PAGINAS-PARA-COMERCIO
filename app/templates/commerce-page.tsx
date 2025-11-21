@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { AdSpace } from '@/components/AdSpace'
 
 type Service = {
   name: string
@@ -85,6 +86,13 @@ export default function StorePublicPage() {
 
   return (
     <div className="min-h-screen bg-bgLight text-textDark">
+      {/* Ad Space - Top */}
+      <div className="bg-white border-b border-borderLight">
+        <div className="max-w-5xl mx-auto px-4 py-2">
+          <AdSpace position="top" />
+        </div>
+      </div>
+
       {/* HEADER */}
       <header className="sticky top-0 z-20 bg-white/90 backdrop-blur border-b border-borderLight">
         <div className="max-w-5xl mx-auto flex items-center justify-between px-4 py-3 md:py-4">
@@ -193,6 +201,11 @@ export default function StorePublicPage() {
             </div>
           </div>
         </section>
+
+        {/* Ad Space - Middle */}
+        <div className="bg-white border border-borderLight rounded-2xl p-4 my-8">
+          <AdSpace position="middle" />
+        </div>
 
         {/* SERVIÇOS / PRODUTOS */}
         {store.services.length > 0 && (
@@ -324,6 +337,9 @@ export default function StorePublicPage() {
           </p>
         </div>
       </footer>
+
+      {/* Ad Space - Footer (Sticky) */}
+      <AdSpace position="footer" />
     </div>
   )
 }
