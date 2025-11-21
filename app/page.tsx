@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Logo, LogoSmall } from '@/components/Logo'
-import { VButton, VCard } from '@/components/ui'
+import { VButton } from '@/components/ui'
 import { AdSpace } from '@/components/AdSpace'
 import { HeroVitrineFast } from '@/components/HeroVitrineFast'
 
