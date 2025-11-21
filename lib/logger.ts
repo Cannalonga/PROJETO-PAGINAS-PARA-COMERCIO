@@ -8,6 +8,7 @@
  * - Timestamp ISO 8601
  * - Correlação: requestId, tenantId, userId, path, method
  * - Metadata customizada
+ * - Integração com Sentry para errors
  * 
  * Segurança:
  * - Nunca loga senhas, tokens, dados sensíveis
@@ -158,6 +159,7 @@ export const logger = {
    * Sanitiza automaticamente:
    * - Mensagens de erro externas (Prisma, Stripe, etc.)
    * - Evita expor tokens ou dados sensíveis
+   * - Envia para Sentry se configurado
    * 
    * @param message Mensagem
    * @param meta Dados adicionais (pode incluir error object)
@@ -167,6 +169,15 @@ export const logger = {
    */
   error(message: string, meta?: LogMeta) {
     console.error(formatLog("error", message, meta));
+    
+    // Send to Sentry if available
+    try {
+      const { captureException } = require('./sentry');
+      const error = meta?.error instanceof Error ? meta.error : new Error(message);
+      captureException(error, { message, ...meta });
+    } catch {
+      // Sentry not available or error sending - ignore
+    }
   },
 };
 
@@ -174,6 +185,7 @@ export const logger = {
  * Wrapper para logar errors de forma segura
  * 
  * Extrai apenas informações públicas de erros
+ * Envia para Sentry se configurado
  * 
  * @param error Erro a logar
  * @param context Contexto adicional
@@ -207,4 +219,14 @@ export function logError(error: unknown, context?: LogMeta) {
     context?.message ? String(context.message) : "Error occurred",
     { ...context, ...errorData }
   );
+
+  // Also send to Sentry with full context
+  try {
+    const { captureException } = require('./sentry');
+    if (error instanceof Error) {
+      captureException(error, { ...context, ...errorData });
+    }
+  } catch {
+    // Sentry not available or error sending - ignore
+  }
 }
