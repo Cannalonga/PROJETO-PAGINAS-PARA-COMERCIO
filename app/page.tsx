@@ -9,7 +9,7 @@ import { HeroVitrineFast } from '@/components/HeroVitrineFast'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-bgLight text-textDark">
+    <div className="min-h-screen text-textDark">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-white border-b border-borderLight backdrop-blur">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
