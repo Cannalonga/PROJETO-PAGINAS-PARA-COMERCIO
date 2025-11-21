@@ -772,3 +772,254 @@ export async function PUT(
     );
   }
 }
+
+// ============================================================================
+// DELETE HANDLER - DELETE USER
+// ============================================================================
+
+// DELETE-SPECIFIC: RBAC for deletion
+const DELETE_ALLOWED_ROLES: Record<string, string[]> = {
+  SUPERADMIN: ['SUPERADMIN', 'OPERADOR', 'CLIENTE_ADMIN', 'CLIENTE_USER'],
+  OPERADOR: ['CLIENTE_ADMIN', 'CLIENTE_USER'],
+  CLIENTE_ADMIN: ['CLIENTE_USER'],
+};
+
+function validateDeletePermissions(
+  targetUserRole: string,
+  authenticatedUserRole: string
+): { allowed: boolean; error?: string } {
+  const allowedTargetRoles = DELETE_ALLOWED_ROLES[authenticatedUserRole];
+
+  if (!allowedTargetRoles || allowedTargetRoles.length === 0) {
+    return {
+      allowed: false,
+      error: `Role '${authenticatedUserRole}' is not authorized to delete any users`,
+    };
+  }
+
+  if (!allowedTargetRoles.includes(targetUserRole)) {
+    return {
+      allowed: false,
+      error: `Role '${authenticatedUserRole}' cannot delete users with role '${targetUserRole}'`,
+    };
+  }
+
+  return { allowed: true };
+}
+
+async function auditDeleteLog(
+  authenticatedUser: { id: string; tenantId: string },
+  targetUserId: string,
+  action: 'ATTEMPT' | 'DELETE' | 'FAILURE',
+  metadata: {
+    targetUserRole?: string;
+    targetUserEmail?: string;
+    error?: string;
+  }
+) {
+  logAuditEvent({
+    userId: authenticatedUser.id,
+    tenantId: authenticatedUser.tenantId,
+    action: action === 'DELETE' ? 'DELETE_USER' : `DELETE_USER_${action}`,
+    entity: 'user',
+    entityId: targetUserId,
+    metadata: {
+      endpoint: 'DELETE /api/users/:id',
+      targetUserId,
+      targetUserRole: metadata.targetUserRole,
+      targetUserEmail: metadata.targetUserEmail,
+      error: metadata.error,
+    },
+  }).catch((err) => {
+    console.error('Audit logging failed:', err);
+  });
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const resolvedParams = await params;
+
+    // LAYER 2: AUTHENTICATION
+    const auth = await authenticateRequest(request);
+    if (auth.error) {
+      await auditDeleteLog(
+        { id: 'unknown', tenantId: 'unknown' },
+        resolvedParams.id,
+        'FAILURE',
+        { error: 'Authentication failed' }
+      );
+      return NextResponse.json(
+        { error: auth.error, timestamp: new Date().toISOString() },
+        { status: auth.status }
+      );
+    }
+
+    const { authenticatedUser, userRole } = auth;
+
+    // LAYER 3: AUTHORIZATION (Role-based access)
+    const ALLOWED_ROLES = ['SUPERADMIN', 'OPERADOR', 'CLIENTE_ADMIN'];
+    if (!ALLOWED_ROLES.includes(userRole!)) {
+      await auditDeleteLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        resolvedParams.id,
+        'FAILURE',
+        { error: `User role '${userRole}' not authorized to delete users` }
+      );
+      return NextResponse.json(
+        { error: 'Forbidden: Not authorized to delete users', timestamp: new Date().toISOString() },
+        { status: 403 }
+      );
+    }
+
+    // LAYER 4: PARAMETER VALIDATION
+    const paramValidation = validateParams({ id: resolvedParams.id });
+    if ('valid' in paramValidation && !paramValidation.valid) {
+      await auditDeleteLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        resolvedParams.id,
+        'FAILURE',
+        { error: paramValidation.error }
+      );
+      return NextResponse.json(
+        { error: paramValidation.error, timestamp: new Date().toISOString() },
+        { status: paramValidation.status }
+      );
+    }
+
+    const { id: targetUserId } = paramValidation as { id: string };
+
+    // LAYER 6: TENANT VALIDATION + TARGET USER INFO RETRIEVAL
+    if (!authenticatedUser!.tenantId) {
+      throw new Error('Invalid authenticated user state: tenantId is null');
+    }
+
+    const whereClause = buildSafeQuery(targetUserId, {
+      id: authenticatedUser!.id,
+      tenantId: authenticatedUser!.tenantId!,
+      role: authenticatedUser!.role as string,
+    });
+
+    // Fetch target user for deletion checks
+    const targetUser = await prisma.user.findUnique({
+      where: whereClause,
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        tenantId: true,
+      },
+    });
+
+    if (!targetUser) {
+      await auditDeleteLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'FAILURE',
+        { error: 'User not found' }
+      );
+      return NextResponse.json(
+        { error: 'User not found', timestamp: new Date().toISOString() },
+        { status: 404 }
+      );
+    }
+
+    // LAYER 3b: ROLE-BASED DELETION VALIDATION
+    const deletePermission = validateDeletePermissions(
+      targetUser.role as string,
+      userRole!
+    );
+    if (!deletePermission.allowed) {
+      await auditDeleteLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'ATTEMPT',
+        {
+          targetUserRole: targetUser.role as string,
+          targetUserEmail: targetUser.email,
+          error: deletePermission.error,
+        }
+      );
+      return NextResponse.json(
+        { error: deletePermission.error, timestamp: new Date().toISOString() },
+        { status: 403 }
+      );
+    }
+
+    // LAYER 7: PREVENT SELF-DELETION
+    if (targetUserId === authenticatedUser!.id) {
+      await auditDeleteLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'ATTEMPT',
+        {
+          targetUserRole: targetUser.role as string,
+          targetUserEmail: targetUser.email,
+          error: 'Cannot delete own user account',
+        }
+      );
+      return NextResponse.json(
+        { error: 'Cannot delete your own user account', timestamp: new Date().toISOString() },
+        { status: 400 }
+      );
+    }
+
+    // LAYER 8: SAFE DELETE OPERATION
+    const deletedUser = await prisma.user.delete({
+      where: whereClause,
+      select: {
+        id: true,
+        email: true,
+        role: true,
+        firstName: true,
+        lastName: true,
+        tenantId: true,
+      },
+    });
+
+    // LAYER 9: AUDIT LOGGING (Success)
+    await auditDeleteLog(
+      { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+      targetUserId,
+      'DELETE',
+      {
+        targetUserRole: deletedUser.role as string,
+        targetUserEmail: deletedUser.email,
+      }
+    );
+
+    return NextResponse.json(
+      {
+        data: {
+          id: deletedUser.id,
+          email: deletedUser.email,
+          message: 'User deleted successfully',
+        },
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('DELETE /api/users/:id error:', error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'Internal server error';
+
+    await auditDeleteLog(
+      { id: 'unknown', tenantId: 'unknown' },
+      'unknown',
+      'FAILURE',
+      { error: errorMessage }
+    );
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
+}
