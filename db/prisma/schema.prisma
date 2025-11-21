@@ -8,7 +8,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 // ============================================================================
@@ -200,6 +199,7 @@ model Page {
   // Audit
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  deletedAt DateTime? // Soft delete timestamp
   
   // Relations
   images    PageImage[]
@@ -208,6 +208,7 @@ model Page {
   @@index([tenantId])
   @@index([status])
   @@index([template])
+  @@index([deletedAt])
 }
 
 model PageImage {

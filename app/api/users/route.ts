@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { CreateUserSchema, type CreateUserInput } from '@/lib/validations';
 import { successResponse, errorResponse, paginatedResponse } from '@/utils/helpers';
 import * as bcrypt from 'bcryptjs';
-import { withAuth, withRole, getTenantIdFromSession } from '@/lib/middleware';
+import { withAuth, withRole } from '@/lib/middleware';
 
 /**
  * GET /api/users
