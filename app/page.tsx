@@ -83,58 +83,107 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-white border-t border-borderLight">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">
-              Tudo que você precisa
+      <section id="features" className="py-12 md:py-16 bg-white border-t border-[#E3E8EF]">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Título da seção */}
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <p className="text-xs font-semibold text-[#2D7DF6] uppercase tracking-wide">
+              Recursos poderosos
+            </p>
+            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-[#0A2540]">
+              Tudo que você precisa para ter um negócio online de sucesso
             </h2>
-            <p className="text-lg text-textLight max-w-2xl mx-auto">
-              Recursos poderosos para transformar seu comércio local em presença online profissional.
+            <p className="mt-3 text-sm md:text-base text-[#64748B]">
+              Monte sua vitrine digital com blocos prontos: capa, serviços,
+              depoimentos, mapa, WhatsApp e muito mais — sem depender de agência.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
-              {
-                icon: '⚡',
-                title: 'Sem Código',
-                desc: 'Editor visual intuitivo com drag-and-drop. Qualquer pessoa consegue usar.',
-              },
-              {
-                icon: '🎨',
-                title: 'Templates Modernos',
-                desc: '50+ designs profissionais prontos para usar. Customize conforme quiser.',
-              },
-              {
-                icon: '📱',
-                title: 'Mobile First',
-                desc: 'Perfeito em qualquer dispositivo. Responsivo e otimizado.',
-              },
-              {
-                icon: '🔍',
-                title: 'SEO Otimizado',
-                desc: 'Rankeie no Google automaticamente. Ferramentas built-in.',
-              },
-              {
-                icon: '⚙️',
-                title: 'Integrações',
-                desc: 'Conecte com WhatsApp, Google Maps, Calendly e mais.',
-              },
-              {
-                icon: '🛡️',
-                title: 'Seguro & Confiável',
-                desc: 'SSL automático, backups diários e suporte 24/7.',
-              },
-            ].map((feature, i) => (
-              <VCard key={i} variant="light">
-                <div className="text-4xl mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-semibold text-secondary mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-textLight">{feature.desc}</p>
-              </VCard>
-            ))}
+          {/* Grid de features */}
+          <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+            {/* Feature 1 */}
+            <div className="bg-[#F7F9FC] border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-2">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                ⚡
+              </div>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Sem código
+              </h3>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Editor visual intuitivo: arraste blocos, troque textos e publique
+                sua página em poucos cliques.
+              </p>
+            </div>
+
+            {/* Feature 2 */}
+            <div className="bg-[#F7F9FC] border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-2">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                🎨
+              </div>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Templates modernos
+              </h3>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Layouts pensados para salões, clínicas, restaurantes, lojas e
+                profissionais liberais.
+              </p>
+            </div>
+
+            {/* Feature 3 */}
+            <div className="bg-[#F7F9FC] border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-2">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                📱
+              </div>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Mobile first
+              </h3>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Sua página linda e rápida no celular, onde seus clientes realmente
+                estão.
+              </p>
+            </div>
+
+            {/* Feature 4 */}
+            <div className="bg-[#F7F9FC] border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-2">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                📈
+              </div>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                SEO otimizado
+              </h3>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Engine de SEO integrada para ajudar seu comércio a ser encontrado
+                no Google.
+              </p>
+            </div>
+
+            {/* Feature 5 */}
+            <div className="bg-[#F7F9FC] border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-2">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                🔗
+              </div>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Integrações prontas
+              </h3>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                WhatsApp, Google Maps, Instagram, links de pagamento e mais em
+                poucos cliques.
+              </p>
+            </div>
+
+            {/* Feature 6 */}
+            <div className="bg-[#F7F9FC] border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-2">
+              <div className="h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center text-lg">
+                🛡️
+              </div>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Segurança por padrão
+              </h3>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                HTTPS, backups, multi-tenant seguro e monitoramento para proteger
+                seus dados e dos seus clientes.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -147,92 +196,92 @@ export default function Home() {
       </div>
 
       {/* Pricing Section */}
-      <section id="pricing" className="py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-secondary mb-4">
-              Planos Acessíveis
+      <section id="pricing" className="py-12 md:py-16 bg-[#F7F9FC] border-t border-[#E3E8EF]">
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Título */}
+          <div className="text-center max-w-2xl mx-auto mb-10">
+            <p className="text-xs font-semibold text-[#2D7DF6] uppercase tracking-wide">
+              Planos acessíveis
+            </p>
+            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-[#0A2540]">
+              Comece grátis e evolua no seu tempo
             </h2>
-            <p className="text-lg text-textLight max-w-2xl mx-auto">
-              Crescer não precisa ser caro. Escolha o plano certo para seu negócio.
+            <p className="mt-3 text-sm md:text-base text-[#64748B]">
+              Teste o VitrineFast sem compromisso. Publique sua página, veja o
+              resultado e só então decida se quer recursos avançados.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {[
-              {
-                name: 'Iniciante',
-                price: 'Grátis',
-                desc: 'Perfeito para começar',
-                features: ['1 página', 'Template básico', 'Domínio grátis', 'Suporte por email'],
-                cta: 'Começar Agora',
-              },
-              {
-                name: 'Profissional',
-                price: 'R$ 29',
-                desc: 'Mais popular para negócios',
-                period: '/mês',
-                features: [
-                  'Até 5 páginas',
-                  'Todos os templates',
-                  'Domínio próprio',
-                  'Suporte prioritário',
-                  'Analytics básico',
-                ],
-                cta: 'Upgrade Agora',
-                highlight: true,
-              },
-              {
-                name: 'Empresa',
-                price: 'R$ 99',
-                desc: 'Para negócios em crescimento',
-                period: '/mês',
-                features: [
-                  'Páginas ilimitadas',
-                  'Customização total',
-                  'API acesso',
-                  'Suporte 24/7',
-                  'Analytics avançado',
-                  'Integrações premium',
-                ],
-                cta: 'Começar Agora',
-              },
-            ].map((plan, i) => (
-              <VCard
-                key={i}
-                variant={plan.highlight ? 'premium' : 'light'}
-                className={plan.highlight ? 'md:scale-105' : ''}
-              >
-                {plan.highlight && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-3 py-1 bg-fast text-white text-xs font-bold rounded-full">
-                    Mais Popular ⭐
-                  </div>
-                )}
-                <h3 className="text-2xl font-bold text-secondary mb-1">{plan.name}</h3>
-                <p className="text-textLight text-sm mb-4">{plan.desc}</p>
-                <div className="mb-6">
-                  <span className="text-4xl font-bold text-primary">{plan.price}</span>
-                  {plan.period && <span className="text-textLight text-sm ml-1">{plan.period}</span>}
-                </div>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feat, j) => (
-                    <li key={j} className="flex items-center text-sm text-textDark">
-                      <span className="w-5 h-5 rounded-full bg-success/20 flex items-center justify-center mr-3 text-xs text-success">
-                        ✓
-                      </span>
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
-                <VButton
-                  variant={plan.highlight ? 'primary' : 'outline'}
-                  size="md"
-                  className="w-full"
-                >
-                  {plan.cta}
-                </VButton>
-              </VCard>
-            ))}
+          {/* Cards de planos */}
+          <div className="grid md:grid-cols-3 gap-5">
+            {/* Iniciante */}
+            <div className="bg-white border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-3">
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Iniciante
+              </h3>
+              <p className="text-lg md:text-xl font-bold text-[#0A2540]">Grátis</p>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Ideal para dar os primeiros passos online.
+              </p>
+              <ul className="mt-2 space-y-1 text-xs md:text-sm text-[#475569]">
+                <li>✓ 1 página</li>
+                <li>✓ Template básico</li>
+                <li>✓ Suporte por email</li>
+                <li>✓ Subdomínio .vercel.app</li>
+              </ul>
+              <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl border border-[#E3E8EF] text-[#0A2540] hover:bg-[#F7F9FC] transition">
+                Começar
+              </button>
+            </div>
+
+            {/* Profissional – destaque */}
+            <div className="relative bg-white border border-[#2D7DF6] rounded-2xl p-5 flex flex-col gap-3 shadow-md scale-[1.02]">
+              <span className="absolute -top-3 right-4 text-[11px] px-2 py-1 rounded-full bg-[#FF8C42] text-white font-semibold shadow-sm">
+                Mais popular
+              </span>
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Profissional
+              </h3>
+              <p className="text-lg md:text-xl font-bold text-[#0A2540]">
+                R$ 29/mês
+              </p>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Para quem quer parecer profissional e crescer online.
+              </p>
+              <ul className="mt-2 space-y-1 text-xs md:text-sm text-[#475569]">
+                <li>✓ Até 5 páginas</li>
+                <li>✓ Todos os templates</li>
+                <li>✓ Domínio próprio</li>
+                <li>✓ Suporte prioritário</li>
+                <li>✓ Analytics básico</li>
+              </ul>
+              <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl bg-[#2D7DF6] text-white hover:bg-[#1B64D3] transition">
+                Upgrade agora
+              </button>
+            </div>
+
+            {/* Negócio */}
+            <div className="bg-white border border-[#E3E8EF] rounded-2xl p-5 flex flex-col gap-3">
+              <h3 className="text-sm md:text-base font-semibold text-[#0A2540]">
+                Negócio
+              </h3>
+              <p className="text-lg md:text-xl font-bold text-[#0A2540]">
+                R$ 99/mês
+              </p>
+              <p className="text-xs md:text-sm text-[#64748B]">
+                Para negócios que dependem da internet todo dia.
+              </p>
+              <ul className="mt-2 space-y-1 text-xs md:text-sm text-[#475569]">
+                <li>✓ Páginas ilimitadas</li>
+                <li>✓ Templates + customização avançada</li>
+                <li>✓ API de acesso</li>
+                <li>✓ Suporte 24/7</li>
+                <li>✓ Integrações avançadas</li>
+              </ul>
+              <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl border border-[#E3E8EF] text-[#0A2540] hover:bg-[#F7F9FC] transition">
+                Falar com vendas
+              </button>
+            </div>
           </div>
         </div>
       </section>
