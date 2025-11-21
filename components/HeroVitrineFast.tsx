@@ -1,6 +1,51 @@
 'use client'
 
+import { FloatingFeatureCard } from './FloatingFeatureCard'
+
 export function HeroVitrineFast() {
+  const features = [
+    {
+      icon: '⚡',
+      title: 'Sem código',
+      description: 'Editor visual intuitivo: arraste blocos, troque textos e publique sua página em poucos cliques.',
+      animationClass: 'top-16 left-8 float-card-1',
+      borderColor: 'border-blue-500/30',
+      glowColor: 'from-blue-500 to-blue-600',
+    },
+    {
+      icon: '🎨',
+      title: 'Templates modernos',
+      description: 'Layouts pensados para salões, clínicas, restaurantes, lojas e profissionais liberais.',
+      animationClass: 'top-32 right-12 float-card-2',
+      borderColor: 'border-orange-500/30',
+      glowColor: 'from-orange-500 to-orange-600',
+    },
+    {
+      icon: '📱',
+      title: 'Mobile first',
+      description: 'Sua página linda e rápida no celular, onde seus clientes realmente estão.',
+      animationClass: 'bottom-24 left-16 float-card-3',
+      borderColor: 'border-purple-500/30',
+      glowColor: 'from-purple-500 to-purple-600',
+    },
+    {
+      icon: '📈',
+      title: 'SEO otimizado',
+      description: 'Engine de SEO integrada para ajudar seu comércio a ser encontrado no Google.',
+      animationClass: 'bottom-16 right-8 float-card-4',
+      borderColor: 'border-green-500/30',
+      glowColor: 'from-green-500 to-green-600',
+    },
+    {
+      icon: '🔗',
+      title: 'Integrações prontas',
+      description: 'WhatsApp, Google Maps, Instagram, links de pagamento e mais em poucos cliques.',
+      animationClass: 'top-1/2 right-1/4 float-card-5',
+      borderColor: 'border-pink-500/30',
+      glowColor: 'from-pink-500 to-pink-600',
+    },
+  ]
+
   return (
     <section className="w-full bg-slate-950 text-white py-24 relative overflow-hidden">
       {/* Grid Background */}
@@ -21,30 +66,23 @@ export function HeroVitrineFast() {
       <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-blue-500 rounded-full opacity-10 blur-3xl" />
       <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-orange-500 rounded-full opacity-10 blur-3xl" />
 
-      {/* Floating Elements - Left Side */}
-      <div className="absolute left-8 top-1/3 opacity-20 float-slow">
-        <div className="text-5xl">💬</div>
-      </div>
-      <div className="absolute left-12 bottom-1/3 opacity-30 float-slow-alt">
-        <div className="text-4xl">📍</div>
-      </div>
-      <div className="absolute left-1/4 top-1/4 opacity-15 float-slow">
-        <div className="text-4xl">📸</div>
-      </div>
-
-      {/* Floating Elements - Right Side */}
-      <div className="absolute right-8 top-1/4 opacity-25 float-slow-alt">
-        <div className="text-5xl">📈</div>
-      </div>
-      <div className="absolute right-16 bottom-1/4 opacity-20 float-slow">
-        <div className="text-4xl">🎨</div>
-      </div>
-      <div className="absolute right-1/4 top-1/3 opacity-30 pulse-soft">
-        <div className="text-5xl">🛍️</div>
+      {/* Floating Feature Cards */}
+      <div className="absolute inset-0 pointer-events-none">
+        {features.map((feature, index) => (
+          <FloatingFeatureCard
+            key={index}
+            icon={feature.icon}
+            title={feature.title}
+            description={feature.description}
+            animationClass={feature.animationClass}
+            borderColor={feature.borderColor}
+            glowColor={feature.glowColor}
+          />
+        ))}
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto px-4 relative z-10 flex flex-col items-center justify-center text-center">
+      <div className="max-w-6xl mx-auto px-4 relative z-10 flex flex-col items-center justify-center text-center min-h-screen">
         {/* Central Card with Glow */}
         <div className="mb-8 relative">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-orange-500 rounded-2xl blur opacity-20" />
