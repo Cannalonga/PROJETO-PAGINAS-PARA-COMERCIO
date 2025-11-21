@@ -175,6 +175,7 @@ model Page {
   seoDescription String? @db.VarChar(500)
   seoKeywords String? @db.VarChar(500)
   seoImage  String?  @db.VarChar(500)
+  seoNoIndex Boolean @default(false) // noindex, nofollow when true
   
   // Contact & Location (denormalized from tenant)
   phone     String?  @db.VarChar(20)

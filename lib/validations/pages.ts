@@ -16,6 +16,11 @@ export const createPageSchema = z.object({
   content: z.string().min(1, 'Conteúdo é obrigatório'),
   templateId: z.string().uuid('ID de template inválido').optional().nullable(),
   status: z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']).default('DRAFT'),
+  // SEO fields
+  seoTitle: z.string().min(3, 'SEO title deve ter pelo menos 3 caracteres').max(60, 'SEO title deve ter no máximo 60 caracteres').optional().nullable(),
+  seoDescription: z.string().min(10, 'SEO description deve ter pelo menos 10 caracteres').max(160, 'SEO description deve ter no máximo 160 caracteres').optional().nullable(),
+  seoImage: z.string().url('URL de imagem inválida').optional().nullable(),
+  seoNoIndex: z.boolean().default(false).optional(),
 });
 
 export const updatePageSchema = createPageSchema.partial().strict();

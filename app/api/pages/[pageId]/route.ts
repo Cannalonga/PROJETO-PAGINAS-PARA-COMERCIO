@@ -113,6 +113,81 @@ export const PUT = withAuthHandler(
 );
 
 /**
+ * PATCH /api/pages/[pageId]
+ * ✅ SECURITY: Requires authentication + ADMIN role + IDOR prevention
+ * ✅ SEO-specific update: seoTitle, seoDescription, seoNoIndex, seoImage
+ * ✅ Input validation with XSS prevention
+ * ✅ Rate limiting + audit logging
+ */
+export const PATCH = withAuthHandler(
+  async ({ session, tenant, req, params }) => {
+    try {
+      // ✅ SECURITY: RBAC - only ADMIN can update SEO
+      const allowedRoles = ['SUPERADMIN', 'OPERADOR', 'CLIENTE_ADMIN'];
+      if (!allowedRoles.includes(session.role)) {
+        return NextResponse.json(
+          errorResponse('Sem permissão para editar SEO'),
+          { status: 403 }
+        );
+      }
+
+      const pageId = pageIdSchema.parse(params?.pageId);
+
+      // ✅ SECURITY: Verify page exists and belongs to tenant (IDOR prevention)
+      const page = await PageService.getPageById(tenant.id, pageId);
+      if (!page) {
+        return NextResponse.json(
+          errorResponse('Página não encontrada'),
+          { status: 404 }
+        );
+      }
+
+      const body = await req.json();
+
+      // Validate SEO input
+      const { validateSeoInput } = await import('@/lib/validations/seo');
+      const seoValidation = validateSeoInput(body);
+
+      if (!seoValidation.success) {
+        return NextResponse.json(
+          errorResponse('Dados SEO inválidos'),
+          { status: 400 }
+        );
+      }
+
+      const seoData = seoValidation.data;
+
+      // Update only SEO fields
+      const updated = await PageService.updatePage(tenant.id, pageId, {
+        seoTitle: seoData.seoTitle,
+        seoDescription: seoData.seoDescription,
+        seoNoIndex: seoData.seoNoIndex || false,
+        seoImage: seoData.seoImage,
+      });
+
+      return NextResponse.json(
+        successResponse(updated, 'SEO da página atualizado com sucesso')
+      );
+    } catch (error) {
+      console.error('[PATCH /api/pages/[pageId]] Error:', error);
+
+      if (error instanceof z.ZodError) {
+        return NextResponse.json(
+          errorResponse('ID de página inválido'),
+          { status: 400 }
+        );
+      }
+
+      return NextResponse.json(
+        errorResponse('Erro ao atualizar SEO da página'),
+        { status: 500 }
+      );
+    }
+  },
+  { requireTenant: true }
+);
+
+/**
  * DELETE /api/pages/[pageId]
  * ✅ SECURITY: Requires authentication + ADMIN role + IDOR prevention
  * ✅ Uses soft delete (sets deletedAt timestamp)
