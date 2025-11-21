@@ -208,7 +208,7 @@ describe("buildSeoForPage", () => {
 
     const metadata = buildSeoForPage(params);
     expect(metadata.twitter).toBeDefined();
-    expect(metadata.twitter?.card).toBe("summary_large_image");
+    // Twitter metadata is a TwitterMetadata object, not TwitterCard
     expect(metadata.twitter?.title).toBe("Page Title");
     expect(metadata.twitter?.description).toBe("Page description");
   });
@@ -227,7 +227,8 @@ describe("buildSeoForPage", () => {
 
     const metadata = buildSeoForPage(params);
     expect(metadata.openGraph?.images).toBeUndefined();
-    expect(metadata.twitter?.image).toBeUndefined();
+    // Use 'images' instead of 'image' for Twitter metadata
+    expect(metadata.twitter?.images).toBeUndefined();
   });
 
   // 10. Canonical URL

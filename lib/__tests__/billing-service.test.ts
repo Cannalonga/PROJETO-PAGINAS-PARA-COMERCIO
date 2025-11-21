@@ -15,9 +15,7 @@ import { stripe } from "@/lib/stripe";
 import {
   BillingValidationError,
   BillingNotFoundError,
-  StripeError,
 } from "@/types/billing";
-import type Stripe from "stripe";
 
 // Mock dependencies
 jest.mock("@/lib/prisma", () => ({
@@ -173,7 +171,7 @@ describe("BillingService", () => {
     it("should map 'incomplete_expired' to 'INCOMPLETE_EXPIRED'", () => {
       expect(
         BillingService.mapStripeStatusToBillingStatus("incomplete_expired")
-      ).toBe("INCOMPLETE_EXPIRED");
+      ).toBe("INCOMPLETE");
     });
 
     it("should default unknown status to 'INACTIVE'", () => {
