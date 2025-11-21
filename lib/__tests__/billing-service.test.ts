@@ -9,7 +9,7 @@
  * - Error handling
  */
 
-import { BillingService } from "@/services/billing-service";
+import { BillingService } from "@/lib/services/billing-service";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import {

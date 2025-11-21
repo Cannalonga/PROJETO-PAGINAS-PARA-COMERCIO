@@ -31,6 +31,15 @@ export const seoInputSchema = z.object({
     .max(160, "SEO description must be at most 160 characters")
     .optional()
     .nullable(),
+  seoKeywords: z
+    .string()
+    .optional()
+    .nullable(),
+  seoImage: z
+    .string()
+    .url("SEO image must be a valid URL")
+    .optional()
+    .nullable(),
   seoNoIndex: z
     .boolean()
     .optional(),

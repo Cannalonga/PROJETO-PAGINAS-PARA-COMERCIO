@@ -27,17 +27,14 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
-import { BillingService } from "@/services/billing-service";
+import { BillingService } from "@/lib/services/billing-service";
 import type Stripe from "stripe";
 
 /**
  * Config for handling raw request body (Stripe signature verification)
+ * New syntax for Next.js 14+
  */
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
+export const runtime = 'nodejs';
 
 /**
  * POST /api/stripe/webhook

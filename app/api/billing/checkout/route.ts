@@ -25,7 +25,7 @@
 import { NextResponse } from "next/server";
 import { withAuthHandler } from "@/lib/auth/with-auth-handler";
 import { z } from "zod";
-import { BillingService } from "@/services/billing-service";
+import { BillingService } from "@/lib/services/billing-service";
 import { rateLimit, rateLimitProfiles } from "@/lib/rate-limit";
 import type { AuthContext } from "@/lib/auth/with-auth-handler";
 

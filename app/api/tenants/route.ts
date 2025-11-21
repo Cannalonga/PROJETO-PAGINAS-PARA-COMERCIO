@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
           email: true,
           createdAt: true,
           billingStatus: true,
-          billingPlan: true,
+          plan: true,
         },
         orderBy: { createdAt: 'desc' },
       }),

@@ -16,7 +16,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { logger, logError } from "@/lib/logger";
+import { logError } from "@/lib/logger";
 import type Stripe from "stripe";
 import {
   STRIPE_PRICES,
@@ -125,13 +125,6 @@ export class BillingService {
     params: CreateCheckoutSessionRequest
   ): Promise<{ url: string | null; sessionId: string }> {
     const { tenantId, plan, successUrl, cancelUrl } = params;
-
-    // ✅ SECURITY: Validate plan
-    if (plan === "FREE") {
-      throw new BillingValidationError(
-        "FREE plan does not require checkout. Use direct plan upgrade instead."
-      );
-    }
 
     // ✅ SECURITY: Validate plan configuration exists
     const priceConfig = STRIPE_PRICES[plan];

@@ -219,10 +219,6 @@ export function buildJsonLdLocalBusiness(
     phone?: string;
     email?: string;
     city?: string;
-  },
-  page?: {
-    title: string;
-    slug: string;
   }
 ) {
   return {

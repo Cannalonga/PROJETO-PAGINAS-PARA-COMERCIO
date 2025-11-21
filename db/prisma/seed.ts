@@ -40,7 +40,7 @@ async function main() {
       state: 'SP',
       zipCode: '01234-567',
       status: 'ACTIVE',
-      billingPlan: 'PROFESSIONAL',
+      plan: 'PREMIUM',
       billingStatus: 'ACTIVE',
       logoUrl: 'https://via.placeholder.com/200x100?text=Pizza+Bella',
       metadata: {
@@ -62,7 +62,7 @@ async function main() {
       state: 'SP',
       zipCode: '01311-100',
       status: 'ACTIVE',
-      billingPlan: 'STARTER',
+      plan: 'PRO',
       billingStatus: 'ACTIVE',
       logoUrl: 'https://via.placeholder.com/200x100?text=Eletro+Santos',
       metadata: {
