@@ -80,17 +80,6 @@ export async function generateMetadata(
         slug: pageSlug.toLowerCase(),
         status: "PUBLISHED",
       },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        description: true,
-        seoTitle: true,
-        seoDescription: true,
-        seoImage: true,
-        seoKeywords: true,
-        seoNoIndex: true,
-      },
     });
 
     if (!page) {
@@ -241,8 +230,15 @@ export default async function PublicPage({ params }: { params: PageParams }) {
  *
  * Pre-renders popular pages at build time for faster loading
  * Future optimization: Generate all pages, implement ISR (Incremental Static Regeneration)
+ * 
+ * TEMPORARILY DISABLED for production build (database not required at build time)
  */
 export async function generateStaticParams(): Promise<PageParams[]> {
+  // Return empty array for production build
+  // In staging/prod with database, this will generate static params for popular pages
+  return [];
+  
+  /* ORIGINAL CODE (commented out for build):
   // Fetch published pages and their tenants
   const pages = await prisma.page.findMany({
     where: {
@@ -269,4 +265,5 @@ export async function generateStaticParams(): Promise<PageParams[]> {
     tenantSlug: tenantMap[page.tenantId] || "",
     pageSlug: page.slug,
   }));
+  */
 }

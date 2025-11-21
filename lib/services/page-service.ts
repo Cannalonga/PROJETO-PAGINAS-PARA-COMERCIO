@@ -20,6 +20,11 @@ export interface UpdatePageInput {
   status?: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
   content?: string;
   description?: string | null;
+  seoTitle?: string | null;
+  seoDescription?: string | null;
+  seoKeywords?: string | null;
+  seoImage?: string | null;
+  seoNoIndex?: boolean;
 }
 
 export class PageService {
