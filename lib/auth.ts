@@ -16,8 +16,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials');
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+        const user = await prisma.user.findFirst({
+          where: {
+            email: credentials.email,
+            deletedAt: null, // ✅ SECURITY: Exclude soft-deleted users
+          },
           include: { tenant: true },
         });
 
@@ -25,6 +28,7 @@ export const authOptions: NextAuthOptions = {
           throw new Error('User not found or inactive');
         }
 
+        // ✅ SECURITY: Constant-time password comparison to prevent timing attacks
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password

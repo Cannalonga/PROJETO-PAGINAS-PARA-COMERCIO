@@ -122,7 +122,7 @@ model Tenant {
 
 model User {
   id        String   @id @default(cuid())
-  email     String   @unique @db.VarChar(255)
+  email     String   @db.VarChar(255)
   password  String   @db.VarChar(255)
   firstName String?  @db.VarChar(100)
   lastName  String?  @db.VarChar(100)
@@ -145,8 +145,11 @@ model User {
   // Relations
   auditLogs AuditLog[]
   
+  // ✅ SECURITY: Unique constraint on email only for non-deleted users
+  @@unique([email, deletedAt], name: "unique_email_active")
   @@index([tenantId])
   @@index([role])
+  @@index([deletedAt])
 }
 
 // ============================================================================

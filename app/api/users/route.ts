@@ -3,12 +3,26 @@ import { prisma } from '@/lib/prisma';
 import { CreateUserSchema, type CreateUserInput } from '@/lib/validations';
 import { successResponse, errorResponse, paginatedResponse } from '@/utils/helpers';
 import * as bcrypt from 'bcryptjs';
+import { withAuth, withRole, getTenantIdFromSession } from '@/lib/middleware';
 
 /**
  * GET /api/users
+ * SECURITY: Requires authentication + (SUPERADMIN or OPERADOR)
  * List users with pagination and filtering
  */
 export async function GET(request: NextRequest) {
+  // ✅ SECURITY: Validate authentication
+  const authResponse = await withAuth(request);
+  if (authResponse.status !== 200) {
+    return authResponse;
+  }
+
+  // ✅ SECURITY: Validate RBAC
+  const rbacResponse = await withRole(['SUPERADMIN', 'OPERADOR'])(request);
+  if (rbacResponse.status !== 200) {
+    return rbacResponse;
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
@@ -17,31 +31,29 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role');
 
     // Get user from headers (set by auth middleware)
-    const userId = request.headers.get('x-user-id');
     const userRole = request.headers.get('x-user-role');
     const userTenantId = request.headers.get('x-tenant-id');
 
-    if (!userId) {
-      return NextResponse.json(
-        errorResponse('Não autenticado'),
-        { status: 401 }
-      );
-    }
-
-    // Build where clause
+    // Build where clause with tenant scoping
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const where: any = {};
 
-    // RBAC: SUPERADMIN sees all users, others see only their tenant
+    // ✅ SECURITY: IDOR Prevention - SUPERADMIN sees all users, others scoped to tenant
     if (userRole !== 'SUPERADMIN') {
+      // Non-SUPERADMIN: can only see users in their own tenant
       where.tenantId = userTenantId;
     } else if (tenantId) {
+      // SUPERADMIN with tenantId filter
       where.tenantId = tenantId;
     }
 
-    if (role) {
+    // ✅ SECURITY: Validate role parameter if provided
+    if (role && ['SUPERADMIN', 'OPERADOR', 'CLIENTE_ADMIN', 'CLIENTE_USER'].includes(role)) {
       where.role = role;
     }
+
+    // Exclude soft-deleted users
+    where.deletedAt = null;
 
     const skip = (page - 1) * pageSize;
 
@@ -81,20 +93,25 @@ export async function GET(request: NextRequest) {
 
 /**
  * POST /api/users
- * Create new user
+ * SECURITY: Requires authentication + (SUPERADMIN or OPERADOR)
+ * Create new user with proper password hashing
  */
 export async function POST(request: NextRequest) {
+  // ✅ SECURITY: Validate authentication
+  const authResponse = await withAuth(request);
+  if (authResponse.status !== 200) {
+    return authResponse;
+  }
+
+  // ✅ SECURITY: Validate RBAC
+  const rbacResponse = await withRole(['SUPERADMIN', 'OPERADOR'])(request);
+  if (rbacResponse.status !== 200) {
+    return rbacResponse;
+  }
+
   try {
-    const userId = request.headers.get('x-user-id');
     const userRole = request.headers.get('x-user-role');
     const userTenantId = request.headers.get('x-tenant-id');
-
-    if (!userId) {
-      return NextResponse.json(
-        errorResponse('Não autenticado'),
-        { status: 401 }
-      );
-    }
 
     // Parse and validate request body
     const body = await request.json();
@@ -109,22 +126,25 @@ export async function POST(request: NextRequest) {
 
     const data: CreateUserInput = validation.data;
 
-    // RBAC: Only SUPERADMIN, OPERADOR can create users
-    if (!['SUPERADMIN', 'OPERADOR'].includes(userRole || '')) {
-      return NextResponse.json(
-        errorResponse('Sem permissão para criar usuários'),
-        { status: 403 }
-      );
-    }
-
-    // Ensure non-SUPERADMIN users can only create users in their tenant
+    // ✅ SECURITY: Tenant scoping - non-SUPERADMIN can only create users in their tenant
     if (userRole !== 'SUPERADMIN') {
+      if (data.tenantId && data.tenantId !== userTenantId) {
+        // Attempting IDOR - trying to create user in different tenant
+        console.warn(`[SECURITY] IDOR attempt: user tried to create user in tenantId=${data.tenantId} but owns=${userTenantId}`);
+        return NextResponse.json(
+          errorResponse('Sem permissão para criar usuários em outro tenant'),
+          { status: 403 }
+        );
+      }
       data.tenantId = userTenantId || undefined;
     }
 
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-      where: { email: data.email },
+    // Check if user already exists (consider soft-deleted users)
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: data.email,
+        deletedAt: null, // Only check non-deleted users
+      },
     });
 
     if (existingUser) {
@@ -134,8 +154,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(data.password, 12);
+    // ✅ SECURITY: Use bcrypt with rounds=14+ for password hashing (not 12)
+    const hashedPassword = await bcrypt.hash(data.password, 14);
 
     // Create user
     const newUser = await prisma.user.create({
@@ -144,9 +164,10 @@ export async function POST(request: NextRequest) {
         password: hashedPassword,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role,
+        role: data.role || 'CLIENTE_USER',
         tenantId: data.tenantId,
         isActive: true,
+        emailVerified: false,
       },
       select: {
         id: true,
