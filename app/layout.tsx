@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import '@/styles/globals.css';
 import { initSentry } from '@/lib/sentry';
 
 // Initialize Sentry on app start
