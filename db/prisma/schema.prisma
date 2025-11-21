@@ -44,17 +44,20 @@ enum PageTemplate {
 }
 
 enum BillingStatus {
+  INACTIVE
+  TRIALING
   ACTIVE
   PAST_DUE
   CANCELED
-  TRIALING
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
 }
 
-enum BillingPlan {
+enum Plan {
   FREE
-  STARTER
-  PROFESSIONAL
-  ENTERPRISE
+  BASIC
+  PRO
+  PREMIUM
 }
 
 enum PaymentStatus {
@@ -98,9 +101,10 @@ model Tenant {
   faviconUrl String?  @db.VarChar(500)
   
   // Billing
-  billingStatus BillingStatus @default(TRIALING)
-  billingPlan BillingPlan @default(FREE)
+  billingStatus BillingStatus @default(INACTIVE)
+  plan Plan @default(FREE)
   stripeCustomerId String? @unique @db.VarChar(255)
+  stripeSubscriptionId String? @unique @db.VarChar(255)
   
   // Metadata
   metadata  Json?
