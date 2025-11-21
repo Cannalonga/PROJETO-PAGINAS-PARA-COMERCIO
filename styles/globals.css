@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Animations */
+@layer utilities {
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slideIn {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.5s ease-out;
+  }
+
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/30 backdrop-blur-md border border-white/20;
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    @apply bg-gradient-to-r from-sky-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent;
+  }
+
+  /* Shadow Elevated */
+  .shadow-elevated {
+    @apply shadow-2xl;
+  }
+}
+
 @layer base {
   html {
     @apply scroll-smooth;
