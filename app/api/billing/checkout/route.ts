@@ -8,7 +8,7 @@
  * - RBAC: Only OWNER/ADMIN can access
  * - Uses tenant from session (never client body)
  * - Validates plan against whitelist
- * - Rate limited (see PHASE D.8)
+ * - Rate limited: 3/min (PHASE D.8)
  * 
  * Request body:
  * {
@@ -26,14 +26,13 @@ import { NextResponse } from "next/server";
 import { withAuthHandler } from "@/lib/auth/with-auth-handler";
 import { z } from "zod";
 import { BillingService } from "@/services/billing-service";
+import { rateLimit, rateLimitProfiles } from "@/lib/rate-limit";
 import type { AuthContext } from "@/lib/auth/with-auth-handler";
 
 // ✅ SECURITY: Strict validation - plan enum, no other fields
 const CheckoutRequestSchema = z.object({
   plan: z.enum(["BASIC", "PRO", "PREMIUM"]),
 });
-
-type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;
 
 /**
  * POST /api/billing/checkout
@@ -42,7 +41,35 @@ type CheckoutRequest = z.infer<typeof CheckoutRequestSchema>;
  */
 export const POST = withAuthHandler(async (context: AuthContext) => {
   const { session, tenant, req } = context;
+  
   try {
+    // ✅ SECURITY: Rate limiting (3/min per user)
+    const rateLimitKey = `billing-checkout:${session.email}`;
+    const rateLimitResult = await rateLimit(
+      rateLimitKey,
+      rateLimitProfiles.billingCheckout
+    );
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: "Too Many Requests",
+          message: "Too many checkout attempts. Please wait before trying again.",
+          code: "RATE_LIMITED",
+          retryAfter: rateLimitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimitResult.retryAfter),
+            "X-RateLimit-Limit": String(rateLimitProfiles.billingCheckout.maxRequests),
+            "X-RateLimit-Remaining": String(rateLimitResult.remaining),
+            "X-RateLimit-Reset": String(rateLimitResult.resetAt),
+          },
+        }
+      );
+    }
+
     // ✅ SECURITY: RBAC Check - only OWNER/ADMIN can manage billing
     const userRole = session.role || "";
     const isAdmin = userRole === "OWNER" || userRole === "ADMIN" || userRole === "CLIENTE_ADMIN";
@@ -106,7 +133,14 @@ export const POST = withAuthHandler(async (context: AuthContext) => {
         sessionId: session_checkout.sessionId,
         plan,
       },
-      { status: 201 }
+      {
+        status: 201,
+        headers: {
+          "X-RateLimit-Limit": String(rateLimitProfiles.billingCheckout.maxRequests),
+          "X-RateLimit-Remaining": String(rateLimitResult.remaining),
+          "X-RateLimit-Reset": String(rateLimitResult.resetAt),
+        },
+      }
     );
   } catch (error: any) {
     // ✅ SECURITY: Don't expose internal error details in production
