@@ -17,7 +17,7 @@ export default {
         textDark: '#1E293B',     // Texto principal
         textLight: '#94A3B8',    // Texto secundário
         borderLight: '#E3E8EF',  // Bordas suaves
-        bgLight: '#F7F9FC',      // Background principal
+        bgLight: '#FFFFFF',      // Background principal
         
         // Semantic Colors
         success: '#10B981',
