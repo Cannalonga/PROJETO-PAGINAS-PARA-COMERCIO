@@ -401,7 +401,7 @@ export class BillingService {
       case "incomplete":
         return "INCOMPLETE";
       case "incomplete_expired":
-        return "INCOMPLETE_EXPIRED";
+        return "INCOMPLETE"; // Map to INCOMPLETE (INCOMPLETE_EXPIRED doesn't exist in enum)
       default:
         return "INACTIVE";
     }
