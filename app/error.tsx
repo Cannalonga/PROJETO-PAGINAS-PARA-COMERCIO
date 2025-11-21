@@ -52,47 +52,65 @@ export default function Error({
           />
         </div>
 
-        {/* Gradient Glows */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500 rounded-full opacity-10 blur-3xl" />
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-red-500 rounded-full opacity-10 blur-3xl" />
+        {/* Gradient Glows - Red for error */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-500 rounded-full opacity-10 blur-3xl" />
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-red-600 rounded-full opacity-10 blur-3xl" />
 
         {/* Content */}
         <div className="relative z-10 text-center px-4 max-w-2xl">
           {/* Error Code */}
           <div className="mb-8">
             <span className="inline-block px-6 py-3 rounded-full bg-red-500/10 border border-red-500/30 text-red-300 font-semibold">
-              ⚠️ Algo deu errado
+              ⚠️ Erro na Aplicação
             </span>
           </div>
 
+          {/* Error Icon - Animated */}
+          <div className="mb-8 relative">
+            <div className="text-8xl md:text-9xl animate-bounce">💥</div>
+          </div>
+
           {/* Main Message */}
-          <h1 className="text-6xl md:text-7xl font-black mb-6 bg-gradient-to-r from-red-400 via-white to-orange-400 bg-clip-text text-transparent">
-            Erro!
+          <h1 className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-red-400 via-orange-400 to-red-500 bg-clip-text text-transparent">
+            Algo deu errado!
           </h1>
 
           <p className="text-xl md:text-2xl text-slate-300 mb-4">
-            Encontramos um problema
+            Encontramos um problema inesperado
           </p>
 
           <p className="text-base md:text-lg text-slate-400 mb-8 leading-relaxed">
-            Algo inesperado aconteceu. Nossa equipe foi notificada e está investigando o problema.
-            Enquanto isso, você pode tentar novamente ou voltar à página inicial.
+            Nossa equipe foi notificada automaticamente e está investigando o problema. 
+            Enquanto isso, você pode tentar recarregar a página ou voltar à página inicial.
           </p>
 
           {/* Error Details (Development Only) */}
           {process.env.NODE_ENV === 'development' && error?.message && (
-            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-left">
-              <p className="text-red-300 text-sm font-mono break-words">
+            <div className="mb-8 p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-left max-h-40 overflow-y-auto">
+              <p className="text-red-300 text-xs font-semibold mb-2">Detalhes do Erro (Dev):</p>
+              <p className="text-red-200 text-xs font-mono break-words">
                 {error.message}
               </p>
+              {error?.digest && (
+                <p className="text-red-300 text-xs mt-2">
+                  ID: <span className="text-red-200">{error.digest}</span>
+                </p>
+              )}
             </div>
           )}
+
+          {/* Floating Icons - Error theme */}
+          <div className="mb-12 flex justify-center gap-6 text-5xl opacity-50">
+            <span>⚙️</span>
+            <span className="animate-spin">🔧</span>
+            <span>🛠️</span>
+          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={reset}
-              className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-white"
+              className="px-8 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-white"
             >
               🔄 Tentar Novamente
             </button>
@@ -103,11 +121,25 @@ export default function Error({
             </Link>
           </div>
 
-          {/* Support Info */}
-          <div className="mt-16 pt-12 border-t border-slate-700">
-            <p className="text-slate-400 mb-4">Precisa de suporte?</p>
-            <p className="text-slate-500 text-sm">
-              Erro ID: <span className="text-slate-400 font-mono">{error?.digest || 'N/A'}</span>
+          {/* Error Info Card */}
+          <div className="mt-12 pt-12 border-t border-slate-700">
+            <div className="bg-slate-900/50 rounded-lg p-6 border border-slate-700">
+              <p className="text-sm text-slate-400 mb-3">📊 Informações do Erro:</p>
+              <div className="space-y-2 text-xs font-mono text-slate-500">
+                <p>Timestamp: <span className="text-slate-400">{new Date().toLocaleString('pt-BR')}</span></p>
+                <p>User Agent: <span className="text-slate-400 truncate">{typeof navigator !== 'undefined' ? navigator.userAgent.substring(0, 40) + '...' : 'N/A'}</span></p>
+                {error?.digest && (
+                  <p>Error ID: <span className="text-slate-400">{error.digest}</span></p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Support Contact */}
+          <div className="mt-8">
+            <p className="text-slate-400 mb-3">Precisa de suporte?</p>
+            <p className="text-sm text-slate-500">
+              📧 suporte@vitrine.fast
             </p>
           </div>
         </div>
