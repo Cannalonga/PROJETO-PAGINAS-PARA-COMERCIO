@@ -8,6 +8,7 @@
  * - RBAC: Only OWNER/ADMIN can access
  * - Uses tenant from session
  * - Redirects to Stripe-hosted portal (secure)
+ * - Rate limited: 5/min (PHASE D.8)
  * 
  * Request body: {} (empty)
  * 
@@ -20,6 +21,7 @@
 import { NextResponse } from "next/server";
 import { withAuthHandler } from "@/lib/auth/with-auth-handler";
 import { BillingService } from "@/services/billing-service";
+import { rateLimit, rateLimitProfiles } from "@/lib/rate-limit";
 import type { AuthContext } from "@/lib/auth/with-auth-handler";
 
 /**
@@ -30,6 +32,33 @@ import type { AuthContext } from "@/lib/auth/with-auth-handler";
 export const POST = withAuthHandler(async (context: AuthContext) => {
   const { session, tenant, req } = context;
   try {
+    // ✅ SECURITY: Rate limiting (5/min per user)
+    const rateLimitKey = `billing-portal:${session.email}`;
+    const rateLimitResult = await rateLimit(
+      rateLimitKey,
+      rateLimitProfiles.billingPortal
+    );
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: "Too Many Requests",
+          message: "Too many portal requests. Please wait before trying again.",
+          code: "RATE_LIMITED",
+          retryAfter: rateLimitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(rateLimitResult.retryAfter),
+            "X-RateLimit-Limit": String(rateLimitProfiles.billingPortal.maxRequests),
+            "X-RateLimit-Remaining": String(rateLimitResult.remaining),
+            "X-RateLimit-Reset": String(rateLimitResult.resetAt),
+          },
+        }
+      );
+    }
+
     // ✅ SECURITY: RBAC Check - only OWNER/ADMIN can access billing portal
     const userRole = session.role || "";
     const isAdmin = userRole === "OWNER" || userRole === "ADMIN" || userRole === "CLIENTE_ADMIN";
@@ -70,7 +99,14 @@ export const POST = withAuthHandler(async (context: AuthContext) => {
       {
         url: portalSession.url,
       },
-      { status: 200 }
+      {
+        status: 200,
+        headers: {
+          "X-RateLimit-Limit": String(rateLimitProfiles.billingPortal.maxRequests),
+          "X-RateLimit-Remaining": String(rateLimitResult.remaining),
+          "X-RateLimit-Reset": String(rateLimitResult.resetAt),
+        },
+      }
     );
   } catch (error: any) {
     // ✅ SECURITY: Don't expose internal error details in production

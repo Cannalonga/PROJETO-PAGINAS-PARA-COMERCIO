@@ -95,4 +95,11 @@ export const rateLimitProfiles = {
 
   // Webhooks (permissive to avoid blocking Stripe)
   webhook: { maxRequests: 1000, windowSeconds: 3600 }, // 1000 per hour
+
+  // ✅ BILLING ENDPOINTS (NEW - PHASE D.8)
+  // Checkout: Prevent brute force checkout attempts
+  billingCheckout: { maxRequests: 3, windowSeconds: 60 }, // 3 checkouts per minute
+
+  // Billing Portal: Moderate rate for portal access
+  billingPortal: { maxRequests: 5, windowSeconds: 60 }, // 5 portal sessions per minute
 };
