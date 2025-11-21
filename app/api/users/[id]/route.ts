@@ -23,6 +23,27 @@ const UserDetailSchema = z.object({
   tenantId: z.string(),
 });
 
+// UPDATE USER SCHEMAS
+const UpdateUserBodySchema = z.object({
+  firstName: z.string().min(1).max(100).optional(),
+  lastName: z.string().min(1).max(100).optional(),
+  email: z.string().email().optional(),
+  isActive: z.boolean().optional(),
+  role: z.enum(['SUPERADMIN', 'OPERADOR', 'CLIENTE_ADMIN', 'CLIENTE_USER']).optional(),
+});
+
+const UpdateUserResponseSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  firstName: z.string().nullable(),
+  lastName: z.string().nullable(),
+  role: z.enum(['SUPERADMIN', 'OPERADOR', 'CLIENTE_ADMIN', 'CLIENTE_USER']),
+  isActive: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date().nullable(),
+  tenantId: z.string(),
+});
+
 // ============================================================================
 // LAYER 2: AUTHENTICATION (x-user-id, x-user-role headers)
 // ============================================================================
@@ -220,6 +241,146 @@ async function auditLog(
 }
 
 // ============================================================================
+// PUT-SPECIFIC LAYERS
+// ============================================================================
+
+// FIELD-LEVEL RBAC FOR UPDATES
+type UpdateableFields = Partial<Record<keyof z.infer<typeof UpdateUserBodySchema>, boolean>>;
+
+const FIELD_PERMISSIONS: Record<string, UpdateableFields> = {
+  SUPERADMIN: {
+    firstName: true,
+    lastName: true,
+    email: true,
+    isActive: true,
+    role: true,
+  },
+  OPERADOR: {
+    firstName: true,
+    lastName: true,
+    email: true,
+    isActive: true,
+  },
+  CLIENTE_ADMIN: {
+    firstName: true,
+    lastName: true,
+    email: true,
+  },
+};
+
+function validateFieldPermissions(
+  requestedFields: Record<string, unknown>,
+  userRole: string
+): { valid: boolean; error?: string; allowedFields?: Record<string, unknown> } {
+  const allowedFields = FIELD_PERMISSIONS[userRole];
+
+  if (!allowedFields || Object.keys(allowedFields).length === 0) {
+    return {
+      valid: false,
+      error: `Role '${userRole}' is not authorized to update any user fields`,
+    };
+  }
+
+  const allowedUpdates: Record<string, unknown> = {};
+  const forbiddenFields: string[] = [];
+
+  for (const [field, value] of Object.entries(requestedFields)) {
+    if (allowedFields[field as keyof UpdateableFields]) {
+      allowedUpdates[field] = value;
+    } else if (value !== undefined) {
+      forbiddenFields.push(field);
+    }
+  }
+
+  if (forbiddenFields.length > 0) {
+    return {
+      valid: false,
+      error: `Role '${userRole}' cannot update fields: ${forbiddenFields.join(', ')}`,
+    };
+  }
+
+  return {
+    valid: true,
+    allowedFields: allowedUpdates,
+  };
+}
+
+async function validateUpdateBody(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validated = UpdateUserBodySchema.parse(body);
+    return {
+      valid: true,
+      data: validated,
+    };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return {
+        valid: false,
+        error: `Invalid request body: ${error.errors.map((e) => e.message).join(', ')}`,
+        status: 400,
+      };
+    }
+    if (error instanceof SyntaxError) {
+      return {
+        valid: false,
+        error: 'Invalid JSON in request body',
+        status: 400,
+      };
+    }
+    return {
+      valid: false,
+      error: 'Request body validation failed',
+      status: 400,
+    };
+  }
+}
+
+const SAFE_RESPONSE_FIELDS = {
+  id: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  role: true,
+  isActive: true,
+  createdAt: true,
+  updatedAt: true,
+  tenantId: true,
+};
+
+async function auditUpdateLog(
+  authenticatedUser: { id: string; tenantId: string },
+  targetUserId: string,
+  action: 'ATTEMPT' | 'UPDATE' | 'FAILURE',
+  metadata: {
+    requestedFields?: Record<string, unknown>;
+    allowedFields?: Record<string, unknown>;
+    oldValues?: Record<string, unknown>;
+    newValues?: Record<string, unknown>;
+    error?: string;
+  }
+) {
+  logAuditEvent({
+    userId: authenticatedUser.id,
+    tenantId: authenticatedUser.tenantId,
+    action: action === 'UPDATE' ? 'UPDATE_USER' : `UPDATE_USER_${action}`,
+    entity: 'user',
+    entityId: targetUserId,
+    metadata: {
+      endpoint: 'PUT /api/users/:id',
+      targetUserId,
+      requestedFields: metadata.requestedFields,
+      allowedFields: metadata.allowedFields,
+      oldValues: metadata.oldValues,
+      newValues: metadata.newValues,
+      error: metadata.error,
+    },
+  }).catch((err) => {
+    console.error('Audit logging failed:', err);
+  });
+}
+
+// ============================================================================
 // MAIN HANDLER
 // ============================================================================
 export async function GET(
@@ -361,6 +522,245 @@ export async function GET(
       { id: 'unknown', tenantId: 'unknown' },
       'unknown',
       errorMessage
+    );
+
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// ============================================================================
+// PUT HANDLER - UPDATE USER
+// ============================================================================
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const resolvedParams = await params;
+
+    // LAYER 2: AUTHENTICATION
+    const auth = await authenticateRequest(request);
+    if (auth.error) {
+      await auditUpdateLog(
+        { id: 'unknown', tenantId: 'unknown' },
+        resolvedParams.id,
+        'FAILURE',
+        { error: 'Authentication failed' }
+      );
+      return NextResponse.json(
+        { error: auth.error, timestamp: new Date().toISOString() },
+        { status: auth.status }
+      );
+    }
+
+    const { authenticatedUser, userRole } = auth;
+
+    // LAYER 3: AUTHORIZATION (Role-based access)
+    const authz = authorizeRequest(userRole!);
+    if (!authz.authorized) {
+      await auditUpdateLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        resolvedParams.id,
+        'FAILURE',
+        { error: authz.error || undefined }
+      );
+      return NextResponse.json(
+        { error: authz.error, timestamp: new Date().toISOString() },
+        { status: authz.status }
+      );
+    }
+
+    // LAYER 4: PARAMETER VALIDATION
+    const paramValidation = validateParams({ id: resolvedParams.id });
+    if ('valid' in paramValidation && !paramValidation.valid) {
+      await auditUpdateLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        resolvedParams.id,
+        'FAILURE',
+        { error: paramValidation.error || undefined }
+      );
+      return NextResponse.json(
+        { error: paramValidation.error, timestamp: new Date().toISOString() },
+        { status: paramValidation.status }
+      );
+    }
+
+    const { id: targetUserId } = paramValidation as { id: string };
+
+    // LAYER 5: REQUEST BODY VALIDATION
+    const bodyValidation = await validateUpdateBody(request);
+    if (!bodyValidation.valid) {
+      await auditUpdateLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'FAILURE',
+        { error: bodyValidation.error || undefined }
+      );
+      return NextResponse.json(
+        { error: bodyValidation.error, timestamp: new Date().toISOString() },
+        { status: bodyValidation.status }
+      );
+    }
+
+    const requestedFields = bodyValidation.data as Record<string, unknown>;
+
+    // Check if at least one field is being updated
+    if (Object.keys(requestedFields).length === 0) {
+      return NextResponse.json(
+        { error: 'At least one field must be provided for update', timestamp: new Date().toISOString() },
+        { status: 400 }
+      );
+    }
+
+    // LAYER 3b: FIELD-LEVEL RBAC
+    const fieldPermission = validateFieldPermissions(requestedFields, userRole!);
+    if (!fieldPermission.valid) {
+      await auditUpdateLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'ATTEMPT',
+        {
+          requestedFields,
+          error: fieldPermission.error || undefined,
+        }
+      );
+      return NextResponse.json(
+        { error: fieldPermission.error, timestamp: new Date().toISOString() },
+        { status: 403 }
+      );
+    }
+
+    const allowedFields = fieldPermission.allowedFields as Record<string, unknown>;
+
+    // LAYER 6: TENANT VALIDATION
+    if (!authenticatedUser!.tenantId) {
+      throw new Error('Invalid authenticated user state: tenantId is null');
+    }
+
+    const tenantCheck = await validateTenantAccess(
+      targetUserId,
+      {
+        id: authenticatedUser!.id,
+        tenantId: authenticatedUser!.tenantId,
+        role: authenticatedUser!.role as string,
+      }
+    );
+    if (!tenantCheck.authorized) {
+      await auditUpdateLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'FAILURE',
+        { error: tenantCheck.error || undefined }
+      );
+      return NextResponse.json(
+        {
+          error: tenantCheck.error,
+          timestamp: new Date().toISOString(),
+        },
+        {
+          status:
+            tenantCheck.error === 'User not found'
+              ? 404
+              : 403,
+        }
+      );
+    }
+
+    // LAYER 7: SAFE QUERY CONSTRUCTION - Get current user
+    const whereClause = buildSafeQuery(targetUserId, {
+      id: authenticatedUser!.id,
+      tenantId: authenticatedUser!.tenantId!,
+      role: authenticatedUser!.role as string,
+    });
+
+    const currentUser = await prisma.user.findUnique({
+      where: whereClause,
+      select: {
+        ...SAFE_RESPONSE_FIELDS,
+        firstName: true,
+        lastName: true,
+        email: true,
+        isActive: true,
+        role: true,
+      },
+    });
+
+    if (!currentUser) {
+      await auditUpdateLog(
+        { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+        targetUserId,
+        'FAILURE',
+        { error: 'User not found' }
+      );
+      return NextResponse.json(
+        { error: 'User not found', timestamp: new Date().toISOString() },
+        { status: 404 }
+      );
+    }
+
+    // Store old values for audit trail
+    const oldValues: Record<string, unknown> = {};
+    for (const field of Object.keys(allowedFields)) {
+      oldValues[field] = currentUser[field as keyof typeof currentUser];
+    }
+
+    // Perform update with Prisma
+    const updatedUser = await prisma.user.update({
+      where: whereClause,
+      data: allowedFields,
+      select: SAFE_RESPONSE_FIELDS,
+    });
+
+    // Store new values for audit trail
+    const newValues: Record<string, unknown> = {};
+    for (const field of Object.keys(allowedFields)) {
+      newValues[field] = updatedUser[field as keyof typeof updatedUser];
+    }
+
+    // Validate response matches safe schema
+    const validatedUser = UpdateUserResponseSchema.parse(updatedUser);
+
+    // LAYER 8: AUDIT LOGGING (Success with change tracking)
+    await auditUpdateLog(
+      { id: authenticatedUser!.id, tenantId: authenticatedUser!.tenantId as string },
+      targetUserId,
+      'UPDATE',
+      {
+        requestedFields,
+        allowedFields,
+        oldValues,
+        newValues,
+      }
+    );
+
+    return NextResponse.json(
+      {
+        data: validatedUser,
+        changes: {
+          oldValues,
+          newValues,
+        },
+        timestamp: new Date().toISOString(),
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error('PUT /api/users/:id error:', error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'Internal server error';
+
+    await auditUpdateLog(
+      { id: 'unknown', tenantId: 'unknown' },
+      'unknown',
+      'FAILURE',
+      { error: errorMessage }
     );
 
     return NextResponse.json(
