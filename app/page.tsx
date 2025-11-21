@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Logo, LogoSmall } from '@/components/Logo'
 import { VButton, VCard } from '@/components/ui'
 import { AdSpace } from '@/components/AdSpace'
+import { HeroVitrineFast } from '@/components/HeroVitrineFast'
 
 export default function Home() {
   return (
@@ -30,57 +31,15 @@ export default function Home() {
         </div>
       </nav>
 
+      {/* Hero Section - New Dark Hero */}
+      <HeroVitrineFast />
+
       {/* Ad Space - Top */}
       <div className="bg-white border-b border-borderLight">
         <div className="container mx-auto px-6 py-2">
           <AdSpace position="top" />
         </div>
       </div>
-
-      {/* Hero Section */}
-      <section className="py-20 sm:py-32">
-        <div className="max-w-5xl mx-auto text-center px-6">
-          <h1 className="text-4xl md:text-6xl font-extrabold text-secondary leading-tight">
-            Sua Vitrine Online,
-            <br />
-            <span className="text-primary">Rápida</span> e
-            <span className="block text-fast mt-2">Profissional</span>
-          </h1>
-
-          <p className="mt-6 text-lg text-textLight max-w-2xl mx-auto leading-relaxed">
-            Crie páginas modernas para seu comércio em minutos — sem complicação e sem precisar de código.
-          </p>
-
-          <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/auth/register">
-              <VButton variant="primary" size="lg" className="w-full sm:w-auto">
-                Criar Minha Página
-              </VButton>
-            </Link>
-            <Link href="#features">
-              <VButton variant="outline" size="lg" className="w-full sm:w-auto">
-                Ver Exemplos
-              </VButton>
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 mt-16 pt-16 border-t border-borderLight">
-            <div>
-              <div className="text-4xl font-bold text-primary">10k+</div>
-              <p className="text-sm text-textLight mt-2">Negócios criados</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-primary">50+</div>
-              <p className="text-sm text-textLight mt-2">Templates prontos</p>
-            </div>
-            <div>
-              <div className="text-4xl font-bold text-primary">99%</div>
-              <p className="text-sm text-textLight mt-2">Uptime garantido</p>
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Features Section */}
       <section id="features" className="py-12 md:py-16 bg-white border-t border-[#E3E8EF]">
