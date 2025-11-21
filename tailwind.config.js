@@ -8,12 +8,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#0066cc',
-        secondary: '#00cc99',
-        accent: '#ff6b6b',
-        danger: '#ff0000',
-        warning: '#ffa500',
-        success: '#00cc00',
+        // VitrineFast Brand Colors
+        primary: '#2D7DF6',      // Azul VitrineFast
+        secondary: '#0A2540',    // Azul Escuro Pro
+        fast: '#FF8C42',         // Laranja Fast
+        
+        // UI Colors
+        textDark: '#1E293B',     // Texto principal
+        textLight: '#94A3B8',    // Texto secundário
+        borderLight: '#E3E8EF',  // Bordas suaves
+        bgLight: '#F7F9FC',      // Background principal
+        
+        // Semantic Colors
+        success: '#10B981',
+        warning: '#F59E0B',
+        error: '#EF4444',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
