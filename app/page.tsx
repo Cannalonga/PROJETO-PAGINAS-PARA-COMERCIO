@@ -9,7 +9,7 @@ import { HeroVitrineFast } from '@/components/HeroVitrineFast'
 
 export default function Home() {
   return (
-    <>
+    <div className="bg-slate-950">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 bg-slate-950 border-b border-slate-800 backdrop-blur">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
@@ -349,7 +349,7 @@ export default function Home() {
 
       {/* Ad Space - Footer (Sticky) */}
       <AdSpace position="footer" />
-      </div>
-    </>
+    </div>
+    </div>
   )
 }
