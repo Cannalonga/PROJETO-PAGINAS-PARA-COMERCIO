@@ -9,9 +9,9 @@ import { HeroVitrineFast } from '@/components/HeroVitrineFast'
 
 export default function Home() {
   return (
-    <div className="min-h-screen text-textDark">
+    <>
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-borderLight backdrop-blur">
+      <nav className="sticky top-0 z-50 bg-slate-950 border-b border-slate-800 backdrop-blur">
         <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
           <div className="w-32">
             <Logo className="h-12 w-auto" />
@@ -34,12 +34,14 @@ export default function Home() {
       {/* Hero Section - New Dark Hero */}
       <HeroVitrineFast />
 
-      {/* Ad Space - Top */}
-      <div className="bg-white border-b border-borderLight">
-        <div className="container mx-auto px-6 py-2">
-          <AdSpace position="top" />
+      {/* Rest of page with white background */}
+      <div className="min-h-screen text-textDark bg-white">
+        {/* Ad Space - Top */}
+        <div className="border-b border-borderLight">
+          <div className="container mx-auto px-6 py-2">
+            <AdSpace position="top" />
+          </div>
         </div>
-      </div>
 
       {/* Features Section */}
       <section id="features" className="py-12 md:py-16 bg-white border-t border-[#E3E8EF]">
@@ -347,6 +349,7 @@ export default function Home() {
 
       {/* Ad Space - Footer (Sticky) */}
       <AdSpace position="footer" />
-    </div>
+      </div>
+    </>
   )
 }
