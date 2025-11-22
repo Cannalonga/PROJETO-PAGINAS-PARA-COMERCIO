@@ -24,17 +24,17 @@ export default function Home() {
           </div>
 
           {/* Links */}
-          <nav className="flex items-center gap-3 text-sm">
-            <a href="#features" className="hidden md:inline text-slate-300 hover:text-slate-50">
+          <nav className="flex items-center gap-2 text-sm">
+            <a href="#features" className="hidden md:inline px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-slate-50 hover:border-slate-700 transition">
               Recursos
             </a>
-            <a href="#how-it-works" className="hidden md:inline text-slate-300 hover:text-slate-50">
+            <a href="#how-it-works" className="hidden md:inline px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-slate-50 hover:border-slate-700 transition">
               Como funciona
             </a>
-            <a href="#pricing" className="hidden md:inline text-slate-300 hover:text-slate-50">
+            <a href="#pricing" className="hidden md:inline px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-slate-50 hover:border-slate-700 transition">
               Planos
             </a>
-            <a href="#faq" className="hidden md:inline text-slate-300 hover:text-slate-50">
+            <a href="#faq" className="hidden md:inline px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300 hover:text-slate-50 hover:border-slate-700 transition">
               Dúvidas
             </a>
 
@@ -152,24 +152,30 @@ export default function Home() {
         </section>
 
         {/* FEATURES */}
-        <section id="features" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+        <section
+          id="features"
+          className="py-12 md:py-16 bg-slate-900 border-t border-slate-800"
+        >
           <div className="max-w-6xl mx-auto px-4">
+            {/* Cabeçalho da seção */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
-                Recursos
+                Recursos poderosos
               </p>
               <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
                 Tudo o que sua página precisa para parecer profissional
               </h2>
               <p className="mt-3 text-sm md:text-base text-slate-300">
-                Modelos prontos, otimização para Google, integração com WhatsApp
-                e um visual pensado para comércios locais.
+                Modelos prontos, otimização para Google, integração com WhatsApp e um
+                visual pensado especialmente para comércios locais.
               </p>
             </div>
 
+            {/* Grid de features */}
             <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+              {/* Sem código */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-xl">
                   ⚡
                 </div>
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
@@ -177,12 +183,14 @@ export default function Home() {
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300">
                   Monte sua página escolhendo blocos prontos: capa, serviços,
-                  depoimentos, mapa, contato e muito mais.
+                  depoimentos, mapa, contato e muito mais — sem precisar falar com
+                  programador.
                 </p>
               </div>
 
+              {/* Templates modernos */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-xl">
                   🎨
                 </div>
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
@@ -190,59 +198,64 @@ export default function Home() {
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300">
                   Layouts pensados para salões, clínicas, restaurantes, lojas e
-                  profissionais liberais.
+                  profissionais liberais — é só escolher o que mais combina com seu
+                  negócio.
                 </p>
               </div>
 
+              {/* Mobile first */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-xl">
                   📱
                 </div>
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
                   100% mobile
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300">
-                  Sua página fica linda e rápida no celular, onde seus clientes
-                  realmente estão.
+                  Sua página fica rápida e bonita no celular, onde seus clientes
+                  realmente estão — perfeita para enviar por WhatsApp.
                 </p>
               </div>
 
+              {/* SEO */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-xl">
                   📈
                 </div>
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
                   SEO otimizado
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300">
-                  Engine de SEO integrada para ajudar seu comércio a ser
-                  encontrado no Google.
+                  Engine de SEO integrada ajuda seu comércio a ser encontrado no
+                  Google, com título, descrição e URL bem configurados.
                 </p>
               </div>
 
+              {/* Integrações */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-xl">
                   🔗
                 </div>
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
                   Integrações fáceis
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300">
-                  Conecte WhatsApp, Google Maps, Instagram, links de pagamento e
-                  outros canais.
+                  Conecte WhatsApp, Google Maps, Instagram, links de pagamento e outros
+                  canais diretamente na sua página.
                 </p>
               </div>
 
+              {/* Segurança */}
               <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                <div className="h-10 w-10 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-xl">
                   🛡️
                 </div>
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
                   Segurança por padrão
                 </h3>
                 <p className="text-xs md:text-sm text-slate-300">
-                  HTTPS, backups, multi-tenant seguro e monitoramento para
-                  proteger seus dados.
+                  HTTPS, backups, multi-tenant seguro e monitoramento — toda a
+                  infraestrutura preparada para você focar no seu negócio.
                 </p>
               </div>
             </div>
@@ -250,9 +263,13 @@ export default function Home() {
         </section>
 
         {/* COMO FUNCIONA */}
-        <section id="how-it-works" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+        <section
+          id="how-it-works"
+          className="py-12 md:py-16 bg-slate-950 border-t border-slate-800"
+        >
           <div className="max-w-5xl mx-auto px-4">
-            <div className="text-center max-w-2xl mx-auto mb-8">
+            {/* Cabeçalho */}
+            <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
                 Como funciona
               </p>
@@ -260,51 +277,84 @@ export default function Home() {
                 Publique sua página em 3 passos simples
               </h2>
               <p className="mt-3 text-sm md:text-base text-slate-300">
-                Pensado para quem não quer perder tempo com ferramentas
-                complicadas.
+                Pensado para quem não quer perder tempo com ferramentas complicadas.
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <p className="text-xs font-semibold text-sky-300 mb-1">Passo 1</p>
-                <h3 className="text-sm md:text-base font-semibold text-slate-50">
-                  Crie sua conta
-                </h3>
-                <p className="text-xs md:text-sm text-slate-300">
-                  Informe seu nome, email e o nome do seu comércio. Leva menos de
-                  um minuto.
-                </p>
-              </div>
+            {/* Linha de progresso + 3 passos */}
+            <div className="relative">
+              {/* linha horizontal (desktop) */}
+              <div className="hidden md:block absolute top-7 left-10 right-10 h-px bg-slate-700/70" />
 
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <p className="text-xs font-semibold text-sky-300 mb-1">Passo 2</p>
-                <h3 className="text-sm md:text-base font-semibold text-slate-50">
-                  Escolha um modelo
-                </h3>
-                <p className="text-xs md:text-sm text-slate-300">
-                  Selecione um template pronto para o seu tipo de negócio e
-                  personalize textos e imagens.
-                </p>
-              </div>
+              <div className="grid md:grid-cols-3 gap-6 md:gap-8">
+                {/* Passo 1 */}
+                <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-sm font-bold">
+                      1
+                    </div>
+                    <span className="text-xs font-semibold text-sky-300">
+                      Crie sua conta
+                    </span>
+                  </div>
+                  <h3 className="mt-2 text-sm md:text-base font-semibold text-slate-50">
+                    Informe os dados do seu comércio
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-300">
+                    Nome da loja, email e alguns dados básicos. Em menos de um minuto
+                    você já tem acesso ao painel.
+                  </p>
+                </div>
 
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
-                <p className="text-xs font-semibold text-sky-300 mb-1">Passo 3</p>
-                <h3 className="text-sm md:text-base font-semibold text-slate-50">
-                  Publique e compartilhe
-                </h3>
-                <p className="text-xs md:text-sm text-slate-300">
-                  Gere o link da sua página e envie para seus clientes no
-                  WhatsApp, Instagram e cartão de visita.
-                </p>
+                {/* Passo 2 */}
+                <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-sm font-bold">
+                      2
+                    </div>
+                    <span className="text-xs font-semibold text-sky-300">
+                      Escolha um modelo
+                    </span>
+                  </div>
+                  <h3 className="mt-2 text-sm md:text-base font-semibold text-slate-50">
+                    Selecione o template ideal
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-300">
+                    Escolha um template pensado para o seu tipo de negócio e ajuste
+                    textos, fotos, cores e links do seu jeito.
+                  </p>
+                </div>
+
+                {/* Passo 3 */}
+                <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-sm font-bold">
+                      3
+                    </div>
+                    <span className="text-xs font-semibold text-sky-300">
+                      Publique e compartilhe
+                    </span>
+                  </div>
+                  <h3 className="mt-2 text-sm md:text-base font-semibold text-slate-50">
+                    Gere o link da sua vitrine
+                  </h3>
+                  <p className="text-xs md:text-sm text-slate-300">
+                    Com um clique você publica sua página e já pode compartilhar o link
+                    com clientes no WhatsApp, Instagram e cartão de visita.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* PRICING */}
-        <section id="pricing" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+        <section
+          id="pricing"
+          className="py-12 md:py-16 bg-slate-950 border-t border-slate-800"
+        >
           <div className="max-w-6xl mx-auto px-4">
+            {/* Cabeçalho */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
                 Planos
@@ -313,14 +363,15 @@ export default function Home() {
                 Comece grátis e evolua conforme seu negócio cresce
               </h2>
               <p className="mt-3 text-sm md:text-base text-slate-300">
-                Teste sem compromisso. Publique sua página, veja o resultado e
-                só então decida se quer recursos avançados.
+                Teste sem compromisso. Publique sua página, veja o resultado e só então
+                decida se quer recursos avançados.
               </p>
             </div>
 
+            {/* Grid de planos */}
             <div className="grid md:grid-cols-3 gap-5">
-              {/* Iniciante */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
+              {/* Plano Iniciante */}
+              <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
                   Iniciante
                 </h3>
@@ -339,8 +390,8 @@ export default function Home() {
                 </button>
               </div>
 
-              {/* Profissional */}
-              <div className="relative bg-slate-900 border border-sky-500 rounded-2xl p-5 flex flex-col gap-3 shadow-lg scale-[1.02]">
+              {/* Plano Profissional (destaque) */}
+              <div className="relative bg-slate-900 border border-sky-500 rounded-2xl p-5 flex flex-col gap-3 shadow-lg scale-[1.03]">
                 <span className="absolute -top-3 right-4 text-[11px] px-2 py-1 rounded-full bg-orange-400 text-white font-semibold shadow-sm">
                   Mais popular
                 </span>
@@ -363,10 +414,13 @@ export default function Home() {
                 <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl bg-sky-500 text-white hover:bg-sky-400 transition">
                   Escolher Profissional
                 </button>
+                <p className="mt-2 text-[11px] text-slate-400">
+                  Recomendado para comércios que já vendem todo dia.
+                </p>
               </div>
 
-              {/* Negócio */}
-              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
+              {/* Plano Negócio */}
+              <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
                 <h3 className="text-sm md:text-base font-semibold text-slate-50">
                   Negócio
                 </h3>
@@ -392,7 +446,7 @@ export default function Home() {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+        <section id="faq" className="py-12 md:py-16 bg-slate-900 border-t border-slate-800">
           <div className="max-w-4xl mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-8">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
@@ -453,7 +507,7 @@ export default function Home() {
         </section>
 
         {/* CTA FINAL */}
-        <section id="cta" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+        <section id="cta" className="py-12 md:py-16 bg-slate-950/95 border-t border-slate-800">
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-2xl md:text-3xl font-bold text-slate-50">
               Pronto para criar a vitrine do seu comércio?
