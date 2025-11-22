@@ -1,229 +1,539 @@
 'use client'
 
 import Link from 'next/link'
-import { Logo, LogoSmall } from '@/components/Logo'
-import { VButton } from '@/components/ui'
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-          <div className="w-32">
-            <Logo className="h-10 w-auto" />
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      {/* NAVBAR */}
+      <header className="border-b border-slate-800 bg-slate-950/90 backdrop-blur">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
+            <div className="h-9 w-9 rounded-xl bg-sky-500 flex items-center justify-center text-white font-bold text-lg">
+              V
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="font-semibold text-sm md:text-base text-slate-50">
+                VitrineFast
+              </span>
+              <span className="text-[11px] text-slate-400 hidden sm:block">
+                Sua vitrine online, rápida e profissional
+              </span>
+            </div>
           </div>
-          <div className="space-x-4">
-            <Link href="/auth/login">
-              <VButton variant="ghost" size="md">
-                Entrar
-              </VButton>
+
+          {/* Links */}
+          <nav className="flex items-center gap-3 text-sm">
+            <a href="#features" className="hidden md:inline text-slate-300 hover:text-slate-50">
+              Recursos
+            </a>
+            <a href="#how-it-works" className="hidden md:inline text-slate-300 hover:text-slate-50">
+              Como funciona
+            </a>
+            <a href="#pricing" className="hidden md:inline text-slate-300 hover:text-slate-50">
+              Planos
+            </a>
+            <a href="#faq" className="hidden md:inline text-slate-300 hover:text-slate-50">
+              Dúvidas
+            </a>
+
+            <Link href="/auth/login" className="text-slate-300 hover:text-slate-50 font-medium">
+              Entrar
             </Link>
-            <Link href="/auth/register">
-              <VButton variant="primary" size="md">
-                Começar Grátis
-              </VButton>
+            <Link
+              href="/auth/register"
+              className="bg-sky-500 text-white font-semibold text-xs md:text-sm px-4 py-2 rounded-xl shadow-sm hover:bg-sky-400 transition"
+            >
+              Começar grátis
             </Link>
-          </div>
+          </nav>
         </div>
-      </nav>
+      </header>
 
-      {/* Hero Section */}
-      <section className="py-20 md:py-32 bg-gradient-to-br from-slate-50 to-white">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold text-slate-900 mb-6">
-            Sua Vitrine Digital
-          </h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-8">
-            Crie uma página profissional para seu negócio local em minutos. Sem código, sem complicação.
-          </p>
-          <div className="flex justify-center gap-4 mb-12">
-            <Link href="/auth/register">
-              <button className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
-                Criar Página Agora
-              </button>
-            </Link>
-            <button className="px-8 py-3 border border-gray-300 text-slate-700 font-semibold rounded-lg hover:bg-gray-50 transition">
-              Ver Demo
-            </button>
+      <main>
+        {/* HERO DARK ESTILO MODERNO */}
+        <section className="relative overflow-hidden bg-slate-950">
+          {/* Glows */}
+          <div className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-32 -left-40 h-72 w-72 rounded-full bg-sky-500 opacity-25 blur-3xl"></div>
+            <div className="absolute -bottom-40 -right-20 h-80 w-80 rounded-full bg-orange-400 opacity-20 blur-3xl"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.15),_transparent_60%)]"></div>
           </div>
-        </div>
-      </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-16">
-            Tudo que você precisa
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition">
-              <div className="text-4xl mb-4">⚡</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Sem Código</h3>
-              <p className="text-slate-600">
-                Editor visual intuitivo. Arraste, solte e publique sua página em minutos.
+          <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-16 md:pt-24 md:pb-20 grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
+            {/* Texto */}
+            <div>
+              <p className="inline-flex items-center gap-2 text-xs font-medium text-sky-300 bg-sky-950/60 px-3 py-1 rounded-full border border-sky-500/40">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                Para comércios locais que querem vender mais
               </p>
-            </div>
-            <div className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Templates Modernos</h3>
-              <p className="text-slate-600">
-                Designs profissionais para salões, clínicas, restaurantes e lojas.
-              </p>
-            </div>
-            <div className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition">
-              <div className="text-4xl mb-4">📱</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Mobile First</h3>
-              <p className="text-slate-600">
-                Sua página perfeita no celular, onde seus clientes realmente estão.
-              </p>
-            </div>
-            <div className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition">
-              <div className="text-4xl mb-4">📈</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">SEO Otimizado</h3>
-              <p className="text-slate-600">
-                Apareça no Google e seja encontrado pelos seus clientes locais.
-              </p>
-            </div>
-            <div className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition">
-              <div className="text-4xl mb-4">🔗</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Integrações</h3>
-              <p className="text-slate-600">
-                WhatsApp, Google Maps, Instagram, pagamento e mais em poucos cliques.
-              </p>
-            </div>
-            <div className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition">
-              <div className="text-4xl mb-4">🛡️</div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-2">Seguro</h3>
-              <p className="text-slate-600">
-                HTTPS, backups automáticos e proteção de dados inclusos.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Pricing Section */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-slate-900 mb-16">
-            Planos Simples e Diretos
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Free */}
-            <div className="bg-white p-8 rounded-xl border border-gray-200">
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Grátis</h3>
-              <p className="text-slate-600 mb-6">Perfeito para começar</p>
-              <ul className="space-y-3 mb-8 text-slate-700">
-                <li className="flex items-center gap-2">✓ 1 página</li>
-                <li className="flex items-center gap-2">✓ Template básico</li>
-                <li className="flex items-center gap-2">✓ Suporte por email</li>
-              </ul>
-              <button className="w-full px-6 py-2 border border-gray-300 text-slate-700 font-semibold rounded-lg hover:bg-gray-50 transition">
-                Começar Grátis
-              </button>
-            </div>
+              <h1 className="mt-5 text-3xl md:text-5xl font-extrabold tracking-tight text-slate-50">
+                Sua vitrine online, pronta em
+                <span className="text-sky-400"> poucos minutos</span>.
+              </h1>
 
-            {/* Pro */}
-            <div className="bg-white p-8 rounded-xl border-2 border-blue-600 transform scale-105 shadow-lg">
-              <div className="inline-block px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded-full mb-4">
-                Mais Popular
+              <p className="mt-4 text-sm md:text-base text-slate-300 max-w-xl leading-relaxed">
+                Crie uma página profissional para o seu comércio com WhatsApp,
+                localização, horário, serviços e depoimentos. Sem código, sem
+                dor de cabeça — ideal para quem já vende no WhatsApp ou
+                Instagram.
+              </p>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href="/auth/register"
+                  className="inline-flex items-center justify-center rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-sky-400 transition"
+                >
+                  Criar minha página grátis
+                </Link>
+                <a
+                  href="#how-it-works"
+                  className="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-slate-100 hover:bg-slate-900/70 transition"
+                >
+                  Ver como funciona
+                </a>
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Profissional</h3>
-              <p className="text-slate-600 mb-2">
-                <span className="text-4xl font-bold text-slate-900">R$ 29</span>/mês
-              </p>
-              <p className="text-slate-600 mb-6 text-sm">Billed monthly</p>
-              <ul className="space-y-3 mb-8 text-slate-700">
-                <li className="flex items-center gap-2">✓ Até 5 páginas</li>
-                <li className="flex items-center gap-2">✓ Todos os templates</li>
-                <li className="flex items-center gap-2">✓ Domínio próprio</li>
-                <li className="flex items-center gap-2">✓ Suporte prioritário</li>
-                <li className="flex items-center gap-2">✓ Analytics</li>
-              </ul>
-              <button className="w-full px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition">
-                Upgrade Agora
-              </button>
-            </div>
 
-            {/* Business */}
-            <div className="bg-white p-8 rounded-xl border border-gray-200">
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Negócio</h3>
-              <p className="text-slate-600 mb-2">
-                <span className="text-4xl font-bold text-slate-900">R$ 99</span>/mês
-              </p>
-              <p className="text-slate-600 mb-6 text-sm">Billed monthly</p>
-              <ul className="space-y-3 mb-8 text-slate-700">
-                <li className="flex items-center gap-2">✓ Páginas ilimitadas</li>
-                <li className="flex items-center gap-2">✓ Customização completa</li>
-                <li className="flex items-center gap-2">✓ API de acesso</li>
-                <li className="flex items-center gap-2">✓ Suporte 24/7</li>
-                <li className="flex items-center gap-2">✓ Integrações avançadas</li>
-              </ul>
-              <button className="w-full px-6 py-2 border border-gray-300 text-slate-700 font-semibold rounded-lg hover:bg-gray-50 transition">
-                Falar com Vendedor
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-blue-600 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Pronto para começar?
-          </h2>
-          <p className="text-xl mb-8 text-blue-100">
-            Crie sua primeira página agora e atraia mais clientes.
-          </p>
-          <Link href="/auth/register">
-            <button className="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition">
-              Criar Página Agora
-            </button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-slate-900 text-white py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="w-32 mb-4">
-                <LogoSmall className="h-10 w-auto" />
+              <div className="mt-8 grid grid-cols-3 gap-4 max-w-md text-xs md:text-sm text-slate-300">
+                <div>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">10k+</p>
+                  <p>Páginas criadas</p>
+                </div>
+                <div>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">50+</p>
+                  <p>Templates modernos</p>
+                </div>
+                <div>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">99%</p>
+                  <p>Uptime e estabilidade</p>
+                </div>
               </div>
-              <p className="text-slate-400">
-                Transformando negócios locais em vitrines profissionais.
-              </p>
             </div>
-            <div>
-              <h4 className="font-semibold mb-4">Produto</h4>
-              <ul className="space-y-2 text-slate-400 text-sm">
-                <li><a href="#" className="hover:text-white transition">Features</a></li>
-                <li><a href="#" className="hover:text-white transition">Pricing</a></li>
-                <li><a href="#" className="hover:text-white transition">Templates</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Empresa</h4>
-              <ul className="space-y-2 text-slate-400 text-sm">
-                <li><a href="#" className="hover:text-white transition">Sobre</a></li>
-                <li><a href="#" className="hover:text-white transition">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition">Contato</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Legal</h4>
-              <ul className="space-y-2 text-slate-400 text-sm">
-                <li><a href="#" className="hover:text-white transition">Privacidade</a></li>
-                <li><a href="#" className="hover:text-white transition">Termos</a></li>
-                <li><a href="#" className="hover:text-white transition">Segurança</a></li>
-              </ul>
+
+            {/* Card visual */}
+            <div className="relative">
+              <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-sky-500/20 via-slate-900 to-orange-500/10 blur-xl"></div>
+
+              <div className="relative bg-slate-900/90 border border-slate-700/70 rounded-3xl shadow-2xl p-4 md:p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-xl bg-sky-500 flex items-center justify-center text-xs font-bold">
+                      VF
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold text-slate-50">
+                        Loja da Ana
+                      </span>
+                      <span className="text-[11px] text-slate-400">
+                        Salão &amp; Estética
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-[11px] px-2 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/40 font-medium">
+                    Online
+                  </span>
+                </div>
+
+                <div className="h-32 md:h-40 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-[11px] text-slate-400">
+                  Prévia da página do seu comércio
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs md:text-sm text-slate-300">
+                    Mostre seus serviços, horário, endereço e contato em uma
+                    página elegante, fácil de compartilhar no WhatsApp e nas
+                    redes sociais.
+                  </p>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 text-[11px] text-sky-300 px-2 py-1 border border-sky-500/40">
+                      💬 WhatsApp em 1 clique
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 text-[11px] text-slate-200 px-2 py-1 border border-slate-600">
+                      📍 Mapa e endereço
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 text-[11px] text-slate-200 px-2 py-1 border border-slate-600">
+                      ⭐ Depoimentos
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Tags flutuantes decorativas */}
+              <div className="absolute -left-4 top-6 md:-left-8 md:top-4 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-2xl text-[11px] shadow-lg">
+                💼 Cartão digital
+              </div>
+              <div className="absolute -right-4 top-14 md:-right-8 md:top-10 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-2xl text-[11px] shadow-lg">
+                🔗 Link único
+              </div>
+              <div className="absolute left-10 -bottom-4 md:left-16 md:-bottom-5 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-2xl text-[11px] shadow-lg">
+                📈 SEO pronto
+              </div>
             </div>
           </div>
-          <div className="border-t border-slate-800 pt-8 text-center text-slate-400 text-sm">
-            <p>© 2025 VitrineFast. Todos os direitos reservados.</p>
+
+          {/* faixa "feito para" */}
+          <div className="border-t border-slate-800/80 bg-slate-950/95">
+            <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] md:text-xs text-slate-400">
+              <p className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                Feito para salões, clínicas, restaurantes, lojas, autônomos e muito mais.
+              </p>
+              <p className="flex flex-wrap gap-3">
+                <span>💈 Salões &amp; Estética</span>
+                <span>🍽 Restaurantes</span>
+                <span>🏥 Clínicas &amp; Consultórios</span>
+                <span>🛍 Lojas &amp; Boutiques</span>
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* FEATURES */}
+        <section id="features" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
+                Recursos
+              </p>
+              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
+                Tudo o que sua página precisa para parecer profissional
+              </h2>
+              <p className="mt-3 text-sm md:text-base text-slate-300">
+                Modelos prontos, otimização para Google, integração com WhatsApp
+                e um visual pensado para comércios locais.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                  ⚡
+                </div>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Sem código
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Monte sua página escolhendo blocos prontos: capa, serviços,
+                  depoimentos, mapa, contato e muito mais.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                  🎨
+                </div>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Templates modernos
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Layouts pensados para salões, clínicas, restaurantes, lojas e
+                  profissionais liberais.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                  📱
+                </div>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  100% mobile
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Sua página fica linda e rápida no celular, onde seus clientes
+                  realmente estão.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                  📈
+                </div>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  SEO otimizado
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Engine de SEO integrada para ajudar seu comércio a ser
+                  encontrado no Google.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                  🔗
+                </div>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Integrações fáceis
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Conecte WhatsApp, Google Maps, Instagram, links de pagamento e
+                  outros canais.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <div className="h-9 w-9 rounded-xl bg-sky-500/10 text-sky-300 flex items-center justify-center text-lg">
+                  🛡️
+                </div>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Segurança por padrão
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  HTTPS, backups, multi-tenant seguro e monitoramento para
+                  proteger seus dados.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* COMO FUNCIONA */}
+        <section id="how-it-works" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-8">
+              <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
+                Como funciona
+              </p>
+              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
+                Publique sua página em 3 passos simples
+              </h2>
+              <p className="mt-3 text-sm md:text-base text-slate-300">
+                Pensado para quem não quer perder tempo com ferramentas
+                complicadas.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <p className="text-xs font-semibold text-sky-300 mb-1">Passo 1</p>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Crie sua conta
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Informe seu nome, email e o nome do seu comércio. Leva menos de
+                  um minuto.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <p className="text-xs font-semibold text-sky-300 mb-1">Passo 2</p>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Escolha um modelo
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Selecione um template pronto para o seu tipo de negócio e
+                  personalize textos e imagens.
+                </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
+                <p className="text-xs font-semibold text-sky-300 mb-1">Passo 3</p>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Publique e compartilhe
+                </h3>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Gere o link da sua página e envie para seus clientes no
+                  WhatsApp, Instagram e cartão de visita.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* PRICING */}
+        <section id="pricing" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+          <div className="max-w-6xl mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-10">
+              <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
+                Planos
+              </p>
+              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
+                Comece grátis e evolua conforme seu negócio cresce
+              </h2>
+              <p className="mt-3 text-sm md:text-base text-slate-300">
+                Teste sem compromisso. Publique sua página, veja o resultado e
+                só então decida se quer recursos avançados.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-5">
+              {/* Iniciante */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Iniciante
+                </h3>
+                <p className="text-lg md:text-xl font-bold text-slate-50">Grátis</p>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Perfeito para dar os primeiros passos online.
+                </p>
+                <ul className="mt-2 space-y-1 text-xs md:text-sm text-slate-300">
+                  <li>✓ 1 página</li>
+                  <li>✓ Template básico</li>
+                  <li>✓ Subdomínio incluso</li>
+                  <li>✓ Suporte por email</li>
+                </ul>
+                <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-700 text-slate-50 hover:bg-slate-900 transition">
+                  Começar grátis
+                </button>
+              </div>
+
+              {/* Profissional */}
+              <div className="relative bg-slate-900 border border-sky-500 rounded-2xl p-5 flex flex-col gap-3 shadow-lg scale-[1.02]">
+                <span className="absolute -top-3 right-4 text-[11px] px-2 py-1 rounded-full bg-orange-400 text-white font-semibold shadow-sm">
+                  Mais popular
+                </span>
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Profissional
+                </h3>
+                <p className="text-lg md:text-xl font-bold text-slate-50">
+                  R$ 29/mês
+                </p>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Para quem quer parecer profissional e crescer online.
+                </p>
+                <ul className="mt-2 space-y-1 text-xs md:text-sm text-slate-300">
+                  <li>✓ Até 5 páginas</li>
+                  <li>✓ Todos os templates</li>
+                  <li>✓ Domínio próprio</li>
+                  <li>✓ Suporte prioritário</li>
+                  <li>✓ Analytics básico</li>
+                </ul>
+                <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl bg-sky-500 text-white hover:bg-sky-400 transition">
+                  Escolher Profissional
+                </button>
+              </div>
+
+              {/* Negócio */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-3">
+                <h3 className="text-sm md:text-base font-semibold text-slate-50">
+                  Negócio
+                </h3>
+                <p className="text-lg md:text-xl font-bold text-slate-50">
+                  R$ 99/mês
+                </p>
+                <p className="text-xs md:text-sm text-slate-300">
+                  Para negócios que dependem da internet todos os dias.
+                </p>
+                <ul className="mt-2 space-y-1 text-xs md:text-sm text-slate-300">
+                  <li>✓ Páginas ilimitadas</li>
+                  <li>✓ Customização avançada</li>
+                  <li>✓ API de acesso</li>
+                  <li>✓ Suporte dedicado</li>
+                  <li>✓ Integrações premium</li>
+                </ul>
+                <button className="mt-4 w-full text-sm font-semibold px-4 py-2.5 rounded-xl border border-slate-700 text-slate-50 hover:bg-slate-900 transition">
+                  Falar com vendas
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section id="faq" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+          <div className="max-w-4xl mx-auto px-4">
+            <div className="text-center max-w-2xl mx-auto mb-8">
+              <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
+                Dúvidas
+              </p>
+              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
+                Perguntas frequentes
+              </h2>
+              <p className="mt-3 text-sm md:text-base text-slate-300">
+                Se ainda restar alguma dúvida, você pode falar com a gente a
+                qualquer momento.
+              </p>
+            </div>
+
+            <div className="space-y-4 text-sm text-slate-300">
+              <details className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <summary className="cursor-pointer font-semibold text-slate-50">
+                  Preciso saber programar?
+                </summary>
+                <p className="mt-2 text-sm text-slate-300">
+                  Não. O VitrineFast foi feito para donos de comércio, não para
+                  desenvolvedores. Você só preenche textos, escolhe imagens e
+                  publica.
+                </p>
+              </details>
+
+              <details className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <summary className="cursor-pointer font-semibold text-slate-50">
+                  Tem plano grátis?
+                </summary>
+                <p className="mt-2 text-sm text-slate-300">
+                  Sim. Você pode começar com o plano Iniciante, publicar sua
+                  página e testar sem pagar nada.
+                </p>
+              </details>
+
+              <details className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <summary className="cursor-pointer font-semibold text-slate-50">
+                  Posso usar meu próprio domínio?
+                </summary>
+                <p className="mt-2 text-sm text-slate-300">
+                  Sim. A partir do plano Profissional você pode conectar um
+                  domínio próprio (como suaempresa.com.br).
+                </p>
+              </details>
+
+              <details className="bg-slate-900 border border-slate-800 rounded-xl p-4">
+                <summary className="cursor-pointer font-semibold text-slate-50">
+                  Posso cancelar quando quiser?
+                </summary>
+                <p className="mt-2 text-sm text-slate-300">
+                  Pode. Não há fidelidade. Você controla sua assinatura direto
+                  pelo painel.
+                </p>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        {/* CTA FINAL */}
+        <section id="cta" className="py-12 md:py-16 bg-slate-950 border-t border-slate-800">
+          <div className="max-w-4xl mx-auto px-4 text-center">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-50">
+              Pronto para criar a vitrine do seu comércio?
+            </h2>
+            <p className="mt-3 text-sm md:text-base text-slate-300 max-w-xl mx-auto">
+              Em poucos minutos, você terá uma página profissional pronta para
+              compartilhar com seus clientes no WhatsApp, Instagram e onde mais
+              quiser.
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <Link
+                href="/auth/register"
+                className="bg-sky-500 text-white font-semibold text-sm px-6 py-3 rounded-xl shadow-sm hover:bg-sky-400 transition"
+              >
+                Criar conta grátis agora
+              </Link>
+              <a
+                href="#features"
+                className="border border-slate-700 text-slate-200 text-sm px-6 py-3 rounded-xl hover:bg-slate-900 transition"
+              >
+                Ver recursos primeiro
+              </a>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="border-t border-slate-800 bg-slate-950">
+        <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-100">VitrineFast</span>
+            <span>
+              Transformando comércios locais em vitrines digitais profissionais.
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <a href="#" className="hover:text-slate-100">Sobre</a>
+            <a href="#" className="hover:text-slate-100">Contato</a>
+            <a href="#" className="hover:text-slate-100">Privacidade</a>
+            <a href="#" className="hover:text-slate-100">Termos</a>
           </div>
         </div>
       </footer>
