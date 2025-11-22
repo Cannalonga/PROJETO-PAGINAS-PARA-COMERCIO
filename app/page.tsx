@@ -268,7 +268,6 @@ export default function Home() {
           className="py-12 md:py-16 bg-slate-950 border-t border-slate-800"
         >
           <div className="max-w-5xl mx-auto px-4">
-            {/* Cabeçalho */}
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">
                 Como funciona
@@ -281,13 +280,10 @@ export default function Home() {
               </p>
             </div>
 
-            {/* Linha de progresso + 3 passos */}
             <div className="relative">
-              {/* linha horizontal (desktop) */}
               <div className="hidden md:block absolute top-7 left-10 right-10 h-px bg-slate-700/70" />
 
               <div className="grid md:grid-cols-3 gap-6 md:gap-8">
-                {/* Passo 1 */}
                 <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-sm font-bold">
@@ -301,12 +297,10 @@ export default function Home() {
                     Informe os dados do seu comércio
                   </h3>
                   <p className="text-xs md:text-sm text-slate-300">
-                    Nome da loja, email e alguns dados básicos. Em menos de um minuto
-                    você já tem acesso ao painel.
+                    Nome da loja, email e alguns dados básicos. Em menos de um minuto você já tem acesso ao painel.
                   </p>
                 </div>
 
-                {/* Passo 2 */}
                 <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-sm font-bold">
@@ -320,12 +314,10 @@ export default function Home() {
                     Selecione o template ideal
                   </h3>
                   <p className="text-xs md:text-sm text-slate-300">
-                    Escolha um template pensado para o seu tipo de negócio e ajuste
-                    textos, fotos, cores e links do seu jeito.
+                    Escolha um template pensado para o seu tipo de negócio e ajuste textos, fotos, cores e links do seu jeito.
                   </p>
                 </div>
 
-                {/* Passo 3 */}
                 <div className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col gap-2">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-full bg-sky-500 text-slate-950 flex items-center justify-center text-sm font-bold">
@@ -339,8 +331,7 @@ export default function Home() {
                     Gere o link da sua vitrine
                   </h3>
                   <p className="text-xs md:text-sm text-slate-300">
-                    Com um clique você publica sua página e já pode compartilhar o link
-                    com clientes no WhatsApp, Instagram e cartão de visita.
+                    Com um clique você publica sua página e já pode compartilhar o link com clientes no WhatsApp, Instagram e cartão de visita.
                   </p>
                 </div>
               </div>
