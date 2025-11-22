@@ -61,73 +61,75 @@ export default function Home() {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(148,163,184,0.15),_transparent_60%)]"></div>
           </div>
 
-          <div className="relative max-w-6xl mx-auto px-4 pt-16 pb-16 md:pt-24 md:pb-20 grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
-            {/* Texto */}
+          <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-20 grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-center">
+            {/* Coluna esquerda: texto */}
             <div>
+              {/* Badge */}
               <p className="inline-flex items-center gap-2 text-xs font-medium text-sky-300 bg-sky-950/60 px-3 py-1 rounded-full border border-sky-500/40">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                Para comércios locais que querem vender mais
+                Páginas para comércios locais em minutos
               </p>
 
+              {/* Título principal */}
               <h1 className="mt-5 text-3xl md:text-5xl font-extrabold tracking-tight text-slate-50">
-                Sua vitrine online, pronta em
-                <span className="text-sky-400"> poucos minutos</span>.
+                Sua <span className="text-sky-400">Vitrine Online</span>,
+                <br />
+                Rápida e Profissional
               </h1>
 
+              {/* Subtítulo */}
               <p className="mt-4 text-sm md:text-base text-slate-300 max-w-xl leading-relaxed">
-                Crie uma página profissional para o seu comércio com WhatsApp,
-                localização, horário, serviços e depoimentos. Sem código, sem
-                dor de cabeça — ideal para quem já vende no WhatsApp ou
-                Instagram.
+                Crie páginas modernas para seu comércio em minutos — sem complicação e sem precisar de código.
               </p>
 
+              {/* CTAs */}
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/auth/register"
                   className="inline-flex items-center justify-center rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-sky-400 transition"
                 >
-                  Criar minha página grátis
+                  Criar Minha Página
                 </Link>
                 <a
-                  href="#how-it-works"
+                  href="#features"
                   className="inline-flex items-center justify-center rounded-xl border border-slate-600 px-6 py-3 text-sm font-semibold text-slate-100 hover:bg-slate-900/70 transition"
                 >
-                  Ver como funciona
+                  Ver Exemplos
                 </a>
               </div>
 
+              {/* Números */}
               <div className="mt-8 grid grid-cols-3 gap-4 max-w-md text-xs md:text-sm text-slate-300">
                 <div>
                   <p className="text-lg md:text-2xl font-bold text-slate-50">10k+</p>
-                  <p>Páginas criadas</p>
+                  <p>Negócios criados</p>
                 </div>
                 <div>
                   <p className="text-lg md:text-2xl font-bold text-slate-50">50+</p>
-                  <p>Templates modernos</p>
+                  <p>Templates prontos</p>
                 </div>
                 <div>
                   <p className="text-lg md:text-2xl font-bold text-slate-50">99%</p>
-                  <p>Uptime e estabilidade</p>
+                  <p>Uptime garantido</p>
                 </div>
               </div>
             </div>
 
-            {/* Card visual */}
+            {/* Coluna direita: card de preview */}
             <div className="relative">
               <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-sky-500/20 via-slate-900 to-orange-500/10 blur-xl"></div>
-
               <div className="relative bg-slate-900/90 border border-slate-700/70 rounded-3xl shadow-2xl p-4 md:p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-xl bg-sky-500 flex items-center justify-center text-xs font-bold">
+                    <div className="h-8 w-8 rounded-xl bg-sky-500 flex items-center justify-center text-xs font-bold text-white">
                       VF
                     </div>
                     <div className="flex flex-col">
                       <span className="text-xs font-semibold text-slate-50">
-                        Loja da Ana
+                        Loja Exemplo
                       </span>
                       <span className="text-[11px] text-slate-400">
-                        Salão &amp; Estética
+                        Comércio local
                       </span>
                     </div>
                   </div>
@@ -140,52 +142,11 @@ export default function Home() {
                   Prévia da página do seu comércio
                 </div>
 
-                <div className="mt-4 space-y-2">
-                  <p className="text-xs md:text-sm text-slate-300">
-                    Mostre seus serviços, horário, endereço e contato em uma
-                    página elegante, fácil de compartilhar no WhatsApp e nas
-                    redes sociais.
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-sky-500/10 text-[11px] text-sky-300 px-2 py-1 border border-sky-500/40">
-                      💬 WhatsApp em 1 clique
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 text-[11px] text-slate-200 px-2 py-1 border border-slate-600">
-                      📍 Mapa e endereço
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-800 text-[11px] text-slate-200 px-2 py-1 border border-slate-600">
-                      ⭐ Depoimentos
-                    </span>
-                  </div>
-                </div>
+                <p className="mt-4 text-xs md:text-sm text-slate-300">
+                  Destaque serviços, horário, endereço e WhatsApp em uma única página
+                  feita para o seu comércio local.
+                </p>
               </div>
-
-              {/* Tags flutuantes decorativas */}
-              <div className="absolute -left-4 top-6 md:-left-8 md:top-4 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-2xl text-[11px] shadow-lg">
-                💼 Cartão digital
-              </div>
-              <div className="absolute -right-4 top-14 md:-right-8 md:top-10 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-2xl text-[11px] shadow-lg">
-                🔗 Link único
-              </div>
-              <div className="absolute left-10 -bottom-4 md:left-16 md:-bottom-5 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-2xl text-[11px] shadow-lg">
-                📈 SEO pronto
-              </div>
-            </div>
-          </div>
-
-          {/* faixa "feito para" */}
-          <div className="border-t border-slate-800/80 bg-slate-950/95">
-            <div className="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-3 text-[11px] md:text-xs text-slate-400">
-              <p className="flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                Feito para salões, clínicas, restaurantes, lojas, autônomos e muito mais.
-              </p>
-              <p className="flex flex-wrap gap-3">
-                <span>💈 Salões &amp; Estética</span>
-                <span>🍽 Restaurantes</span>
-                <span>🏥 Clínicas &amp; Consultórios</span>
-                <span>🛍 Lojas &amp; Boutiques</span>
-              </p>
             </div>
           </div>
         </section>
