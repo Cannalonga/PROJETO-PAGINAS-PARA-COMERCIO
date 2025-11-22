@@ -9,117 +9,81 @@ export default function Offline() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-slate-950/80 border-b border-slate-800 backdrop-blur">
-        <div className="container mx-auto px-4 sm:px-6 py-4 flex justify-between items-center">
+      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <Link href="/">
-            <div className="w-32 cursor-pointer hover:opacity-80 transition">
-              <Logo className="h-12 w-auto" />
+            <div className="w-32 cursor-pointer hover:opacity-75 transition">
+              <Logo className="h-10 w-auto" />
             </div>
           </Link>
         </div>
       </nav>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden">
-        {/* Background Effects */}
-        <div className="absolute inset-0 opacity-5">
-          <div 
-            className="w-full h-full"
-            style={{
-              backgroundImage: `
-                linear-gradient(0deg, transparent 24%, rgba(45, 125, 246, 0.05) 25%, rgba(45, 125, 246, 0.05) 26%, transparent 27%, transparent 74%, rgba(45, 125, 246, 0.05) 75%, rgba(45, 125, 246, 0.05) 76%, transparent 77%, transparent),
-                linear-gradient(90deg, transparent 24%, rgba(45, 125, 246, 0.05) 25%, rgba(45, 125, 246, 0.05) 26%, transparent 27%, transparent 74%, rgba(45, 125, 246, 0.05) 75%, rgba(45, 125, 246, 0.05) 76%, transparent 77%, transparent)
-              `,
-              backgroundSize: '50px 50px'
-            }}
-          />
-        </div>
-
-        {/* Gradient Glows */}
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500 rounded-full opacity-10 blur-3xl" />
-        <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-orange-500 rounded-full opacity-10 blur-3xl" />
-
-        {/* Content */}
-        <div className="relative z-10 text-center px-4 max-w-2xl">
-          {/* Error Code */}
-          <div className="mb-8">
-            <span className="inline-block px-6 py-3 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-300 font-semibold">
-              📡 Sem Conexão
-            </span>
+      <div className="flex-1 flex items-center justify-center px-4">
+        <div className="text-center max-w-2xl">
+          {/* Icon */}
+          <div className="mb-8 text-8xl md:text-9xl animate-bounce">
+            📡
           </div>
 
-          {/* Main Message */}
-          <h1 className="text-7xl md:text-8xl font-black mb-6">
-            <span className="inline-block animate-pulse">📡</span>
+          {/* Error Badge */}
+          <div className="mb-6 inline-block px-4 py-2 bg-yellow-50 border border-yellow-200 rounded-full">
+            <span className="text-yellow-700 font-semibold text-sm">Sem Conexão com o Servidor</span>
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">
+            Servidor Offline
           </h1>
 
-          <h2 className="text-5xl md:text-6xl font-black mb-6 bg-gradient-to-r from-yellow-400 via-orange-400 to-orange-500 bg-clip-text text-transparent">
-            Servidor Offline
-          </h2>
-
-          <p className="text-xl md:text-2xl text-slate-300 mb-4">
-            Parece que o servidor está temporariamente indisponível
+          {/* Description */}
+          <p className="text-xl text-slate-600 mb-8">
+            Parece que o servidor está temporariamente indisponível no momento.
           </p>
 
-          <p className="text-base md:text-lg text-slate-400 mb-12 leading-relaxed">
-            Pode ser que o servidor está em manutenção, ou há um problema com sua conexão. 
-            Tente novamente em alguns momentos. Se o problema persistir, entre em contato com o suporte.
-          </p>
-
-          {/* Floating Icons - Disconnected */}
-          <div className="mb-12 flex justify-center gap-6 text-5xl opacity-40">
-            <span>📡</span>
-            <span>❌</span>
-            <span>🔌</span>
-          </div>
-
-          {/* Status Info */}
-          <div className="mb-8 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-            <p className="text-yellow-300 text-sm mb-2">Status do Servidor:</p>
-            <p className="text-slate-300 font-mono text-sm">
-              ⏳ Aguardando conexão...
+          {/* Info Box */}
+          <div className="mb-8 p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-slate-700 text-sm leading-relaxed">
+              Pode ser que o servidor está em manutenção, ou há um problema temporário com a conexão. 
+              Tente recarregar a página em alguns momentos. Se o problema persistir, entre em contato com o suporte.
             </p>
           </div>
 
-          {/* CTA Buttons */}
+          {/* Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={handleRetry}
-              className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105 text-white"
+              className="px-8 py-3 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg transition-colors"
             >
               🔄 Tentar Novamente
             </button>
-            <a
-              href="https://status.vitrine.fast"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 border border-orange-400 text-orange-400 hover:bg-orange-400/10 rounded-lg font-semibold transition-all duration-300"
-            >
-              Ver Status →
-            </a>
+            <Link href="/">
+              <button className="px-8 py-3 border border-gray-300 text-slate-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                ← Voltar ao Início
+              </button>
+            </Link>
           </div>
 
-          {/* Support Info */}
-          <div className="mt-16 pt-12 border-t border-slate-700">
-            <p className="text-slate-400 mb-4">Persistindo o problema?</p>
-            <div className="space-y-2">
-              <p className="text-slate-500 text-sm">
-                ✉️ suporte@vitrine.fast
-              </p>
-              <p className="text-slate-500 text-sm">
-                💬 Chat de suporte indisponível
-              </p>
-            </div>
+          {/* Support */}
+          <div className="mt-12 pt-8 border-t border-gray-200">
+            <p className="text-slate-600 text-sm mb-3">Precisa de ajuda?</p>
+            <a 
+              href="mailto:suporte@vitrine.fast"
+              className="text-blue-600 hover:text-blue-700 font-semibold"
+            >
+              ✉️ Contate o Suporte
+            </a>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-950/50 backdrop-blur py-8">
-        <div className="container mx-auto px-4 text-center text-slate-500 text-sm">
-          <p>© 2025 VitrineFast - Transformando negócios locais em vitrines profissionais</p>
+      <footer className="border-t border-gray-200 bg-white py-8">
+        <div className="max-w-7xl mx-auto px-4 text-center text-slate-600 text-sm">
+          <p>© 2025 VitrineFast. Todos os direitos reservados.</p>
         </div>
       </footer>
     </div>
