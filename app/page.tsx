@@ -38,11 +38,11 @@ export default function Home() {
               Dúvidas
             </a>
 
-            <Link href="/api/auth/signin" className="text-slate-300 hover:text-slate-50 font-medium">
+            <Link href="#pricing" className="text-slate-300 hover:text-slate-50 font-medium">
               Entrar
             </Link>
             <Link
-              href="/api/auth/signin"
+              href="#pricing"
               className="bg-sky-500 text-white font-semibold text-xs md:text-sm px-4 py-2 rounded-xl shadow-sm hover:bg-sky-400 transition"
             >
               Começar grátis
@@ -78,7 +78,7 @@ export default function Home() {
 
               <div className="flex flex-wrap gap-3 mb-8">
                 <Link
-                  href="/api/auth/signin"
+                  href="#pricing"
                   className="inline-flex items-center justify-center rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-sky-400 transition"
                 >
                   Criar Minha Página
@@ -210,9 +210,9 @@ export default function Home() {
                   <ul className="space-y-1 text-sm text-slate-300">
                     {plan.features.map((f, j) => <li key={j}>✓ {f}</li>)}
                   </ul>
-                  <button className={`mt-4 px-4 py-2.5 rounded-xl font-semibold transition ${plan.highlight ? 'bg-sky-500 text-white hover:bg-sky-400' : 'border border-slate-700 text-slate-50 hover:bg-slate-900'}`}>
+                  <Link href="/create" className={`mt-4 px-4 py-2.5 rounded-xl font-semibold transition inline-block text-center ${plan.highlight ? 'bg-sky-500 text-white hover:bg-sky-400' : 'border border-slate-700 text-slate-50 hover:bg-slate-900'}`}>
                     {plan.highlight ? 'Escolher' : 'Começar'}
-                  </button>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -253,7 +253,7 @@ export default function Home() {
             </p>
             <div className="mt-6 flex justify-center gap-3">
               <Link
-                href="/api/auth/signin"
+                href="#pricing"
                 className="bg-sky-500 text-white font-semibold text-sm px-6 py-3 rounded-xl hover:bg-sky-400 transition"
               >
                 Criar conta grátis agora
