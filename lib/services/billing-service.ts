@@ -16,7 +16,6 @@
 
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { logError } from "@/lib/logger";
 import type Stripe from "stripe";
 import {
   STRIPE_PRICES,
@@ -97,9 +96,9 @@ export class BillingService {
 
       return customer.id;
     } catch (error) {
-      logError(error, { 
-        message: 'Failed to create Stripe customer',
+      console.error('Failed to create Stripe customer', { 
         tenantId,
+        error: error instanceof Error ? error.message : String(error),
       });
       throw new StripeError(
         "Failed to create Stripe customer",

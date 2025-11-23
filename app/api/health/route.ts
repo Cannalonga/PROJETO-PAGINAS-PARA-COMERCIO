@@ -40,7 +40,6 @@
 
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-import { logger } from '@/lib/logger';
 
 type CheckStatus = 'ok' | 'fail';
 
@@ -60,10 +59,9 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
     // Teste simples de conexão com DB
     await prisma.$queryRaw`SELECT 1`;
     checks.db = 'ok';
-    logger.debug('Health check: DB ok');
   } catch (err) {
     checks.db = 'fail';
-    logger.warn('Health check: DB failed', {
+    console.warn('Health check: DB failed', {
       error: err instanceof Error ? err.message : String(err),
     });
   }
@@ -80,11 +78,6 @@ export async function GET(): Promise<NextResponse<HealthResponse>> {
 
   // Retornar 200 se ok, 500 se degraded
   const statusCode = allOk ? 200 : 500;
-
-  logger.info('Health check', {
-    status,
-    statusCode,
-  });
 
   return NextResponse.json(response, { status: statusCode });
 }
