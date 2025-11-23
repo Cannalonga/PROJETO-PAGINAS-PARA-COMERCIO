@@ -1,5 +1,4 @@
 import { createClient, RedisClientType } from 'redis';
-import { logger } from './logger';
 
 let redisClient: RedisClientType | null = null;
 let isConnected = false;
@@ -28,7 +27,7 @@ export async function getRedisClient(): Promise<RedisClientType | null> {
         socket: {
           reconnectStrategy: (retries) => {
             if (retries > 10) {
-              logger.error(
+              console.error(
                 'Redis connection failed after 10 retries',
                 { retries }
               );
@@ -41,29 +40,29 @@ export async function getRedisClient(): Promise<RedisClientType | null> {
       });
 
       redisClient.on('error', (err) => {
-        logger.error('Redis client error', { error: err.message });
+        console.error('Redis client error', { error: err.message });
         isConnected = false;
       });
 
       redisClient.on('connect', () => {
         isConnected = true;
-        logger.info('Redis connected', {});
+        console.info('Redis connected', {});
       });
 
       redisClient.on('disconnect', () => {
         isConnected = false;
-        logger.info('Redis disconnected', {});
+        console.info('Redis disconnected', {});
       });
 
       await redisClient.connect();
       isConnected = true;
 
-      logger.info('Redis initialized', { url });
+      console.info('Redis initialized', { url });
     }
 
     return redisClient;
   } catch (error) {
-    logger.error(
+    console.error(
       'Failed to initialize Redis',
       {
         error: error instanceof Error ? error.message : String(error),
@@ -85,9 +84,9 @@ export async function closeRedis(): Promise<void> {
     try {
       await redisClient.disconnect();
       isConnected = false;
-      logger.info('Redis disconnected', {});
+      console.info('Redis disconnected', {});
     } catch (error) {
-      logger.error(
+      console.error(
         'Error closing Redis',
         {
           error: error instanceof Error ? error.message : String(error),

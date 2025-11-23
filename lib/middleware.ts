@@ -4,7 +4,6 @@ import { authOptions } from '@/lib/auth';
 import { errorResponse } from '@/utils/helpers';
 import { randomUUID } from 'crypto';
 import { runWithRequestContext, setTenantInContext, setUserInContext } from '@/lib/request-context';
-import { logger } from '@/lib/logger';
 
 /**
  * Rate Limiting Store (in-memory)
@@ -32,7 +31,7 @@ export function withRequestContext(request: NextRequest) {
   // Wrap downstream handlers with context
   // This enables logger and context access everywhere
   return runWithRequestContext(ctx, async () => {
-    logger.info('Incoming request', {
+    console.info('Incoming request', {
       path,
       method,
       query: url.search ? Object.fromEntries(url.searchParams) : undefined,
@@ -53,7 +52,7 @@ export async function withAuth(request: NextRequest) {
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
-      logger.warn('Authentication failed', { reason: 'no session' });
+      console.warn('Authentication failed', { reason: 'no session' });
       return NextResponse.json(
         errorResponse('Não autenticado'),
         { status: 401 }
@@ -77,7 +76,7 @@ export async function withAuth(request: NextRequest) {
       setTenantInContext(tenantId);
     }
 
-    logger.info('Authentication succeeded', { 
+    console.info('Authentication succeeded', { 
       userId,
       role: user.role,
     });
@@ -86,7 +85,7 @@ export async function withAuth(request: NextRequest) {
       request: { headers },
     });
   } catch (error) {
-    logger.error('Auth middleware error', { 
+    console.error('Auth middleware error', { 
       error: error instanceof Error ? error.message : String(error)
     });
     return NextResponse.json(
@@ -106,7 +105,7 @@ export function withRole(allowedRoles: string[]) {
       const userRole = request.headers.get('x-user-role');
       
       if (!userRole || !allowedRoles.includes(userRole)) {
-        logger.warn('RBAC denied', { 
+        console.warn('RBAC denied', { 
           requiredRoles: allowedRoles,
           userRole,
         });
@@ -118,7 +117,7 @@ export function withRole(allowedRoles: string[]) {
 
       return NextResponse.next();
     } catch (error) {
-      logger.error('RBAC middleware error', {
+      console.error('RBAC middleware error', {
         error: error instanceof Error ? error.message : String(error)
       });
       return NextResponse.json(
@@ -142,7 +141,7 @@ export function withTenantIsolation(request: NextRequest) {
     
     // Must have tenant context
     if (!userTenantId || userTenantId === 'null' || userTenantId === 'undefined') {
-      logger.warn('Tenant context missing', { userId });
+      console.warn('Tenant context missing', { userId });
       return NextResponse.json(
         errorResponse('Tenant context missing - IDOR violation detected'),
         { status: 403 }
@@ -160,7 +159,7 @@ export function withTenantIsolation(request: NextRequest) {
     
     // CRITICAL: If client explicitly provides different tenantId, REJECT (IDOR)
     if (urlTenantId && urlTenantId !== userTenantId) {
-      logger.warn('IDOR attempt detected', {
+      console.warn('IDOR attempt detected', {
         userId,
         attemptedTenantId: urlTenantId,
         actualTenantId: userTenantId,
@@ -179,7 +178,7 @@ export function withTenantIsolation(request: NextRequest) {
       request: { headers },
     });
   } catch (error) {
-    logger.error('Tenant isolation middleware error', {
+    console.error('Tenant isolation middleware error', {
       error: error instanceof Error ? error.message : String(error)
     });
     return NextResponse.json(
@@ -231,7 +230,7 @@ export function withRateLimit(
       
       // Increment counter
       if (record.count >= maxRequests) {
-        logger.warn('Rate limit exceeded', {
+        console.warn('Rate limit exceeded', {
           identifier,
           limit: maxRequests,
         });
@@ -249,7 +248,7 @@ export function withRateLimit(
       record.count++;
       return NextResponse.next();
     } catch (error) {
-      logger.error('Rate limit middleware error', {
+      console.error('Rate limit middleware error', {
         error: error instanceof Error ? error.message : String(error)
       });
       return NextResponse.next(); // Don't block on errors
@@ -278,7 +277,7 @@ export async function withValidation<T>(
     const parsed = schema.safeParse(data);
     
     if (!parsed.success) {
-      logger.warn('Validation failed', { errors: parsed.error.errors });
+      console.warn('Validation failed', { errors: parsed.error.errors });
       return {
         valid: false,
         response: NextResponse.json(
@@ -293,7 +292,7 @@ export async function withValidation<T>(
       data: parsed.data,
     };
   } catch (error) {
-    logger.error('Validation middleware error', {
+    console.error('Validation middleware error', {
       error: error instanceof Error ? error.message : String(error)
     });
     return {
