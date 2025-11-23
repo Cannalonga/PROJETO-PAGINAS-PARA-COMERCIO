@@ -16,7 +16,10 @@ export default function CreatePage() {
     setLoading(true);
     setTimeout(() => {
       console.log('Store created:', { storeName, email });
-      // Redireciona para página de customização da loja
+      // Salva no localStorage para usar na página de setup
+      localStorage.setItem('storeName', storeName);
+      localStorage.setItem('email', email);
+      // Redireciona para página de setup
       window.location.href = '/setup';
     }, 800);
   };

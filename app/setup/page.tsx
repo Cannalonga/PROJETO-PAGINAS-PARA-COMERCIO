@@ -8,6 +8,7 @@ export default function SetupPage() {
   const [pageTitle, setPageTitle] = useState('');
   const [pageDescription, setPageDescription] = useState('');
   const [businessType, setBusinessType] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -15,8 +16,38 @@ export default function SetupPage() {
     }
   };
 
-  const handleFinish = () => {
-    alert(`✅ Página criada com sucesso!\n\nSua página está disponível em:\nloja.vitrinafast.com.br\n\nAgora você pode:\n✓ Adicionar produtos\n✓ Compartilhar com clientes\n✓ Gerenciar sua loja`);
+  const handleFinish = async () => {
+    try {
+      setLoading(true);
+      
+      const response = await fetch('/api/stores', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          storeName: localStorage.getItem('storeName') || 'Minha Loja',
+          email: localStorage.getItem('email') || '',
+          businessType,
+          pageTitle,
+          pageDescription,
+          photos: [],
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert('❌ Erro ao salvar página: ' + data.error);
+        setLoading(false);
+        return;
+      }
+
+      // Redireciona para preview com o ID da loja
+      window.location.href = `/preview/${data.tenantId}`;
+    } catch (error) {
+      console.error('Erro:', error);
+      alert('❌ Erro ao salvar página. Tente novamente.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -202,9 +233,10 @@ export default function SetupPage() {
                 </button>
                 <button
                   onClick={handleFinish}
-                  className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-lg text-lg"
+                  disabled={loading}
+                  className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 disabled:bg-slate-700 text-white font-bold rounded-lg text-lg disabled:cursor-not-allowed"
                 >
-                  ✅ Publicar Página
+                  {loading ? '⏳ Salvando...' : '✅ Publicar Página'}
                 </button>
               </div>
             </div>
