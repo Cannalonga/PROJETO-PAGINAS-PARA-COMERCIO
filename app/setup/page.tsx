@@ -1,7 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+
+const PHOTO_SLOTS = [
+  { id: 'hero', label: 'Hero (Destaque Principal)', description: 'A primeira imagem que os clientes veem', emoji: '🎯', width: 'md:col-span-2' },
+  { id: 'left-top', label: 'Canto Superior Esquerdo', description: 'Destaque à esquerda', emoji: '↖️', width: 'md:col-span-1' },
+  { id: 'right-top', label: 'Canto Superior Direito', description: 'Destaque à direita', emoji: '↗️', width: 'md:col-span-1' },
+  { id: 'center', label: 'Centro', description: 'Imagem central da página', emoji: '📍', width: 'md:col-span-2' },
+  { id: 'left-bottom', label: 'Canto Inferior Esquerdo', description: 'Rodapé esquerda', emoji: '↙️', width: 'md:col-span-1' },
+  { id: 'right-bottom', label: 'Canto Inferior Direito', description: 'Rodapé direita', emoji: '↘️', width: 'md:col-span-1' },
+];
 
 export default function SetupPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -9,6 +18,9 @@ export default function SetupPage() {
   const [pageDescription, setPageDescription] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [loading, setLoading] = useState(false);
+  const [photos, setPhotos] = useState<Record<string, { url: string; uploading: boolean; error?: string }>>({});
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const currentSlotRef = useRef<string | null>(null);
 
   const handleNext = () => {
     if (currentStep < 4) {
@@ -16,10 +28,66 @@ export default function SetupPage() {
     }
   };
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>, slotId: string) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Atualizar estado para mostrar carregamento
+    setPhotos((prev) => ({
+      ...prev,
+      [slotId]: { url: '', uploading: true },
+    }));
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('slot', slotId);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro no upload');
+      }
+
+      // Atualizar com sucesso
+      setPhotos((prev) => ({
+        ...prev,
+        [slotId]: { url: data.url, uploading: false },
+      }));
+    } catch (error) {
+      console.error('Erro:', error);
+      setPhotos((prev) => ({
+        ...prev,
+        [slotId]: { url: '', uploading: false, error: error instanceof Error ? error.message : 'Erro desconhecido' },
+      }));
+    }
+  };
+
+  const handleRemovePhoto = (slotId: string) => {
+    setPhotos((prev) => {
+      const newPhotos = { ...prev };
+      delete newPhotos[slotId];
+      return newPhotos;
+    });
+  };
+
   const handleFinish = async () => {
     try {
       setLoading(true);
       
+      // Converter fotos para array de objetos com slot e URL
+      const photosArray = Object.entries(photos)
+        .filter(([_, photo]) => photo.url && !photo.uploading)
+        .map(([slot, photo]) => ({
+          slot,
+          url: photo.url,
+        }));
+
       const response = await fetch('/api/stores', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,7 +97,7 @@ export default function SetupPage() {
           businessType,
           pageTitle,
           pageDescription,
-          photos: [],
+          photos: photosArray,
         }),
       });
 
@@ -167,20 +235,95 @@ export default function SetupPage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Adicione Fotos</h2>
+              <p className="text-slate-400">Escolha as posições das imagens na sua página. Clique para adicionar fotos.</p>
+              
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  if (currentSlotRef.current) {
+                    handleFileSelect(e, currentSlotRef.current);
+                  }
+                }}
+              />
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="aspect-square bg-slate-800 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-center hover:border-sky-500 cursor-pointer transition"
-                  >
-                    <div className="text-center">
-                      <div className="text-4xl mb-2">📷</div>
-                      <p className="text-xs text-slate-400">Clique para adicionar</p>
+                {PHOTO_SLOTS.map((slot) => (
+                  <div key={slot.id} className={`${slot.width}`}>
+                    <div className="space-y-2 mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl">{slot.emoji}</span>
+                        <div>
+                          <p className="font-semibold text-sm">{slot.label}</p>
+                          <p className="text-xs text-slate-500">{slot.description}</p>
+                        </div>
+                      </div>
                     </div>
+
+                    {photos[slot.id]?.url ? (
+                      <div className="relative aspect-video bg-slate-800 rounded-lg overflow-hidden border border-sky-500">
+                        <img
+                          src={photos[slot.id].url}
+                          alt={slot.label}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition flex items-center justify-center">
+                          <div className="space-x-2 opacity-0 hover:opacity-100 transition">
+                            <button
+                              onClick={() => {
+                                currentSlotRef.current = slot.id;
+                                fileInputRef.current?.click();
+                              }}
+                              className="px-3 py-1 bg-sky-500 text-white text-xs rounded hover:bg-sky-400"
+                            >
+                              ✏️ Trocar
+                            </button>
+                            <button
+                              onClick={() => handleRemovePhoto(slot.id)}
+                              className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-400"
+                            >
+                              🗑️ Remover
+                            </button>
+                          </div>
+                        </div>
+                        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                          ✓ Pronto
+                        </div>
+                      </div>
+                    ) : photos[slot.id]?.uploading ? (
+                      <div className="aspect-video bg-slate-800 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-2xl animate-spin mb-2">⏳</div>
+                          <p className="text-xs text-slate-400">Carregando...</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div
+                        onClick={() => {
+                          currentSlotRef.current = slot.id;
+                          fileInputRef.current?.click();
+                        }}
+                        className="aspect-video bg-slate-800 border-2 border-dashed border-slate-700 rounded-lg flex items-center justify-center hover:border-sky-500 cursor-pointer transition"
+                      >
+                        <div className="text-center">
+                          <div className="text-3xl mb-2">📷</div>
+                          <p className="text-xs text-slate-400">Clique para adicionar</p>
+                          {photos[slot.id]?.error && (
+                            <p className="text-xs text-red-400 mt-2">{photos[slot.id].error}</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-              <p className="text-sm text-slate-400">Adicione fotos para destacar seu negócio</p>
+
+              <p className="text-xs text-slate-500">
+                💡 Dica: Imagens de alta qualidade (máximo 5MB cada) funcionam melhor. Formatos suportados: JPG, PNG, WebP
+              </p>
+
               <div className="flex gap-3">
                 <button
                   onClick={() => setCurrentStep(2)}

@@ -1,0 +1,3 @@
+@echo off
+cd /d "c:\Users\rafae\Desktop\PROJETOS DE ESTUDOS\PROJETO PÁGINAS DO COMERCIO LOCAL\PAGINAS PARA O COMERCIO APP"
+npm run dev
