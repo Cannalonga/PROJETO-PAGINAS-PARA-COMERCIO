@@ -25,13 +25,21 @@ export default function CreatePage() {
   if (showSuccess) {
     return (
       <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex items-center justify-center p-4">
-        <div className="text-center space-y-4 max-w-xl">
-          <div className="text-7xl">✅</div>
-          <h1 className="text-4xl font-bold text-sky-400">Sucesso!</h1>
-          <p className="text-lg text-slate-300">Sua loja foi criada</p>
-          <p className="text-slate-400">Confira seu email para detalhes de acesso</p>
+        <div className="text-center space-y-4 max-w-2xl">
+          <div className="text-7xl">🎉</div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-sky-400 to-blue-500 bg-clip-text text-transparent">
+            Loja Criada!
+          </h1>
+          <p className="text-xl text-slate-300 mt-4">
+            Sua vitrine está pronta para usar
+          </p>
+          <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-6 my-6 text-left">
+            <p className="text-slate-300 mb-2"><strong>Email registrado:</strong> {email}</p>
+            <p className="text-slate-300 mb-4"><strong>Nome da loja:</strong> {storeName}</p>
+            <p className="text-sm text-slate-400">Próximos passos: customize suas informações, adicione fotos e publique sua página!</p>
+          </div>
           <Link href="/" className="inline-block mt-8 px-8 py-3 bg-sky-500 text-white font-bold rounded-lg hover:bg-sky-400">
-            Voltar
+            Voltar para Home
           </Link>
         </div>
       </main>
