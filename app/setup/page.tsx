@@ -399,43 +399,102 @@ export default function SetupPage() {
 
           {currentStep === 4 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Revisar e Publicar</h2>
-              <div className="bg-slate-800/50 p-6 rounded-lg space-y-4">
-                <div>
-                  <p className="text-xs text-slate-400 uppercase font-semibold">Tipo de Negócio</p>
-                  <p className="text-lg font-semibold mt-1">
-                    {businessType === 'loja' && '🏪 Loja Física'}
-                    {businessType === 'food' && '🍔 Restaurante/Bar'}
-                    {businessType === 'beauty' && '💇 Salão de Beleza'}
-                    {businessType === 'services' && '🔧 Serviços'}
-                  </p>
-                </div>
-                <div className="border-t border-slate-700 pt-4">
-                  <p className="text-xs text-slate-400 uppercase font-semibold">Título</p>
-                  <p className="text-lg font-semibold mt-1">{pageTitle}</p>
-                </div>
-                <div className="border-t border-slate-700 pt-4">
-                  <p className="text-xs text-slate-400 uppercase font-semibold">Descrição</p>
-                  <p className="text-slate-300 mt-1">{pageDescription}</p>
-                </div>
-                <div className="border-t border-slate-700 pt-4 bg-sky-500/10 p-4 rounded">
-                  <p className="text-xs text-slate-400 uppercase font-semibold">Sua página estará em</p>
-                  <p className="text-xl font-bold text-sky-400 mt-1">vitrinafast.com.br/loja</p>
+              <div className="bg-sky-500/10 border border-sky-500/30 p-4 rounded-lg">
+                <h2 className="text-2xl font-bold text-sky-400">✨ Veja como ficará sua página</h2>
+                <p className="text-slate-300 mt-2">Esta é uma prévia. Se quiser trocar algo, clique em "Voltar"</p>
+              </div>
+
+              {/* PREVIEW DA PÁGINA */}
+              <div className="border-2 border-slate-700 rounded-xl overflow-hidden bg-white">
+                <div className="bg-slate-950 text-slate-50 min-h-96">
+                  {/* Header da página */}
+                  <div className="bg-gradient-to-r from-sky-600 to-sky-500 px-6 py-8">
+                    <h1 className="text-4xl font-bold">{pageTitle || 'Sua Loja'}</h1>
+                    <p className="text-sky-100 mt-2">{pageDescription || 'Descrição do seu negócio'}</p>
+                  </div>
+
+                  {/* Grid de fotos */}
+                  <div className="p-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {PHOTO_SLOTS.map((slot) => (
+                        <div
+                          key={slot.id}
+                          className={`${
+                            slot.id === 'hero' ? 'md:col-span-2' : ''
+                          } bg-slate-800 rounded-lg overflow-hidden border border-slate-700`}
+                        >
+                          {photos[slot.id]?.url ? (
+                            <div className="space-y-0">
+                              {/* Cabeçalho (header) da foto */}
+                              {photos[slot.id]?.header && (
+                                <div className="bg-orange-500 px-4 py-2 text-white font-bold text-center">
+                                  {photos[slot.id].header}
+                                </div>
+                              )}
+
+                              {/* Imagem */}
+                              <div className="aspect-video relative overflow-hidden">
+                                <img
+                                  src={photos[slot.id].url}
+                                  alt={slot.label}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+
+                              {/* Descrição da foto */}
+                              {photos[slot.id]?.description && (
+                                <div className="px-4 py-3 bg-slate-700/50 border-t border-slate-600">
+                                  <p className="text-slate-300 text-sm">{photos[slot.id].description}</p>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="aspect-video flex items-center justify-center text-slate-600">
+                              <div className="text-center">
+                                <p className="text-4xl mb-2">{slot.emoji}</p>
+                                <p className="text-sm">{slot.label}</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Footer da página */}
+                  <div className="border-t border-slate-700 px-8 py-6 bg-slate-900/50 text-center">
+                    <p className="text-slate-400 text-sm">
+                      Desenvolvido com ❤️ por <span className="font-bold text-sky-400">VitrineFast</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-              <div className="flex gap-3">
+
+              {/* Info sobre plano grátis */}
+              <div className="bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-lg">
+                <h3 className="font-bold text-yellow-400 mb-3">🎁 Plano Grátis (Iniciante)</h3>
+                <ul className="text-slate-300 space-y-2 text-sm">
+                  <li>✅ 1 página com 6 slots de fotos</li>
+                  <li>✅ Subdomínio: seu-nome.vitrinafast.com.br</li>
+                  <li>✅ Visualização sem limite</li>
+                  <li className="text-yellow-400 font-semibold">💰 Para publicar: será cobrado R$ 29/mês (Plano Profissional)</li>
+                </ul>
+              </div>
+
+              {/* Botões de ação */}
+              <div className="flex gap-3 sticky bottom-4">
                 <button
                   onClick={() => setCurrentStep(3)}
-                  className="flex-1 py-3 border border-slate-700 text-white font-bold rounded-lg hover:bg-slate-800"
+                  className="flex-1 py-4 border-2 border-slate-600 text-white font-bold rounded-lg hover:bg-slate-800 transition text-lg"
                 >
-                  ← Voltar
+                  ← Voltar e Editar
                 </button>
                 <button
                   onClick={handleFinish}
                   disabled={loading}
-                  className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 disabled:bg-slate-700 text-white font-bold rounded-lg text-lg disabled:cursor-not-allowed"
+                  className="flex-1 py-4 bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-400 hover:to-sky-500 disabled:opacity-50 text-white font-bold rounded-lg transition text-lg disabled:cursor-not-allowed"
                 >
-                  {loading ? '⏳ Salvando...' : '✅ Publicar Página'}
+                  {loading ? '⏳ Processando...' : '🚀 Publicar (Assinar R$ 29/mês)'}
                 </button>
               </div>
             </div>
