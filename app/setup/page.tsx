@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useRef } from 'react';
+import PublicPageRenderer from '@/components/PublicPageRenderer';
 
 const PHOTO_SLOTS = [
   { id: 'hero', label: 'Hero (Destaque Principal)', description: 'A primeira imagem que os clientes veem', emoji: '🎯', width: 'md:col-span-2' },
@@ -401,83 +402,34 @@ export default function SetupPage() {
             <div className="space-y-6">
               <div className="bg-sky-500/10 border border-sky-500/30 p-4 rounded-lg">
                 <h2 className="text-2xl font-bold text-sky-400">✨ Veja como ficará sua página</h2>
-                <p className="text-slate-300 mt-2">Esta é uma prévia. Se quiser trocar algo, clique em "Voltar"</p>
+                <p className="text-slate-300 mt-2">Esta é uma prévia exatamente como os clientes verão. Se quiser trocar algo, clique em "Voltar"</p>
               </div>
 
-              {/* PREVIEW DA PÁGINA */}
-              <div className="border-2 border-slate-700 rounded-xl overflow-hidden bg-white">
-                <div className="bg-slate-950 text-slate-50 min-h-96">
-                  {/* Header da página */}
-                  <div className="bg-gradient-to-r from-sky-600 to-sky-500 px-6 py-8">
-                    <h1 className="text-4xl font-bold">{pageTitle || 'Sua Loja'}</h1>
-                    <p className="text-sky-100 mt-2">{pageDescription || 'Descrição do seu negócio'}</p>
-                  </div>
-
-                  {/* Grid de fotos */}
-                  <div className="p-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {PHOTO_SLOTS.map((slot) => (
-                        <div
-                          key={slot.id}
-                          className={`${
-                            slot.id === 'hero' ? 'md:col-span-2' : ''
-                          } bg-slate-800 rounded-lg overflow-hidden border border-slate-700`}
-                        >
-                          {photos[slot.id]?.url ? (
-                            <div className="space-y-0">
-                              {/* Cabeçalho (header) da foto */}
-                              {photos[slot.id]?.header && (
-                                <div className="bg-orange-500 px-4 py-2 text-white font-bold text-center">
-                                  {photos[slot.id].header}
-                                </div>
-                              )}
-
-                              {/* Imagem */}
-                              <div className="aspect-video relative overflow-hidden">
-                                <img
-                                  src={photos[slot.id].url}
-                                  alt={slot.label}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-
-                              {/* Descrição da foto */}
-                              {photos[slot.id]?.description && (
-                                <div className="px-4 py-3 bg-slate-700/50 border-t border-slate-600">
-                                  <p className="text-slate-300 text-sm">{photos[slot.id].description}</p>
-                                </div>
-                              )}
-                            </div>
-                          ) : (
-                            <div className="aspect-video flex items-center justify-center text-slate-600">
-                              <div className="text-center">
-                                <p className="text-4xl mb-2">{slot.emoji}</p>
-                                <p className="text-sm">{slot.label}</p>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Footer da página */}
-                  <div className="border-t border-slate-700 px-8 py-6 bg-slate-900/50 text-center">
-                    <p className="text-slate-400 text-sm">
-                      Desenvolvido com ❤️ por <span className="font-bold text-sky-400">VitrineFast</span>
-                    </p>
-                  </div>
-                </div>
+              {/* PREVIEW DA PÁGINA - Usando template profissional */}
+              <div className="border-2 border-slate-300 rounded-xl overflow-hidden shadow-lg">
+                <PublicPageRenderer
+                  data={{
+                    title: pageTitle || 'Seu Negócio',
+                    pageDescription: pageDescription || 'Descrição do seu negócio',
+                    photos: Object.entries(photos)
+                      .filter(([_, photo]) => photo.url && !photo.uploading)
+                      .map(([slot, photo]) => ({
+                        slot,
+                        url: photo.url,
+                        header: photo.header,
+                        description: photo.description,
+                      })),
+                  }}
+                />
               </div>
 
-              {/* Info sobre plano grátis */}
+              {/* Info sobre próximos passos */}
               <div className="bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-lg">
-                <h3 className="font-bold text-yellow-400 mb-3">🎁 Plano Grátis (Iniciante)</h3>
+                <h3 className="font-bold text-yellow-400 mb-3">🎁 Próximo Passo</h3>
                 <ul className="text-slate-300 space-y-2 text-sm">
-                  <li>✅ 1 página com 6 slots de fotos</li>
-                  <li>✅ Subdomínio: seu-nome.vitrinafast.com.br</li>
-                  <li>✅ Visualização sem limite</li>
-                  <li className="text-yellow-400 font-semibold">💰 Para publicar: será cobrado R$ 29/mês (Plano Profissional)</li>
+                  <li>✅ Sua página está pronta!</li>
+                  <li>✅ Você pode editar a qualquer momento</li>
+                  <li className="text-yellow-400 font-semibold">💰 Para publicar: R$ 29/mês (renovação automática)</li>
                 </ul>
               </div>
 
