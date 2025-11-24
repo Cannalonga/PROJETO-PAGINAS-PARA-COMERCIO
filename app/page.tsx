@@ -93,16 +93,16 @@ export default function Home() {
 
               <div className="grid grid-cols-3 gap-4 max-w-md text-xs md:text-sm text-slate-300">
                 <div>
-                  <p className="text-lg md:text-2xl font-bold text-slate-50">⚡</p>
-                  <p>Sem código</p>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">10k+</p>
+                  <p>Negócios criados</p>
                 </div>
                 <div>
-                  <p className="text-lg md:text-2xl font-bold text-slate-50">📱</p>
-                  <p>100% Mobile</p>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">50+</p>
+                  <p>Templates prontos</p>
                 </div>
                 <div>
-                  <p className="text-lg md:text-2xl font-bold text-slate-50">🔒</p>
-                  <p>Seguro & Rápido</p>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">99%</p>
+                  <p>Uptime garantido</p>
                 </div>
               </div>
             </div>
