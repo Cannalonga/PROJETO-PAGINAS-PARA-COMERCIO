@@ -12,13 +12,21 @@ const PHOTO_SLOTS = [
   { id: 'right-bottom', label: 'Canto Inferior Direito', description: 'Rodapé direita', emoji: '↘️', width: 'md:col-span-1' },
 ];
 
+interface PhotoData {
+  url: string;
+  uploading: boolean;
+  error?: string;
+  header?: string;
+  description?: string;
+}
+
 export default function SetupPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [pageTitle, setPageTitle] = useState('');
   const [pageDescription, setPageDescription] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [loading, setLoading] = useState(false);
-  const [photos, setPhotos] = useState<Record<string, { url: string; uploading: boolean; error?: string }>>({});
+  const [photos, setPhotos] = useState<Record<string, PhotoData>>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentSlotRef = useRef<string | null>(null);
 
@@ -57,7 +65,7 @@ export default function SetupPage() {
       // Atualizar com sucesso
       setPhotos((prev) => ({
         ...prev,
-        [slotId]: { url: data.url, uploading: false },
+        [slotId]: { url: data.url, uploading: false, header: '', description: '' },
       }));
     } catch (error) {
       console.error('Erro:', error);
@@ -76,16 +84,32 @@ export default function SetupPage() {
     });
   };
 
+  const handleHeaderChange = (slotId: string, header: string) => {
+    setPhotos((prev) => ({
+      ...prev,
+      [slotId]: { ...prev[slotId], header },
+    }));
+  };
+
+  const handleDescriptionChange = (slotId: string, description: string) => {
+    setPhotos((prev) => ({
+      ...prev,
+      [slotId]: { ...prev[slotId], description },
+    }));
+  };
+
   const handleFinish = async () => {
     try {
       setLoading(true);
       
-      // Converter fotos para array de objetos com slot e URL
+      // Converter fotos para array de objetos com slot, URL, header e description
       const photosArray = Object.entries(photos)
         .filter(([_, photo]) => photo.url && !photo.uploading)
         .map(([slot, photo]) => ({
           slot,
           url: photo.url,
+          header: photo.header || '',
+          description: photo.description || '',
         }));
 
       const response = await fetch('/api/stores', {
@@ -263,33 +287,65 @@ export default function SetupPage() {
                     </div>
 
                     {photos[slot.id]?.url ? (
-                      <div className="relative aspect-video bg-slate-800 rounded-lg overflow-hidden border border-sky-500">
-                        <img
-                          src={photos[slot.id].url}
-                          alt={slot.label}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition flex items-center justify-center">
-                          <div className="space-x-2 opacity-0 hover:opacity-100 transition">
-                            <button
-                              onClick={() => {
-                                currentSlotRef.current = slot.id;
-                                fileInputRef.current?.click();
-                              }}
-                              className="px-3 py-1 bg-sky-500 text-white text-xs rounded hover:bg-sky-400"
-                            >
-                              ✏️ Trocar
-                            </button>
-                            <button
-                              onClick={() => handleRemovePhoto(slot.id)}
-                              className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-400"
-                            >
-                              🗑️ Remover
-                            </button>
+                      <div className="relative space-y-3">
+                        <div className="relative aspect-video bg-slate-800 rounded-lg overflow-hidden border-2 border-sky-500">
+                          <img
+                            src={photos[slot.id].url}
+                            alt={slot.label}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/0 hover:bg-black/30 transition flex items-center justify-center">
+                            <div className="space-x-2 opacity-0 hover:opacity-100 transition">
+                              <button
+                                onClick={() => {
+                                  currentSlotRef.current = slot.id;
+                                  fileInputRef.current?.click();
+                                }}
+                                className="px-3 py-1 bg-sky-500 text-white text-xs rounded hover:bg-sky-400"
+                              >
+                                ✏️ Trocar
+                              </button>
+                              <button
+                                onClick={() => handleRemovePhoto(slot.id)}
+                                className="px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-400"
+                              >
+                                🗑️ Remover
+                              </button>
+                            </div>
+                          </div>
+                          <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                            ✓ Pronto
                           </div>
                         </div>
-                        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                          ✓ Pronto
+
+                        {/* Header Field (ABOVE IMAGE) */}
+                        <div>
+                          <label className="block text-xs font-medium text-slate-300 mb-1">
+                            📋 Cabeçalho (ex: PROMOÇÃO, NOVIDADE)
+                          </label>
+                          <input
+                            type="text"
+                            value={photos[slot.id].header || ''}
+                            onChange={(e) => handleHeaderChange(slot.id, e.target.value)}
+                            placeholder="Ex: PROMOÇÃO, NOVO, DESTAQUE"
+                            maxLength={50}
+                            className="w-full px-2 py-2 bg-slate-800 border border-slate-700 rounded text-xs text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                          />
+                        </div>
+
+                        {/* Description Field (BELOW IMAGE) */}
+                        <div>
+                          <label className="block text-xs font-medium text-slate-300 mb-1">
+                            📝 Descrição (opcional - aparecerá se preenchido)
+                          </label>
+                          <textarea
+                            value={photos[slot.id].description || ''}
+                            onChange={(e) => handleDescriptionChange(slot.id, e.target.value)}
+                            placeholder="Descreva o que aparece na imagem..."
+                            rows={2}
+                            maxLength={200}
+                            className="w-full px-2 py-2 bg-slate-800 border border-slate-700 rounded text-xs text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                          />
                         </div>
                       </div>
                     ) : photos[slot.id]?.uploading ? (
