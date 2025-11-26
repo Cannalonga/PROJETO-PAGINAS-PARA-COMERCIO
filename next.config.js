@@ -2,6 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  
+  // ✅ FIX: Estabilidade no Windows - desabilitar polling problemático
+  webpack: (config, { dev, isServer }) => {
+    if (dev && !isServer) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: ['**/node_modules/**', '**/.git/**'],
+      };
+    }
+    return config;
+  },
+  
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
@@ -103,4 +116,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
