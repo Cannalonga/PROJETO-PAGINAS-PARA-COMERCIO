@@ -31,6 +31,18 @@ export default function SetupPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const currentSlotRef = useRef<string | null>(null);
 
+  // Campos de contato
+  const [phone, setPhone] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [city, setCity] = useState('');
+  const [state, setState] = useState('');
+  const [zipCode, setZipCode] = useState('');
+  const [instagram, setInstagram] = useState('');
+  const [facebook, setFacebook] = useState('');
+  const [businessHours, setBusinessHours] = useState('');
+
   const handleNext = () => {
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
@@ -122,6 +134,16 @@ export default function SetupPage() {
           businessType,
           pageTitle,
           pageDescription,
+          phone,
+          whatsapp,
+          contactEmail: email, // email do formulário de contato
+          address,
+          city,
+          state,
+          zipCode,
+          instagram,
+          facebook,
+          businessHours,
           photos: photosArray,
         }),
       });
@@ -216,29 +238,199 @@ export default function SetupPage() {
 
           {currentStep === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Informações da Página</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-2">Título da Página</label>
-                  <input
-                    type="text"
-                    value={pageTitle}
-                    onChange={(e) => setPageTitle(e.target.value)}
-                    placeholder="Ex: Loja do João"
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-2">Descrição</label>
-                  <textarea
-                    value={pageDescription}
-                    onChange={(e) => setPageDescription(e.target.value)}
-                    placeholder="Conte um pouco sobre seu negócio..."
-                    rows={4}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
-                  />
+              <h2 className="text-2xl font-bold">Informações do Negócio</h2>
+              <p className="text-slate-400">Preencha os dados que aparecerão na sua vitrine</p>
+              
+              {/* Informações Básicas */}
+              <div className="bg-slate-800/50 p-4 rounded-lg space-y-4">
+                <h3 className="font-semibold text-sky-400 flex items-center gap-2">
+                  <span>📝</span> Informações Básicas
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">Nome do Negócio *</label>
+                    <input
+                      type="text"
+                      value={pageTitle}
+                      onChange={(e) => setPageTitle(e.target.value)}
+                      placeholder="Ex: Loja do João, Padaria Central"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">Descrição *</label>
+                    <textarea
+                      value={pageDescription}
+                      onChange={(e) => setPageDescription(e.target.value)}
+                      placeholder="Conte um pouco sobre seu negócio, produtos e serviços..."
+                      rows={3}
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
                 </div>
               </div>
+
+              {/* Contato */}
+              <div className="bg-slate-800/50 p-4 rounded-lg space-y-4">
+                <h3 className="font-semibold text-green-400 flex items-center gap-2">
+                  <span>📱</span> Contato (WhatsApp/Telefone)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">WhatsApp *</label>
+                    <input
+                      type="tel"
+                      value={whatsapp}
+                      onChange={(e) => setWhatsapp(e.target.value)}
+                      placeholder="(11) 99999-9999"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">Clientes vão te chamar por aqui</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Telefone Fixo (opcional)</label>
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      placeholder="(11) 3333-3333"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">Email (opcional)</label>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="contato@seucomercio.com"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Endereço */}
+              <div className="bg-slate-800/50 p-4 rounded-lg space-y-4">
+                <h3 className="font-semibold text-rose-400 flex items-center gap-2">
+                  <span>📍</span> Endereço (aparece no Google Maps)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium mb-2">Endereço Completo *</label>
+                    <input
+                      type="text"
+                      value={address}
+                      onChange={(e) => setAddress(e.target.value)}
+                      placeholder="Rua das Flores, 123 - Centro"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Cidade *</label>
+                    <input
+                      type="text"
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
+                      placeholder="São Paulo"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Estado *</label>
+                    <select
+                      value={state}
+                      onChange={(e) => setState(e.target.value)}
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 focus:border-sky-500 focus:outline-none"
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="AC">Acre</option>
+                      <option value="AL">Alagoas</option>
+                      <option value="AP">Amapá</option>
+                      <option value="AM">Amazonas</option>
+                      <option value="BA">Bahia</option>
+                      <option value="CE">Ceará</option>
+                      <option value="DF">Distrito Federal</option>
+                      <option value="ES">Espírito Santo</option>
+                      <option value="GO">Goiás</option>
+                      <option value="MA">Maranhão</option>
+                      <option value="MT">Mato Grosso</option>
+                      <option value="MS">Mato Grosso do Sul</option>
+                      <option value="MG">Minas Gerais</option>
+                      <option value="PA">Pará</option>
+                      <option value="PB">Paraíba</option>
+                      <option value="PR">Paraná</option>
+                      <option value="PE">Pernambuco</option>
+                      <option value="PI">Piauí</option>
+                      <option value="RJ">Rio de Janeiro</option>
+                      <option value="RN">Rio Grande do Norte</option>
+                      <option value="RS">Rio Grande do Sul</option>
+                      <option value="RO">Rondônia</option>
+                      <option value="RR">Roraima</option>
+                      <option value="SC">Santa Catarina</option>
+                      <option value="SP">São Paulo</option>
+                      <option value="SE">Sergipe</option>
+                      <option value="TO">Tocantins</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">CEP</label>
+                    <input
+                      type="text"
+                      value={zipCode}
+                      onChange={(e) => setZipCode(e.target.value)}
+                      placeholder="00000-000"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Horário de Funcionamento</label>
+                    <input
+                      type="text"
+                      value={businessHours}
+                      onChange={(e) => setBusinessHours(e.target.value)}
+                      placeholder="Seg-Sex: 9h às 18h"
+                      className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Redes Sociais */}
+              <div className="bg-slate-800/50 p-4 rounded-lg space-y-4">
+                <h3 className="font-semibold text-purple-400 flex items-center gap-2">
+                  <span>🌐</span> Redes Sociais (opcional)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Instagram</label>
+                    <div className="flex">
+                      <span className="px-3 py-3 bg-slate-700 border border-slate-600 border-r-0 rounded-l-lg text-slate-400">@</span>
+                      <input
+                        type="text"
+                        value={instagram}
+                        onChange={(e) => setInstagram(e.target.value)}
+                        placeholder="seucomercio"
+                        className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-r-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Facebook</label>
+                    <div className="flex">
+                      <span className="px-3 py-3 bg-slate-700 border border-slate-600 border-r-0 rounded-l-lg text-slate-400 text-sm">facebook.com/</span>
+                      <input
+                        type="text"
+                        value={facebook}
+                        onChange={(e) => setFacebook(e.target.value)}
+                        placeholder="seucomercio"
+                        className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-r-lg text-slate-50 placeholder-slate-500 focus:border-sky-500 focus:outline-none"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="flex gap-3">
                 <button
                   onClick={() => setCurrentStep(1)}
@@ -248,7 +440,7 @@ export default function SetupPage() {
                 </button>
                 <button
                   onClick={handleNext}
-                  disabled={!pageTitle || !pageDescription}
+                  disabled={!pageTitle || !pageDescription || !whatsapp || !address || !city || !state}
                   className="flex-1 py-3 bg-sky-500 hover:bg-sky-400 disabled:bg-slate-700 text-white font-bold rounded-lg"
                 >
                   Próximo →
@@ -411,6 +603,16 @@ export default function SetupPage() {
                   data={{
                     title: pageTitle || 'Seu Negócio',
                     pageDescription: pageDescription || 'Descrição do seu negócio',
+                    phone: phone || undefined,
+                    whatsapp: whatsapp || undefined,
+                    email: email || undefined,
+                    address: address || undefined,
+                    city: city || undefined,
+                    state: state || undefined,
+                    zipCode: zipCode || undefined,
+                    instagram: instagram || undefined,
+                    facebook: facebook || undefined,
+                    businessHours: businessHours || undefined,
                     photos: Object.entries(photos)
                       .filter(([_, photo]) => photo.url && !photo.uploading)
                       .map(([slot, photo]) => ({

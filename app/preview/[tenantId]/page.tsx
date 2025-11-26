@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import PublicPageRenderer from '@/components/PublicPageRenderer';
 
 interface Store {
   id: string;
@@ -66,6 +67,9 @@ export default function PreviewPage() {
     );
   }
 
+  // Extrair dados de contato do content da página
+  const content = page?.content || {};
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50">
       {/* Topbar com status */}
@@ -81,67 +85,28 @@ export default function PreviewPage() {
         </div>
       </div>
 
-      {/* Navbar da loja (preview) */}
-      <nav className="bg-slate-900 border-b border-slate-800">
-        <div className="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">{store.name}</h1>
-            <p className="text-sm text-slate-400">vitrinafast.com.br/{store.slug}</p>
-          </div>
-          <div className="text-sm text-slate-400">
-            Plano: <span className="font-semibold text-sky-400">{store.plan}</span>
-          </div>
+      {/* Preview usando PublicPageRenderer */}
+      <div className="border-4 border-dashed border-sky-500/30 m-4 rounded-2xl overflow-hidden">
+        <div className="bg-sky-500/5 text-center py-2 text-sm text-sky-400">
+          👆 Prévia da sua página - Assim ela ficará quando estiver online
         </div>
-      </nav>
-
-      {/* Preview da página */}
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-12 mb-12">
-          {/* Hero Section */}
-          <div className="text-center mb-16 space-y-6">
-            <div className="w-24 h-24 bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl mx-auto flex items-center justify-center">
-              <span className="text-5xl">🏪</span>
-            </div>
-            <div>
-              <h1 className="text-5xl font-bold mb-4">{page?.title || store.name}</h1>
-              <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-                {page?.description || 'Sua vitrine está pronta para o mundo!'}
-              </p>
-            </div>
-          </div>
-
-          {/* Informações da loja */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 border-t border-slate-700 pt-12">
-            <div className="text-center">
-              <p className="text-3xl mb-2">📧</p>
-              <p className="text-slate-400">Email</p>
-              <p className="font-semibold">{store.email}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl mb-2">🌐</p>
-              <p className="text-slate-400">Endereço Web</p>
-              <p className="font-semibold text-sky-400">vitrinafast.com.br/{store.slug}</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl mb-2">📱</p>
-              <p className="text-slate-400">Compartilhar</p>
-              <p className="font-semibold text-slate-400">Com clientes</p>
-            </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="bg-gradient-to-r from-sky-500/10 to-blue-500/10 border border-sky-500/30 rounded-xl p-8 text-center space-y-4">
-            <p className="text-slate-300">Seus clientes verão uma página assim quando você publicar</p>
-            <div className="flex gap-4 justify-center">
-              <button className="px-6 py-2 bg-sky-500 text-white rounded-lg font-semibold hover:bg-sky-400">
-                Chamar
-              </button>
-              <button className="px-6 py-2 border border-sky-500 text-sky-400 rounded-lg font-semibold hover:bg-sky-500/10">
-                WhatsApp
-              </button>
-            </div>
-          </div>
-        </div>
+        <PublicPageRenderer
+          data={{
+            title: page?.title || store.name,
+            pageDescription: page?.description || 'Sua vitrine está pronta para o mundo!',
+            phone: content.phone,
+            whatsapp: content.whatsapp,
+            email: content.contactEmail || store.email,
+            address: content.address,
+            city: content.city,
+            state: content.state,
+            zipCode: content.zipCode,
+            instagram: content.instagram,
+            facebook: content.facebook,
+            businessHours: content.businessHours,
+            photos: content.photos || [],
+          }}
+        />
       </div>
 
       {/* Seção de ações */}
