@@ -82,7 +82,7 @@ export default function PreviewPage() {
       <main className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-4xl mb-4">⏳</div>
-          <p className="text-xl text-slate-300">Carregando sua página...</p>
+          <p className="text-xl text-slate-300">Carregando sua vitrine...</p>
         </div>
       </main>
     );
@@ -117,12 +117,12 @@ export default function PreviewPage() {
             {isActive ? (
               <>
                 <h2 className="text-lg font-bold">Status: <span className="text-emerald-400">ONLINE ✓</span></h2>
-                <p className="text-sm text-slate-400">Sua página está publicada!</p>
+                <p className="text-sm text-slate-400">Sua vitrine está publicada!</p>
               </>
             ) : (
               <>
                 <h2 className="text-lg font-bold">Status: <span className="text-yellow-400">RASCUNHO 📋</span></h2>
-                <p className="text-sm text-slate-400">Sua página não está online ainda</p>
+                <p className="text-sm text-slate-400">Sua vitrine não está online ainda</p>
               </>
             )}
           </div>
@@ -139,18 +139,18 @@ export default function PreviewPage() {
             <div className="text-center mb-4">
               <div className="text-4xl mb-2">{isActive ? '🎉' : '✨'}</div>
               <h2 className="text-2xl font-bold text-slate-50">
-                {isActive ? 'Sua página está no ar!' : 'Sua página foi criada!'}
+                {isActive ? 'Sua vitrine está no ar!' : 'Sua vitrine foi criada!'}
               </h2>
               <p className="text-slate-400 mt-1">
                 {isActive 
                   ? 'Compartilhe o link abaixo com seus clientes'
-                  : 'Guarde este link - ele será o endereço da sua página após ativar'}
+                  : 'Guarde este link - ele será o endereço da sua vitrine após ativar'}
               </p>
             </div>
             
             {/* URL Box */}
             <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-4 mb-4">
-              <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Endereço da sua página</p>
+              <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Endereço da sua vitrine</p>
               <div className="flex items-center gap-2 flex-wrap">
                 <code className="flex-1 font-mono text-lg md:text-xl text-sky-400 break-all">
                   {typeof window !== 'undefined' ? window.location.origin : 'https://projeto-paginas-para-comercio.vercel.app'}/loja/{store.slug}
@@ -179,13 +179,13 @@ export default function PreviewPage() {
                   rel="noopener noreferrer"
                   className="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-400 transition flex items-center justify-center gap-2"
                 >
-                  🌐 Abrir Minha Página
+                  🌐 Abrir Minha Vitrine
                 </a>
               ) : (
                 <button
                   onClick={() => {
                     const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://projeto-paginas-para-comercio.vercel.app';
-                    const whatsappText = `Olha a página que eu criei para meu negócio! 🚀\n\n${baseUrl}/loja/${store.slug}\n\n(Em breve estará online!)`;
+                    const whatsappText = `Olha a vitrine que eu criei para meu negócio! 🚀\n\n${baseUrl}/loja/${store.slug}\n\n(Em breve estará online!)`;
                     window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`, '_blank');
                   }}
                   className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-500 transition flex items-center justify-center gap-2"
@@ -198,7 +198,7 @@ export default function PreviewPage() {
             {!isActive && (
               <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
                 <p className="text-sm text-yellow-400 text-center">
-                  ⚠️ <strong>Importante:</strong> A página só ficará acessível ao público após você ativar com um dos planos abaixo
+                  ⚠️ <strong>Importante:</strong> A vitrine só ficará acessível ao público após você ativar com um dos planos abaixo
                 </p>
               </div>
             )}
@@ -209,7 +209,7 @@ export default function PreviewPage() {
       {/* Preview usando PublicPageRenderer */}
       <div className="border-4 border-dashed border-sky-500/30 m-4 rounded-2xl overflow-hidden">
         <div className="bg-sky-500/5 text-center py-2 text-sm text-sky-400">
-          👆 Prévia da sua página - Assim ela ficará quando estiver online
+          👆 Prévia da sua vitrine - Assim ela ficará quando estiver online
         </div>
         <PublicPageRenderer
           data={{

@@ -101,7 +101,7 @@ export default function About() {
                   <div>
                     <h4 className="text-lg font-semibold mb-2 text-white">Resultados Reais</h4>
                     <p className="text-slate-300">
-                      Mais de 10 mil negócios já usam nossa plataforma e relatam aumento médio de 40% em vendas após criar sua página.
+                      Mais de 10 mil negócios já usam nossa plataforma e relatam aumento médio de 40% em vendas após criar sua vitrine.
                     </p>
                   </div>
                 </div>

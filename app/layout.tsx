@@ -11,8 +11,8 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="Plataforma para criar páginas para comércios locais" />
-        <title>Páginas para o Comércio</title>
+        <meta name="description" content="VitrineFast - Crie sua vitrine digital profissional para seu comércio local" />
+        <title>VitrineFast - Sua Vitrine Digital</title>
       </head>
       <body>
         {children}

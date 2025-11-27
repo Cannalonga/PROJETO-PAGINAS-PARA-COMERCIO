@@ -7,7 +7,7 @@ export function HeroVitrineFast() {
     {
       icon: '⚡',
       title: 'Sem código',
-      description: 'Editor visual intuitivo: arraste blocos, troque textos e publique sua página em poucos cliques.',
+      description: 'Editor visual intuitivo: arraste blocos, troque textos e publique sua vitrine em poucos cliques.',
       animationClass: 'top-16 left-8 float-card-1',
       borderColor: 'border-blue-500/30',
       glowColor: 'from-blue-500 to-blue-600',
@@ -23,7 +23,7 @@ export function HeroVitrineFast() {
     {
       icon: '📱',
       title: 'Mobile first',
-      description: 'Sua página linda e rápida no celular, onde seus clientes realmente estão.',
+      description: 'Sua vitrine linda e rápida no celular, onde seus clientes realmente estão.',
       animationClass: 'bottom-24 left-16 float-card-3',
       borderColor: 'border-purple-500/30',
       glowColor: 'from-purple-500 to-purple-600',
