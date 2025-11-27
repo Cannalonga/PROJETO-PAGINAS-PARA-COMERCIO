@@ -93,12 +93,12 @@ export default function Home() {
 
               <div className="grid grid-cols-3 gap-4 max-w-md text-xs md:text-sm text-slate-300">
                 <div>
-                  <p className="text-lg md:text-2xl font-bold text-slate-50">10k+</p>
-                  <p>Negócios criados</p>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">✨</p>
+                  <p>Fácil de usar</p>
                 </div>
                 <div>
-                  <p className="text-lg md:text-2xl font-bold text-slate-50">50+</p>
-                  <p>Templates prontos</p>
+                  <p className="text-lg md:text-2xl font-bold text-slate-50">🚀</p>
+                  <p>Templates em breve</p>
                 </div>
                 <div>
                   <p className="text-lg md:text-2xl font-bold text-slate-50">99%</p>
@@ -109,9 +109,23 @@ export default function Home() {
 
             <div className="relative hidden md:block">
               <div className="absolute -inset-6 rounded-3xl bg-gradient-to-br from-sky-500/20 via-slate-900 to-orange-500/10 blur-xl"></div>
-              <div className="relative bg-slate-900/90 border border-slate-700/70 rounded-3xl shadow-2xl p-5">
-                <div className="h-40 rounded-2xl bg-slate-800/80 border border-slate-700 flex items-center justify-center text-slate-400">
-                  Prévia da página
+              <div className="relative bg-slate-900/90 border border-slate-700/70 rounded-3xl shadow-2xl p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 rounded-xl bg-sky-500/20 flex items-center justify-center text-2xl">🏪</div>
+                    <div>
+                      <p className="font-semibold text-slate-50">Sua Loja Aqui</p>
+                      <p className="text-xs text-slate-400">vitrine.fast/sua-loja</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="h-16 rounded-lg bg-slate-800/80 border border-slate-700"></div>
+                    <div className="h-16 rounded-lg bg-slate-800/80 border border-slate-700"></div>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1 h-8 rounded-lg bg-sky-500/30 border border-sky-500/50 flex items-center justify-center text-xs text-sky-300">📱 WhatsApp</div>
+                    <div className="flex-1 h-8 rounded-lg bg-slate-800/80 border border-slate-700 flex items-center justify-center text-xs text-slate-400">📍 Mapa</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -134,7 +148,7 @@ export default function Home() {
             <div className="grid md:grid-cols-3 gap-4 md:gap-6">
               {[
                 { icon: '⚡', title: 'Sem código', desc: 'Monte sua página escolhendo blocos prontos.' },
-                { icon: '🎨', title: 'Templates modernos', desc: 'Layouts pensados para seu tipo de negócio.' },
+                { icon: '🎨', title: 'Templates em breve', desc: 'Novos layouts chegando em breve para seu negócio.' },
                 { icon: '📱', title: '100% mobile', desc: 'Sua página fica rápida e bonita no celular.' },
                 { icon: '📈', title: 'SEO otimizado', desc: 'Engine de SEO integrada para ser encontrado.' },
                 { icon: '🔗', title: 'Integrações fáceis', desc: 'Conecte WhatsApp, Maps, Instagram.' },

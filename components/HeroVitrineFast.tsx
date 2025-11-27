@@ -14,8 +14,8 @@ export function HeroVitrineFast() {
     },
     {
       icon: '🎨',
-      title: 'Templates modernos',
-      description: 'Layouts pensados para salões, clínicas, restaurantes, lojas e profissionais liberais.',
+      title: 'Templates em breve',
+      description: 'Novos layouts chegando em breve para salões, clínicas, restaurantes e lojas.',
       animationClass: 'top-32 right-12 float-card-2',
       borderColor: 'border-orange-500/30',
       glowColor: 'from-orange-500 to-orange-600',
