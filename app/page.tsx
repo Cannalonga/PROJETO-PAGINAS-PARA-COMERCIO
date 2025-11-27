@@ -141,7 +141,7 @@ export default function Home() {
                 Tudo o que sua vitrine digital precisa para parecer profissional
               </h2>
               <p className="mt-3 text-sm md:text-base text-slate-300">
-                Modelos prontos, otimização para Google, integração com WhatsApp.
+                Design profissional, otimização para Google, integração com WhatsApp.
               </p>
             </div>
 
@@ -214,9 +214,9 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-5">
               {[
-                { name: 'Iniciante', price: 'Grátis', features: ['1 página', 'Template básico', 'Subdomínio', 'Email support'] },
-                { name: 'Profissional', price: 'R$ 29/mês', features: ['Até 5 páginas', 'Todos templates', 'Domínio próprio', 'Suporte prioritário'], highlight: true },
-                { name: 'Negócio', price: 'R$ 99/mês', features: ['Ilimitadas', 'Customização', 'API acesso', 'Suporte dedicado'] },
+                { name: 'Iniciante', price: 'Grátis', features: ['1 vitrine', 'Design padrão', 'Subdomínio', 'Email support'] },
+                { name: 'Profissional', price: 'R$ 29/mês', features: ['Até 5 vitrines', 'Personalização completa', 'Domínio próprio', 'Suporte prioritário'], highlight: true },
+                { name: 'Negócio', price: 'R$ 99/mês', features: ['Vitrines ilimitadas', 'Recursos avançados', 'API acesso', 'Suporte dedicado'] },
               ].map((plan, i) => (
                 <div key={i} className={`rounded-2xl p-5 flex flex-col gap-3 ${plan.highlight ? 'bg-slate-900 border border-sky-500 scale-[1.03] shadow-lg' : 'bg-slate-900/90 border border-slate-800'}`}>
                   <h3 className="font-semibold text-slate-50">{plan.name}</h3>
