@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 
@@ -300,6 +300,3 @@ export default function Home() {
     </div>
   )
 }
-/ /   D e p l o y   t r i g g e r   2 0 2 5 - 1 1 - 2 7   1 5 : 2 5 : 4 7 
- 
- 
