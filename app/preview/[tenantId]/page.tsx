@@ -132,6 +132,49 @@ export default function PreviewPage() {
         </div>
       </div>
 
+      {/* URL da página pública */}
+      {store.slug && (
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+              <div>
+                <p className="text-sm text-slate-400 mb-1">🔗 URL da sua página:</p>
+                <p className="font-mono text-sky-400 text-lg break-all">
+                  {typeof window !== 'undefined' ? window.location.origin : ''}/loja/{store.slug}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    const url = `${window.location.origin}/loja/${store.slug}`;
+                    navigator.clipboard.writeText(url);
+                    alert('✅ Link copiado!');
+                  }}
+                  className="px-4 py-2 bg-sky-500/20 text-sky-400 border border-sky-500/50 rounded-lg hover:bg-sky-500/30 transition text-sm font-medium"
+                >
+                  📋 Copiar Link
+                </button>
+                {isActive && (
+                  <a
+                    href={`/loja/${store.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-400 transition text-sm font-medium"
+                  >
+                    🌐 Abrir Página
+                  </a>
+                )}
+              </div>
+            </div>
+            {!isActive && (
+              <p className="text-xs text-yellow-400 mt-2">
+                ⚠️ A página só ficará acessível publicamente após o pagamento
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Preview usando PublicPageRenderer */}
       <div className="border-4 border-dashed border-sky-500/30 m-4 rounded-2xl overflow-hidden">
         <div className="bg-sky-500/5 text-center py-2 text-sm text-sky-400">
