@@ -4,7 +4,7 @@
   "private": true,
   "description": "Plataforma Multi-Tenant para Páginas de Comércio Local",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev",
