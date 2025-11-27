@@ -95,8 +95,8 @@ export default function Home() {
               },
               {
                 icon: '🎨',
-                title: 'Templates Modernos',
-                desc: '50+ designs profissionais prontos para usar. Customize conforme quiser.',
+                title: 'Templates em Breve',
+                desc: 'Novos designs profissionais chegando em breve. Customize conforme quiser.',
               },
               {
                 icon: '📱',
