@@ -1,12 +1,100 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
-import { existsSync } from 'fs';
+import { uploadImage } from '@/lib/cloudinary';
 
 export const maxDuration = 60;
 
+// ============================================================
+// 🔐 SEGURANÇA: Rate limiting por IP
+// ============================================================
+
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT = 15; // uploads por janela
+const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minuto
+
+function checkRateLimit(ip: string): { allowed: boolean; remaining: number; resetIn: number } {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+
+  if (!entry || now > entry.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    return { allowed: true, remaining: RATE_LIMIT - 1, resetIn: RATE_LIMIT_WINDOW };
+  }
+
+  if (entry.count >= RATE_LIMIT) {
+    return { allowed: false, remaining: 0, resetIn: entry.resetTime - now };
+  }
+
+  entry.count++;
+  return { allowed: true, remaining: RATE_LIMIT - entry.count, resetIn: entry.resetTime - now };
+}
+
+// ============================================================
+// 🔐 SEGURANÇA: Validação de magic bytes (tipo real do arquivo)
+// ============================================================
+
+const VALID_IMAGE_SIGNATURES: { [key: string]: string[] } = {
+  'ffd8ff': ['image/jpeg'],           // JPEG
+  '89504e47': ['image/png'],          // PNG
+  '47494638': ['image/gif'],          // GIF
+  '52494646': ['image/webp'],         // WEBP (RIFF header)
+};
+
+function validateImageMagicBytes(buffer: Buffer): boolean {
+  const hex = buffer.slice(0, 4).toString('hex');
+  
+  for (const signature of Object.keys(VALID_IMAGE_SIGNATURES)) {
+    if (hex.startsWith(signature)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
+// ============================================================
+// Upload handler
+// ============================================================
+
 export async function POST(request: NextRequest) {
   try {
+    // 🔐 Rate limiting
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
+    
+    const rateLimit = checkRateLimit(ip);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { 
+          error: 'Muitos uploads. Aguarde um momento.',
+          retryAfter: Math.ceil(rateLimit.resetIn / 1000),
+        },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil(rateLimit.resetIn / 1000).toString(),
+            'X-RateLimit-Remaining': '0',
+          }
+        }
+      );
+    }
+
+    // 🔐 Validação básica de origem
+    const origin = request.headers.get('origin');
+    const allowedOrigins = [
+      process.env.NEXT_PUBLIC_APP_URL,
+      process.env.NEXTAUTH_URL,
+      'http://localhost:3000',
+      'http://localhost:3001',
+    ].filter(Boolean);
+    
+    if (origin && !allowedOrigins.includes(origin) && process.env.NODE_ENV === 'production') {
+      console.warn(`[SECURITY] Upload de origem não permitida: ${origin}`);
+      return NextResponse.json(
+        { error: 'Origem não permitida' },
+        { status: 403 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get('file') as File;
     const slot = formData.get('slot') as string;
@@ -25,7 +113,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validar tipo de arquivo
+    // Validar tipo de arquivo (Content-Type declarado)
     if (!file.type.startsWith('image/')) {
       return NextResponse.json(
         { error: 'Apenas imagens são permitidas' },
@@ -45,35 +133,34 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Gerar nome único com timestamp
-    const timestamp = Date.now();
-    const random = Math.random().toString(36).substring(7);
-    const ext = file.name.split('.').pop() || 'jpg';
-    const filename = `${timestamp}-${random}.${ext}`;
-
-    // Criar pasta de uploads se não existir
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
+    // 🔐 Validar magic bytes (tipo real do arquivo)
+    if (!validateImageMagicBytes(buffer)) {
+      console.warn(`[SECURITY] Upload com magic bytes inválidos de ${ip}`);
+      return NextResponse.json(
+        { error: 'Arquivo inválido. Apenas imagens JPEG, PNG, GIF e WebP são aceitas.' },
+        { status: 400 }
+      );
     }
 
-    // Salvar arquivo
-    const filepath = path.join(uploadDir, filename);
-    await writeFile(filepath, buffer);
-
-    // Retornar URL relativa para usar na página
-    const imageUrl = `/uploads/${filename}`;
+    // Upload para Cloudinary (nuvem)
+    const result = await uploadImage(buffer, 'vitrinafast/stores');
 
     return NextResponse.json({
       success: true,
-      url: imageUrl,
-      filename: filename,
+      url: result.url,
+      publicId: result.publicId,
       slot: slot,
       size: file.size,
+      width: result.width,
+      height: result.height,
       message: `Imagem carregada com sucesso no slot "${slot}"`,
+    }, {
+      headers: {
+        'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+      }
     });
   } catch (error) {
-    console.error('Erro no upload:', error);
+    console.error('[UPLOAD] Erro:', error instanceof Error ? error.message : 'Unknown error');
     return NextResponse.json(
       { error: 'Erro ao fazer upload da imagem. Tente novamente.' },
       { status: 500 }
