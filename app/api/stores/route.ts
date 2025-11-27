@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { createStore } from '@/lib/store-db';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,11 +7,11 @@ export async function POST(request: NextRequest) {
     const { 
       storeName, 
       email, 
-      businessType, 
+      businessType,
+      storeType = 'physical',
       pageTitle, 
       pageDescription, 
       photos = [],
-      // Novos campos de contato
       phone,
       whatsapp,
       contactEmail,
@@ -27,68 +25,48 @@ export async function POST(request: NextRequest) {
     } = data;
 
     // Validar dados obrigatórios
-    if (!storeName || !email || !businessType || !pageTitle || !pageDescription) {
+    if (!storeName || !businessType || !pageTitle || !pageDescription) {
       return NextResponse.json(
-        { error: 'Dados obrigatórios faltando' },
+        { error: 'Dados obrigatórios faltando (nome, tipo, título, descrição)' },
         { status: 400 }
       );
     }
 
-    // Validar campos de contato obrigatórios
-    if (!whatsapp || !address || !city || !state) {
+    // Validar WhatsApp (único campo obrigatório de contato)
+    if (!whatsapp) {
       return NextResponse.json(
-        { error: 'Dados de contato obrigatórios faltando (WhatsApp, Endereço, Cidade, Estado)' },
+        { error: 'WhatsApp é obrigatório' },
         { status: 400 }
       );
     }
 
-    // Criar slug a partir do nome da loja
-    const slug = storeName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
-
-    // Criar tenant (loja) no banco
-    const tenant = await prisma.tenant.create({
-      data: {
-        name: storeName,
-        slug: slug,
-        email: email,
-        status: 'ACTIVE', // Status da loja
-        plan: 'FREE', // Começa no plano gratuito
-        billingStatus: 'INACTIVE', // Sem bilhetagem ainda
-      },
-    });
-
-    // Criar página padrão com dados de contato
-    const page = await prisma.page.create({
-      data: {
-        title: pageTitle,
-        slug: 'home',
-        description: pageDescription,
-        content: {
-          businessType,
-          photos,
-          // Dados de contato
-          phone: phone || null,
-          whatsapp,
-          contactEmail: contactEmail || null,
-          address,
-          city,
-          state,
-          zipCode: zipCode || null,
-          instagram: instagram || null,
-          facebook: facebook || null,
-          businessHours: businessHours || null,
-        } as any,
-        status: 'DRAFT', // Em rascunho, não publicada
-        tenantId: tenant.id,
-      },
+    // Criar loja usando o novo sistema JSON
+    const store = createStore({
+      name: storeName,
+      email: email || 'contato@vitrinafast.com',
+      businessType,
+      storeType,
+      pageTitle,
+      pageDescription,
+      phone: phone || undefined,
+      whatsapp,
+      contactEmail: contactEmail || undefined,
+      address: address || undefined,
+      city: city || undefined,
+      state: state || undefined,
+      zipCode: zipCode || undefined,
+      instagram: instagram || undefined,
+      facebook: facebook || undefined,
+      businessHours: businessHours || undefined,
+      photos: photos || [],
     });
 
     return NextResponse.json({
       success: true,
-      tenantId: tenant.id,
-      pageId: page.id,
-      slug: tenant.slug,
-      message: 'Página criada com sucesso! Agora visualize e personalize.',
+      tenantId: store.id,
+      storeId: store.id,
+      slug: store.slug,
+      message: 'Página criada com sucesso! 🎉',
     });
   } catch (error) {
     console.error('Erro ao criar página:', error);
@@ -96,7 +74,5 @@ export async function POST(request: NextRequest) {
       { error: 'Erro ao criar página. Tente novamente.' },
       { status: 500 }
     );
-  } finally {
-    await prisma.$disconnect();
   }
 }

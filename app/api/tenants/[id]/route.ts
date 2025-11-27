@@ -1,5 +1,4 @@
-import { prisma } from '@/lib/prisma';
-import { successResponse, errorResponse } from '@/utils/helpers';
+import { getStoreById, updateStore, deleteStore } from '@/lib/store-db';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -10,25 +9,47 @@ export async function GET(
   try {
     const { id } = params;
 
-    const tenant = await prisma.tenant.findUnique({
-      where: { id },
-      include: {
-        pages: true,
-        users: true,
-      },
-    });
+    const store = getStoreById(id);
 
-    if (!tenant) {
-      return NextResponse.json(errorResponse('NOT_FOUND', 'Tenant not found'), {
-        status: 404,
-      });
+    if (!store) {
+      return NextResponse.json(
+        { error: 'NOT_FOUND', message: 'Loja não encontrada' },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json(successResponse(tenant, 'Tenant retrieved successfully'));
+    // Formatar resposta compatível com o frontend
+    return NextResponse.json({
+      id: store.id,
+      name: store.name,
+      email: store.email,
+      slug: store.slug,
+      status: store.status,
+      plan: store.plan,
+      pages: [{
+        id: store.id,
+        title: store.pageTitle,
+        description: store.pageDescription,
+        content: {
+          businessType: store.businessType,
+          photos: store.photos,
+          phone: store.phone,
+          whatsapp: store.whatsapp,
+          contactEmail: store.contactEmail,
+          address: store.address,
+          city: store.city,
+          state: store.state,
+          zipCode: store.zipCode,
+          instagram: store.instagram,
+          facebook: store.facebook,
+          businessHours: store.businessHours,
+        },
+      }],
+    });
   } catch (error) {
-    console.error('Error fetching tenant:', error);
+    console.error('Error fetching store:', error);
     return NextResponse.json(
-      errorResponse('INTERNAL_SERVER_ERROR', 'Failed to fetch tenant'),
+      { error: 'INTERNAL_SERVER_ERROR', message: 'Erro ao buscar loja' },
       { status: 500 }
     );
   }
@@ -42,21 +63,24 @@ export async function PUT(
     const { id } = params;
     const body = await req.json();
 
-    const tenant = await prisma.tenant.update({
-      where: { id },
-      data: body,
-    });
+    const store = updateStore(id, body);
 
-    return NextResponse.json(successResponse(tenant, 'Tenant updated successfully'));
-  } catch (error: any) {
-    if (error.code === 'P2025') {
-      return NextResponse.json(errorResponse('NOT_FOUND', 'Tenant not found'), {
-        status: 404,
-      });
+    if (!store) {
+      return NextResponse.json(
+        { error: 'NOT_FOUND', message: 'Loja não encontrada' },
+        { status: 404 }
+      );
     }
-    console.error('Error updating tenant:', error);
+
+    return NextResponse.json({
+      success: true,
+      data: store,
+      message: 'Loja atualizada com sucesso',
+    });
+  } catch (error) {
+    console.error('Error updating store:', error);
     return NextResponse.json(
-      errorResponse('INTERNAL_SERVER_ERROR', 'Failed to update tenant'),
+      { error: 'INTERNAL_SERVER_ERROR', message: 'Erro ao atualizar loja' },
       { status: 500 }
     );
   }
@@ -69,20 +93,23 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    await prisma.tenant.delete({
-      where: { id },
-    });
+    const deleted = deleteStore(id);
 
-    return NextResponse.json(successResponse(null, 'Tenant deleted successfully'));
-  } catch (error: any) {
-    if (error.code === 'P2025') {
-      return NextResponse.json(errorResponse('NOT_FOUND', 'Tenant not found'), {
-        status: 404,
-      });
+    if (!deleted) {
+      return NextResponse.json(
+        { error: 'NOT_FOUND', message: 'Loja não encontrada' },
+        { status: 404 }
+      );
     }
-    console.error('Error deleting tenant:', error);
+
+    return NextResponse.json({
+      success: true,
+      message: 'Loja deletada com sucesso',
+    });
+  } catch (error) {
+    console.error('Error deleting store:', error);
     return NextResponse.json(
-      errorResponse('INTERNAL_SERVER_ERROR', 'Failed to delete tenant'),
+      { error: 'INTERNAL_SERVER_ERROR', message: 'Erro ao deletar loja' },
       { status: 500 }
     );
   }

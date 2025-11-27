@@ -1,0 +1,58 @@
+{
+  "stores": [
+    {
+      "name": "CannaConverter",
+      "email": "canna.vendasonline@gmail.com",
+      "businessType": "services",
+      "storeType": "online",
+      "pageTitle": "CannaConverter",
+      "pageDescription": "Plataforma completa de conversão de arquivos em quase todos os formatos utilizados no dia a dia.",
+      "whatsapp": "21990533886",
+      "contactEmail": "canna.vendasonline@gmail.com",
+      "city": "LATAM",
+      "instagram": "canna.vendasonline@gmail.com",
+      "facebook": "canna.vendasonline@gmail.com",
+      "businessHours": "24H",
+      "photos": [
+        {
+          "slot": "hero",
+          "url": "https://res.cloudinary.com/dlf9pvoig/image/upload/v1764255614/vitrinafast/stores/jphd9bv04nlm6ndp787s.jpg",
+          "header": "BALDÃO",
+          "description": "O BALDÃO DA MASSA"
+        },
+        {
+          "slot": "right-top",
+          "url": "https://res.cloudinary.com/dlf9pvoig/image/upload/v1764255632/vitrinafast/stores/krjdxjs7zpemqxuhktbo.jpg",
+          "header": "RELAMERDA DE TÓRIO",
+          "description": "O RELAMERDA"
+        },
+        {
+          "slot": "left-bottom",
+          "url": "https://res.cloudinary.com/dlf9pvoig/image/upload/v1764255660/vitrinafast/stores/bomifyrw4veio7zi3ati.jpg",
+          "header": "LETRINHAS DE QUALQUER COISA",
+          "description": "SÓ LIXO"
+        },
+        {
+          "slot": "center",
+          "url": "https://res.cloudinary.com/dlf9pvoig/image/upload/v1764255682/vitrinafast/stores/d52eqjwaqdo6ssffgzoq.jpg",
+          "header": "CHINNON MUSK",
+          "description": "NON TEM GALANTIA NÉ."
+        },
+        {
+          "slot": "right-bottom",
+          "url": "https://res.cloudinary.com/dlf9pvoig/image/upload/v1764255715/vitrinafast/stores/ujscmaezh2lwrwajxwc2.jpg",
+          "header": "MEME DE BOSTA",
+          "description": "PÁGINA EM CONTRUÇÃO !!"
+        }
+      ],
+      "id": "store_1764255744341_1",
+      "slug": "cannaconverter",
+      "status": "ACTIVE",
+      "plan": "FREE",
+      "isVip": false,
+      "createdAt": "2025-11-27T15:02:24.342Z",
+      "updatedAt": "2025-11-27T15:02:24.342Z"
+    }
+  ],
+  "lastId": 1
+}
