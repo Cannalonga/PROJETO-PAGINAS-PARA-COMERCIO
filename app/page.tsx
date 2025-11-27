@@ -208,13 +208,13 @@ export default function Home() {
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">Planos</p>
               <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
-                Comece grátis e evolua conforme seu negócio cresce
+                Escolha o plano ideal para seu negócio
               </h2>
             </div>
 
             <div className="grid md:grid-cols-3 gap-5">
               {[
-                { name: 'Iniciante', price: 'Grátis', features: ['1 vitrine', 'Design padrão', 'Subdomínio', 'Email support'] },
+                { name: 'Iniciante', price: 'Esgotado', features: ['Promoção encerrada', 'Pode voltar em breve!', 'Fique de olho'], disabled: true },
                 { name: 'Profissional', price: 'R$ 29/mês', features: ['Até 5 vitrines', 'Personalização completa', 'Domínio próprio', 'Suporte prioritário'], highlight: true },
                 { name: 'Negócio', price: 'R$ 99/mês', features: ['Vitrines ilimitadas', 'Recursos avançados', 'API acesso', 'Suporte dedicado'] },
               ].map((plan, i) => (
@@ -243,7 +243,7 @@ export default function Home() {
             <div className="space-y-4">
               {[
                 { q: 'Preciso saber programar?', a: 'Não. O VitrineFast foi feito para donos de comércio, você só preenche textos e publica.' },
-                { q: 'Tem plano grátis?', a: 'Sim. Você pode começar com o plano Iniciante e testar sem pagar nada.' },
+                { q: 'Tem plano grátis?', a: 'A promoção do plano grátis esgotou! Mas pode voltar a qualquer momento. Fique de olho!' },
                 { q: 'Posso usar meu próprio domínio?', a: 'Sim. A partir do plano Profissional você pode conectar um domínio próprio.' },
                 { q: 'Posso cancelar quando quiser?', a: 'Pode. Não há fidelidade. Você controla sua assinatura direto pelo painel.' },
               ].map((faq, i) => (
@@ -300,5 +300,6 @@ export default function Home() {
     </div>
   )
 }
-/ /   D e p l o y   t r i g g e r   2 0 2 5 - 1 1 - 2 7   1 5 : 2 5 : 4 7  
+/ /   D e p l o y   t r i g g e r   2 0 2 5 - 1 1 - 2 7   1 5 : 2 5 : 4 7 
+ 
  

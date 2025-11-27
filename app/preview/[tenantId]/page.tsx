@@ -196,9 +196,13 @@ export default function PreviewPage() {
             </div>
 
             {!isActive && (
-              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <p className="text-sm text-yellow-400 text-center">
-                  ⚠️ <strong>Importante:</strong> A vitrine só ficará acessível ao público após você ativar com um dos planos abaixo
+              <div className="mt-4 p-4 bg-orange-500/10 border border-orange-500/30 rounded-lg">
+                <p className="text-orange-400 text-center font-semibold mb-1">
+                  🎁 Promoção Grátis Esgotada!
+                </p>
+                <p className="text-sm text-orange-300 text-center">
+                  A promoção do período gratuito encerrou, mas pode voltar a qualquer momento. 
+                  Para publicar sua vitrine agora, escolha um dos planos abaixo.
                 </p>
               </div>
             )}
