@@ -40,8 +40,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Criar loja usando o novo sistema JSON
-    const store = createStore({
+    // Criar loja no banco de dados
+    const store = await createStore({
       name: storeName,
       email: email || 'contato@vitrinafast.com',
       businessType,

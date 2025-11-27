@@ -9,7 +9,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const store = getStoreById(id);
+    const store = await getStoreById(id);
 
     if (!store) {
       return NextResponse.json(
@@ -63,7 +63,7 @@ export async function PUT(
     const { id } = params;
     const body = await req.json();
 
-    const store = updateStore(id, body);
+    const store = await updateStore(id, body);
 
     if (!store) {
       return NextResponse.json(
@@ -93,7 +93,7 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    const deleted = deleteStore(id);
+    const deleted = await deleteStore(id);
 
     if (!deleted) {
       return NextResponse.json(

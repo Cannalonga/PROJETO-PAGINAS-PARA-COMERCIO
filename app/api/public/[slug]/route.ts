@@ -31,7 +31,12 @@ export async function GET(
       where: { slug: slug.toLowerCase() },
       include: {
         pages: {
-          where: { slug: 'home' },
+          where: { 
+            OR: [
+              { slug: 'home' },
+              { slug: 'principal' },
+            ]
+          },
           take: 1,
         },
       },
