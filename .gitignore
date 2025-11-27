@@ -3,6 +3,9 @@
 /out
 *.log
 .DS_Store
+
+# SECURITY - Never commit .env files
+.env
 .env.local
 .env.*.local
 .vercel
