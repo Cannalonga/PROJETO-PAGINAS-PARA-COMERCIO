@@ -46,7 +46,7 @@ export default function Home() {
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/auth/register">
               <VButton variant="primary" size="lg" className="w-full sm:w-auto">
-                Criar Minha Página
+                Criar Minha Vitrine
               </VButton>
             </Link>
             <Link href="#features">
@@ -63,8 +63,8 @@ export default function Home() {
               <p className="text-sm text-textLight mt-2">Negócios criados</p>
             </div>
             <div>
-              <div className="text-4xl font-bold text-primary">50+</div>
-              <p className="text-sm text-textLight mt-2">Templates prontos</p>
+              <div className="text-4xl font-bold text-primary">✨</div>
+              <p className="text-sm text-textLight mt-2">Design profissional</p>
             </div>
             <div>
               <div className="text-4xl font-bold text-primary">99%</div>
@@ -149,7 +149,7 @@ export default function Home() {
                 name: 'Iniciante',
                 price: 'Grátis',
                 desc: 'Perfeito para começar',
-                features: ['1 página', 'Template básico', 'Domínio grátis', 'Suporte por email'],
+                features: ['1 vitrine', 'Design padrão', 'Domínio grátis', 'Suporte por email'],
                 cta: 'Começar Agora',
               },
               {
@@ -158,8 +158,8 @@ export default function Home() {
                 desc: 'Mais popular para negócios',
                 period: '/mês',
                 features: [
-                  'Até 5 páginas',
-                  'Todos os templates',
+                  'Até 5 vitrines',
+                  'Personalização completa',
                   'Domínio próprio',
                   'Suporte prioritário',
                   'Analytics básico',
@@ -173,7 +173,7 @@ export default function Home() {
                 desc: 'Para negócios em crescimento',
                 period: '/mês',
                 features: [
-                  'Páginas ilimitadas',
+                  'Vitrines ilimitadas',
                   'Customização total',
                   'API acesso',
                   'Suporte 24/7',
@@ -237,7 +237,7 @@ export default function Home() {
               size="lg"
               className="bg-secondary hover:bg-[#051a2e]"
             >
-              Criar Minha Página Agora
+              Criar Minha Vitrine Agora
             </VButton>
           </Link>
         </div>
