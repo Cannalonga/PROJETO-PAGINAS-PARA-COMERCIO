@@ -373,7 +373,7 @@ export default function SetupPage() {
         </div>
 
         <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-2">Crie sua Página</h1>
+          <h1 className="text-4xl font-bold mb-2">Crie sua Vitrine Digital</h1>
           <p className="text-slate-300">Customize a aparência e informações da sua loja</p>
         </div>
 
@@ -721,7 +721,7 @@ export default function SetupPage() {
                 <div className="text-sm text-slate-300 space-y-2">
                   <p>
                     A <strong>VitrinaFast</strong> é uma plataforma de criação e divulgação de vitrines digitais. 
-                    Ao criar sua página, você declara que:
+                    Ao criar sua vitrine, você declara que:
                   </p>
                   <ul className="list-disc list-inside text-slate-400 space-y-1">
                     <li>Todas as informações fornecidas são verdadeiras</li>
@@ -787,7 +787,7 @@ export default function SetupPage() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Adicione Fotos</h2>
-              <p className="text-slate-400">Escolha as posições das imagens na sua página. Clique para adicionar fotos.</p>
+              <p className="text-slate-400">Escolha as posições das imagens na sua vitrine. Clique para adicionar fotos.</p>
               
               <input
                 ref={fileInputRef}
@@ -928,7 +928,7 @@ export default function SetupPage() {
           {currentStep === 4 && (
             <div className="space-y-6">
               <div className="bg-sky-500/10 border border-sky-500/30 p-4 rounded-lg">
-                <h2 className="text-2xl font-bold text-sky-400">✨ Veja como ficará sua página</h2>
+                <h2 className="text-2xl font-bold text-sky-400">✨ Veja como ficará sua vitrine</h2>
                 <p className="text-slate-300 mt-2">Esta é uma prévia exatamente como os clientes verão. Se quiser trocar algo, clique em "Voltar"</p>
               </div>
 
@@ -964,7 +964,7 @@ export default function SetupPage() {
               <div className="bg-yellow-500/10 border border-yellow-500/30 p-6 rounded-lg">
                 <h3 className="font-bold text-yellow-400 mb-3">🎁 Próximo Passo</h3>
                 <ul className="text-slate-300 space-y-2 text-sm">
-                  <li>✅ Sua página está pronta!</li>
+                  <li>✅ Sua vitrine está pronta!</li>
                   <li>✅ Você pode editar a qualquer momento</li>
                   <li className="text-yellow-400 font-semibold">💰 Para publicar: R$ 29/mês (renovação automática)</li>
                 </ul>

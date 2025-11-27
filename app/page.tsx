@@ -81,7 +81,7 @@ export default function Home() {
                   href="/setup"
                   className="inline-flex items-center justify-center rounded-xl bg-sky-500 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-sky-400 transition"
                 >
-                  Criar Minha Página
+                  Criar Minha Vitrine
                 </Link>
                 <a
                   href="#features"
@@ -138,7 +138,7 @@ export default function Home() {
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">Recursos poderosos</p>
               <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
-                Tudo o que sua página precisa para parecer profissional
+                Tudo o que sua vitrine digital precisa para parecer profissional
               </h2>
               <p className="mt-3 text-sm md:text-base text-slate-300">
                 Modelos prontos, otimização para Google, integração com WhatsApp.
@@ -147,9 +147,9 @@ export default function Home() {
 
             <div className="grid md:grid-cols-3 gap-4 md:gap-6">
               {[
-                { icon: '⚡', title: 'Sem código', desc: 'Monte sua página escolhendo blocos prontos.' },
+                { icon: '⚡', title: 'Sem código', desc: 'Monte sua vitrine escolhendo blocos prontos.' },
                 { icon: '🎨', title: 'Templates em breve', desc: 'Novos layouts chegando em breve para seu negócio.' },
-                { icon: '📱', title: '100% mobile', desc: 'Sua página fica rápida e bonita no celular.' },
+                { icon: '📱', title: '100% mobile', desc: 'Sua vitrine fica rápida e bonita no celular.' },
                 { icon: '📈', title: 'SEO otimizado', desc: 'Engine de SEO integrada para ser encontrado.' },
                 { icon: '🔗', title: 'Integrações fáceis', desc: 'Conecte WhatsApp, Maps, Instagram.' },
                 { icon: '🛡️', title: 'Segurança', desc: 'HTTPS, backups, infraestrutura segura.' },
@@ -170,7 +170,7 @@ export default function Home() {
             <div className="text-center max-w-2xl mx-auto mb-10">
               <p className="text-xs font-semibold text-sky-300 uppercase tracking-wide">Como funciona</p>
               <h2 className="mt-2 text-2xl md:text-3xl font-bold text-slate-50">
-                Publique sua página em 3 passos simples
+                Publique sua vitrine digital em 3 passos simples
               </h2>
               <p className="mt-3 text-sm md:text-base text-slate-300">
                 Pensado para quem não quer perder tempo com ferramentas complicadas.
@@ -182,9 +182,9 @@ export default function Home() {
 
               <div className="grid md:grid-cols-3 gap-6 md:gap-8">
                 {[
-                  { num: 1, label: 'Crie sua conta', title: 'Informe os dados do seu comércio', desc: 'Nome da loja, email e alguns dados básicos. Em menos de um minuto você já tem acesso ao painel.' },
+                  { num: 1, label: 'Crie sua vitrine', title: 'Informe os dados do seu comércio', desc: 'Nome da loja, email e alguns dados básicos. Em menos de um minuto você já tem acesso ao painel.' },
                   { num: 2, label: 'Escolha um modelo', title: 'Selecione o template ideal', desc: 'Escolha um template pensado para o seu tipo de negócio e ajuste textos, fotos, cores e links.' },
-                  { num: 3, label: 'Publique e compartilhe', title: 'Gere o link da sua vitrine', desc: 'Com um clique você publica sua página e já pode compartilhar com clientes no WhatsApp, Instagram.' },
+                  { num: 3, label: 'Publique e compartilhe', title: 'Gere o link da sua vitrine', desc: 'Com um clique você publica sua vitrine e já pode compartilhar com clientes no WhatsApp, Instagram.' },
                 ].map((step) => (
                   <div key={step.num} className="relative bg-slate-900 border border-slate-800 rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-3">
