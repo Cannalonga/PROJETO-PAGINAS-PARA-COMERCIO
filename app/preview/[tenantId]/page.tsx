@@ -132,44 +132,75 @@ export default function PreviewPage() {
         </div>
       </div>
 
-      {/* URL da página pública */}
+      {/* URL da página pública - DESTAQUE PRINCIPAL */}
       {store.slug && (
-        <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-              <div>
-                <p className="text-sm text-slate-400 mb-1">🔗 URL da sua página:</p>
-                <p className="font-mono text-sky-400 text-lg break-all">
-                  {typeof window !== 'undefined' ? window.location.origin : ''}/loja/{store.slug}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    const url = `${window.location.origin}/loja/${store.slug}`;
-                    navigator.clipboard.writeText(url);
-                    alert('✅ Link copiado!');
-                  }}
-                  className="px-4 py-2 bg-sky-500/20 text-sky-400 border border-sky-500/50 rounded-lg hover:bg-sky-500/30 transition text-sm font-medium"
-                >
-                  📋 Copiar Link
-                </button>
-                {isActive && (
-                  <a
-                    href={`/loja/${store.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-400 transition text-sm font-medium"
-                  >
-                    🌐 Abrir Página
-                  </a>
-                )}
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          <div className={`${isActive ? 'bg-emerald-500/10 border-emerald-500/40' : 'bg-gradient-to-br from-sky-500/20 to-purple-500/20 border-sky-500/40'} border-2 rounded-2xl p-6`}>
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">{isActive ? '🎉' : '✨'}</div>
+              <h2 className="text-2xl font-bold text-slate-50">
+                {isActive ? 'Sua página está no ar!' : 'Sua página foi criada!'}
+              </h2>
+              <p className="text-slate-400 mt-1">
+                {isActive 
+                  ? 'Compartilhe o link abaixo com seus clientes'
+                  : 'Guarde este link - ele será o endereço da sua página após ativar'}
+              </p>
+            </div>
+            
+            {/* URL Box */}
+            <div className="bg-slate-900/80 border border-slate-700 rounded-xl p-4 mb-4">
+              <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Endereço da sua página</p>
+              <div className="flex items-center gap-2 flex-wrap">
+                <code className="flex-1 font-mono text-lg md:text-xl text-sky-400 break-all">
+                  {typeof window !== 'undefined' ? window.location.origin : 'https://projeto-paginas-para-comercio.vercel.app'}/loja/{store.slug}
+                </code>
               </div>
             </div>
+
+            {/* Botões de ação */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <button
+                onClick={() => {
+                  const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://projeto-paginas-para-comercio.vercel.app';
+                  const url = `${baseUrl}/loja/${store.slug}`;
+                  navigator.clipboard.writeText(url);
+                  alert('✅ Link copiado para a área de transferência!');
+                }}
+                className="px-6 py-3 bg-sky-500 text-white font-semibold rounded-xl hover:bg-sky-400 transition flex items-center justify-center gap-2"
+              >
+                📋 Copiar Link
+              </button>
+              
+              {isActive ? (
+                <a
+                  href={`/loja/${store.slug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-400 transition flex items-center justify-center gap-2"
+                >
+                  🌐 Abrir Minha Página
+                </a>
+              ) : (
+                <button
+                  onClick={() => {
+                    const baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://projeto-paginas-para-comercio.vercel.app';
+                    const whatsappText = `Olha a página que eu criei para meu negócio! 🚀\n\n${baseUrl}/loja/${store.slug}\n\n(Em breve estará online!)`;
+                    window.open(`https://wa.me/?text=${encodeURIComponent(whatsappText)}`, '_blank');
+                  }}
+                  className="px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-500 transition flex items-center justify-center gap-2"
+                >
+                  📱 Compartilhar no WhatsApp
+                </button>
+              )}
+            </div>
+
             {!isActive && (
-              <p className="text-xs text-yellow-400 mt-2">
-                ⚠️ A página só ficará acessível publicamente após o pagamento
-              </p>
+              <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+                <p className="text-sm text-yellow-400 text-center">
+                  ⚠️ <strong>Importante:</strong> A página só ficará acessível ao público após você ativar com um dos planos abaixo
+                </p>
+              </div>
             )}
           </div>
         </div>
