@@ -69,10 +69,6 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.7.0"
   },
-  "engines": {
-    "node": "18.x",
-    "npm": ">=9.0.0"
-  },
   "prisma": {
     "schema": "db/prisma/schema.prisma"
   }
