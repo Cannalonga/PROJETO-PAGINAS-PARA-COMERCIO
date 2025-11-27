@@ -1,8 +1,27 @@
 import PublicPageRenderer from '@/components/PublicPageRenderer';
 import { notFound } from 'next/navigation';
 
+// Slugs reservados que não devem ser capturados por esta rota
+const RESERVED_SLUGS = [
+  'admin',
+  'api',
+  'setup',
+  'preview',
+  'loja',
+  'pagamento',
+  'create',
+  'store',
+  'about',
+  'templates',
+];
+
 // Mock: em produção, buscar do banco de dados
-async function getPageData(_slug: string) {
+async function getPageData(slug: string) {
+  // Verificar se é um slug reservado
+  if (RESERVED_SLUGS.includes(slug.toLowerCase())) {
+    return null;
+  }
+  
   // TODO: Buscar dados do banco de dados baseado no slug
   // Por enquanto, retorna um mock
   
