@@ -1,5 +1,6 @@
 import React from 'react';
 import '@/styles/globals.css';
+import { Providers } from '@/components/providers';
 
 export default function RootLayout({
   children,
@@ -15,7 +16,7 @@ export default function RootLayout({
         <title>VitrineFast - Sua Vitrine Digital</title>
       </head>
       <body>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

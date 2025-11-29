@@ -16,25 +16,36 @@ export const authOptions: NextAuthOptions = {
           throw new Error('Invalid credentials');
         }
 
+        // ✅ SECURITY: Normalize email to lowercase
+        const normalizedEmail = credentials.email.toLowerCase().trim();
+
+        console.log('[AUTH] Login attempt:', normalizedEmail);
+
         const user = await prisma.user.findFirst({
           where: {
-            email: credentials.email,
-            deletedAt: null, // ✅ SECURITY: Exclude soft-deleted users
+            email: normalizedEmail,
+            deletedAt: null,
           },
           include: { tenant: true },
         });
 
+        console.log('[AUTH] User found:', !!user, user?.email);
+
         if (!user || !user.isActive) {
+          console.log('[AUTH] User not found or inactive');
           throw new Error('User not found or inactive');
         }
 
-        // ✅ SECURITY: Constant-time password comparison to prevent timing attacks
+        // ✅ SECURITY: Constant-time password comparison
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
           user.password
         );
 
+        console.log('[AUTH] Password valid:', isPasswordValid);
+
         if (!isPasswordValid) {
+          console.log('[AUTH] Invalid password for user:', normalizedEmail);
           throw new Error('Invalid password');
         }
 
@@ -49,7 +60,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: `${user.firstName} ${user.lastName}`,
           role: user.role,
-          tenantId: user.tenantId,
+          tenantId: user.tenantId || undefined, // Convert null to undefined
         };
       },
     }),
