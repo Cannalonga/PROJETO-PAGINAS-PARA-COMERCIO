@@ -37,16 +37,24 @@ const VALID_IMAGE_SIGNATURES: { [key: string]: string[] } = {
   '89504e47': ['image/png'],          // PNG
   '47494638': ['image/gif'],          // GIF
   '52494646': ['image/webp'],         // WEBP (RIFF header)
+  '424d': ['image/bmp'],              // BMP
+  '49492a00': ['image/tiff'],         // TIFF (little-endian)
+  '4d4d002a': ['image/tiff'],         // TIFF (big-endian)
+  '00000020': ['image/heic', 'image/heif'], // HEIC/HEIF (ftyp box)
+  '0000001c': ['image/heic', 'image/heif'], // HEIC/HEIF variant
 };
 
 function validateImageMagicBytes(buffer: Buffer): boolean {
-  const hex = buffer.slice(0, 4).toString('hex');
+  const hex = buffer.slice(0, 8).toString('hex');
   
   for (const signature of Object.keys(VALID_IMAGE_SIGNATURES)) {
     if (hex.startsWith(signature)) {
       return true;
     }
   }
+  
+  // Aceitar também se o cropper já converteu para JPEG (começa com ffd8)
+  if (hex.startsWith('ffd8')) return true;
   
   return false;
 }

@@ -9,7 +9,7 @@ import { withAuthHandler } from '@/lib/auth/with-auth-handler';
 import { errorResponse, successResponse } from '@/utils/helpers';
 import { randomUUID } from 'crypto';
 import { defaultUploadConfig } from '@/lib/validations/uploads';
-import { enforceRateLimitProfile } from '@/lib/rate-limit-helpers';
+import { enforceRateLimitProfile } from '@/lib/rate-limit';
 
 /**
  * Stub: uploadToS3 - Replace with your actual S3 implementation
@@ -31,14 +31,15 @@ async function uploadToS3(config: {
  * ✅ SECURITY: Requires authentication
  * ✅ Validates file type and size
  * ✅ Generates random filename (prevents path traversal)
- * ✅ Stores file in tenant-specific directory
- * ✅ Rate limiting: 10 uploads per hour per tenant
+ * ✅ Stores file in tenant-specific directory (or temp for setup)
+ * ✅ Rate limiting: 10 uploads per hour per tenant/user
  */
 export const POST = withAuthHandler(
-  async ({ tenant, req }) => {
+  async ({ tenant, req, session }) => {
     try {
-      // ✅ SECURITY: Rate limiting (10 uploads per hour per tenant)
-      const rateLimitKey = `uploads:${tenant.id}`;
+      // ✅ SECURITY: Rate limiting (10 uploads per hour per tenant or user)
+      // If tenant exists, limit by tenant. If not (setup flow), limit by user.
+      const rateLimitKey = tenant ? `uploads:${tenant.id}` : `uploads:user:${session.id}`;
       const rateLimited = await enforceRateLimitProfile(req, rateLimitKey, 'upload');
       if (rateLimited) return rateLimited;
 
@@ -77,8 +78,11 @@ export const POST = withAuthHandler(
       const extension = file.name.split('.').pop() || 'jpg';
       const finalFilename = `${randomFilename}.${extension}`;
 
-      // ✅ SECURITY: Store in tenant-specific directory
-      const key = `tenants/${tenant.id}/images/${finalFilename}`;
+      // ✅ SECURITY: Store in tenant-specific directory or temp user directory
+      // During setup, tenant might not exist yet.
+      const key = tenant
+        ? `tenants/${tenant.id}/images/${finalFilename}`
+        : `temp/${session.id}/images/${finalFilename}`;
 
       // Convert File to Buffer
       const arrayBuffer = await file.arrayBuffer();
@@ -112,6 +116,6 @@ export const POST = withAuthHandler(
         { status: 500 }
       );
     }
-  },
-  { requireTenant: true }
+  }
+  // Removed { requireTenant: true } to allow uploads during setup
 );

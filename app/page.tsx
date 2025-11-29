@@ -38,7 +38,7 @@ export default function Home() {
               Dúvidas
             </a>
 
-            <Link href="#pricing" className="text-slate-300 hover:text-slate-50 font-medium">
+            <Link href="/auth/login" className="text-slate-300 hover:text-slate-50 font-medium">
               Entrar
             </Link>
             <Link
