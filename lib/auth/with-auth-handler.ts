@@ -67,25 +67,30 @@ export function withAuthHandler(
       // ✅ SECURITY: Get tenant context
       let tenant: { id: string; slug: string; name: string } | null = null;
 
-      if (user.tenantId || options?.requireTenant) {
-        if (!user.tenantId) {
-          return NextResponse.json(
-            errorResponse('Contexto de tenant ausente'),
-            { status: 403 }
-          );
-        }
-
+      // Só buscar tenant se requireTenant=true OU se tenantId existe
+      if (user.tenantId) {
         tenant = await prisma.tenant.findUnique({
           where: { id: user.tenantId },
           select: { id: true, slug: true, name: true },
         });
 
-        if (!tenant) {
+        // Se tenant não existe mas era obrigatório, retorna erro
+        if (!tenant && options?.requireTenant) {
           return NextResponse.json(
             errorResponse('Tenant não encontrado'),
             { status: 404 }
           );
         }
+        
+        // Se tenant não existe e não era obrigatório, limpa o tenantId
+        if (!tenant) {
+          user.tenantId = null;
+        }
+      } else if (options?.requireTenant) {
+        return NextResponse.json(
+          errorResponse('Contexto de tenant ausente'),
+          { status: 403 }
+        );
       }
 
       return handler({
