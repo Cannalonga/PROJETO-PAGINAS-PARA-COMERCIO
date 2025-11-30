@@ -50,7 +50,7 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
           title: 'Secret Page - Tenant A',
           slug: 'secret-a',
           description: 'Only visible to Tenant A',
-          content: 'Confidential content',
+          content: { sections: [] },
           tenantId: TENANT_A,
         },
       })
@@ -80,7 +80,9 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
       return await prisma.user.create({
         data: {
           email: 'user-a@test.com',
-          name: 'User A',
+          password: 'hashed-password-a',
+          firstName: 'User',
+          lastName: 'A',
           tenantId: TENANT_A,
         },
       })
@@ -91,7 +93,9 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
       return await prisma.user.create({
         data: {
           email: 'user-b@test.com',
-          name: 'User B',
+          password: 'hashed-password-b',
+          firstName: 'User',
+          lastName: 'B',
           tenantId: TENANT_B,
         },
       })
@@ -123,7 +127,7 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
           title: 'Original Title',
           slug: 'test-update-a',
           description: 'Test',
-          content: 'Content A',
+          content: { sections: [] },
           tenantId: TENANT_A,
         },
       })
@@ -165,20 +169,8 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
           title: 'Page A',
           slug: 'delete-test-a',
           description: 'Test',
-          content: 'Content',
+          content: { sections: [] },
           tenantId: TENANT_A,
-        },
-      })
-    })
-
-    const pageB = await withTenant(TENANT_B, async () => {
-      return await prisma.page.create({
-        data: {
-          title: 'Page B',
-          slug: 'delete-test-b',
-          description: 'Test',
-          content: 'Content',
-          tenantId: TENANT_B,
         },
       })
     })
@@ -215,7 +207,7 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
             title: `Page A-${i}`,
             slug: `count-test-a-${i}`,
             description: 'Test',
-            content: 'Content',
+            content: { sections: [] },
             tenantId: TENANT_A,
           },
         })
@@ -230,7 +222,7 @@ describe('🔒 Multi-Tenant Isolation Tests', () => {
             title: `Page B-${i}`,
             slug: `count-test-b-${i}`,
             description: 'Test',
-            content: 'Content',
+            content: { sections: [] },
             tenantId: TENANT_B,
           },
         })

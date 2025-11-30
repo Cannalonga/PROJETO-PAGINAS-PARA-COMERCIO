@@ -1,4 +1,3 @@
-import { readFileSync } from 'fs'
 import * as FileType from 'file-type'
 
 /**
@@ -17,7 +16,7 @@ export const UPLOAD_LIMITS = {
   blockedExtensions: ['.svg', '.svgz', '.xml', '.html', '.js', '.exe'],
 }
 
-export const MIME_TYPE_MAP: Record<string, string[]> = {
+export const MIME_TYPE_MAP: Record<string, number[]> = {
   'image/jpeg': [0xff, 0xd8, 0xff],
   'image/png': [0x89, 0x50, 0x4e, 0x47],
   'image/webp': [0x52, 0x49, 0x46, 0x46], // RIFF header
@@ -28,12 +27,8 @@ export const MIME_TYPE_MAP: Record<string, string[]> = {
  * Previne upload de arquivos disfarçados com extensão falsa
  */
 export async function validateMagicBytes(
-  buffer: Buffer,
-  mimeType: string
+  buffer: Buffer
 ): Promise<boolean> {
-  // Converter para Uint8Array
-  const bytes = new Uint8Array(buffer.slice(0, 4))
-
   const fileType = await FileType.fileTypeFromBuffer(buffer)
 
   if (!fileType) {
@@ -141,7 +136,7 @@ export async function validateUpload(
     validateSvgRejection(filename, buffer)
 
     // 5. Validar magic bytes (assinatura de arquivo)
-    const magicBytesValid = await validateMagicBytes(buffer, mimeType)
+    const magicBytesValid = await validateMagicBytes(buffer)
     if (!magicBytesValid) {
       return {
         valid: false,
