@@ -1,19 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function LoginFormContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { data: session } = useSession();
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+
+    // Redirecionar baseado na role após login
+    useEffect(() => {
+        if (session?.user) {
+            const role = (session.user as any).role;
+            if (role === 'SUPERADMIN') {
+                router.push('/admin');
+            } else {
+                router.push(callbackUrl);
+            }
+        }
+    }, [session, router, callbackUrl]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,9 +44,8 @@ export default function LoginFormContent() {
             if (result?.error) {
                 setError('Email ou senha inválidos');
                 setLoading(false);
-            } else {
-                router.push(callbackUrl);
             }
+            // Se login foi sucesso, o useEffect acima vai redirecionar
         } catch (err) {
             setError('Ocorreu um erro ao fazer login');
             setLoading(false);
