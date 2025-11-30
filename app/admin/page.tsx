@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession, signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 interface Store {
@@ -14,52 +16,28 @@ interface Store {
   pageTitle?: string;
 }
 
-// Credencial padrão de admin (em produção, usar autenticação real)
-const ADMIN_PASSWORD = 'vitrinafast-admin-2024';
-
 export default function AdminDashboard() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [stores, setStores] = useState<Store[]>([]);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({ total: 0, active: 0, draft: 0, vip: 0 });
 
-  // Verificar se já está autenticado (localStorage)
+  // Redirecionar se não for SUPERADMIN
   useEffect(() => {
-    const auth = localStorage.getItem('admin_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-      loadStores();
-    }
-  }, []);
-
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      localStorage.setItem('admin_auth', 'true');
-      setError('');
-      loadStores();
+    if (status === 'loading') return;
+    
+    if (!session || (session.user as any)?.role !== 'SUPERADMIN') {
+      router.push('/auth/login');
     } else {
-      setError('Senha incorreta');
+      loadStores();
     }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('admin_auth');
-    setStores([]);
-  };
+  }, [session, status, router]);
 
   const loadStores = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/stores', {
-        headers: {
-          'x-admin-secret': ADMIN_PASSWORD,
-        },
-      });
+      const response = await fetch('/api/admin/stores');
       
       if (response.ok) {
         const data = await response.json();
@@ -73,6 +51,10 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut({ redirect: true, callbackUrl: '/' });
+  };
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -83,54 +65,18 @@ export default function AdminDashboard() {
     });
   };
 
-  // Tela de Login
-  if (!isAuthenticated) {
+  // Carregando
+  if (status === 'loading') {
     return (
-      <main className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="h-16 w-16 bg-sky-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
-              🔐
-            </div>
-            <h1 className="text-2xl font-bold text-slate-50">Admin Dashboard</h1>
-            <p className="text-slate-400 mt-2">VitrineFast - Área Administrativa</p>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
-                Senha de Administrador
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-slate-50 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                placeholder="Digite a senha"
-                autoFocus
-              />
-            </div>
-
-            {error && (
-              <p className="text-red-400 text-sm text-center">{error}</p>
-            )}
-
-            <button
-              type="submit"
-              className="w-full py-3 bg-sky-500 text-white font-semibold rounded-xl hover:bg-sky-400 transition"
-            >
-              Entrar
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <Link href="/" className="text-slate-400 hover:text-slate-300 text-sm">
-              ← Voltar para o site
-            </Link>
-          </div>
-        </div>
+      <main className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <div className="text-slate-400">Carregando...</div>
       </main>
     );
+  }
+
+  // Não autorizado
+  if (!session || (session.user as any)?.role !== 'SUPERADMIN') {
+    return null;
   }
 
   // Dashboard
@@ -145,7 +91,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h1 className="font-bold text-lg">Admin Dashboard</h1>
-              <p className="text-xs text-slate-400">VitrineFast</p>
+              <p className="text-xs text-slate-400">VitrineFast - Painel de Controle</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -166,6 +112,12 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 py-8">
+        {/* User Info */}
+        <div className="mb-8 p-4 bg-slate-800/50 border border-slate-700 rounded-lg">
+          <p className="text-sm text-slate-400">Usuário autenticado:</p>
+          <p className="text-lg font-bold text-sky-400">{session?.user?.email}</p>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
@@ -280,8 +232,7 @@ export default function AdminDashboard() {
 
         {/* Footer Info */}
         <div className="mt-8 text-center text-sm text-slate-500">
-          <p>🔒 Dashboard seguro - Acesso restrito a administradores</p>
-          <p className="mt-1">Senha padrão: <code className="bg-slate-800 px-2 py-1 rounded">vitrinafast-admin-2024</code></p>
+          <p>🔒 Dashboard seguro - Acesso restrito a administradores SUPERADMIN</p>
         </div>
       </div>
     </main>
