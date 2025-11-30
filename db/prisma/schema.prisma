@@ -132,6 +132,10 @@ model User {
   lastName  String?  @db.VarChar(100)
   role      UserRole @default(CLIENTE_USER)
   
+  // ✅ Secondary email for password recovery
+  secondaryEmail String? @db.VarChar(255)
+  secondaryEmailVerified Boolean @default(false)
+  
   // Account Status
   isActive  Boolean  @default(true)
   emailVerified Boolean @default(false)
@@ -140,8 +144,13 @@ model User {
   tenantId  String?
   tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   
+  // ✅ Password reset tokens
+  passwordResetToken String? @db.VarChar(500)
+  passwordResetExpires DateTime?
+  
   // Audit
   lastLoginAt DateTime?
+  lastPasswordChangeAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   deletedAt DateTime? // Soft delete timestamp
@@ -154,6 +163,7 @@ model User {
   @@index([tenantId])
   @@index([role])
   @@index([deletedAt])
+  @@index([passwordResetToken])
 }
 
 // ============================================================================
