@@ -9,7 +9,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 
-export async function POST(req: NextRequest) {
+export async function POST(_req: NextRequest) {
   // 🔒 SECURITY: Apenas em development
   if (process.env.NODE_ENV !== 'development') {
     return NextResponse.json(
@@ -22,26 +22,44 @@ export async function POST(req: NextRequest) {
     const newPassword = '123456';
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-    const user = await prisma.user.upsert({
+    // First find by email
+    const existingUser = await prisma.user.findFirst({
       where: { email: 'admin@teste' },
-      update: {
-        password: hashedPassword,
-        isActive: true,
-      },
-      create: {
-        email: 'admin@teste',
-        password: hashedPassword,
-        firstName: 'Admin',
-        lastName: 'Teste',
-        role: 'SUPERADMIN',
-        isActive: true,
-      },
-      select: {
-        id: true,
-        email: true,
-        role: true,
-      },
     });
+
+    let user;
+    if (existingUser) {
+      // Update existing user
+      user = await prisma.user.update({
+        where: { id: existingUser.id },
+        data: {
+          password: hashedPassword,
+          isActive: true,
+        },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+        },
+      });
+    } else {
+      // Create new user
+      user = await prisma.user.create({
+        data: {
+          email: 'admin@teste',
+          password: hashedPassword,
+          firstName: 'Admin',
+          lastName: 'Teste',
+          role: 'SUPERADMIN',
+          isActive: true,
+        },
+        select: {
+          id: true,
+          email: true,
+          role: true,
+        },
+      });
+    }
 
     console.log('[DEV] Test user reset:', user);
 
