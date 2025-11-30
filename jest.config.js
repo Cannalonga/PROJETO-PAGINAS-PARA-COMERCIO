@@ -1,9 +1,12 @@
 /** @type {import('jest').Config} */
 const config = {
   preset: 'ts-jest',
-  testEnvironment: 'jsdom',
+  testEnvironment: 'node',
   roots: ['<rootDir>'],
-  testMatch: ['**/__tests__/**/*.test.ts', '**/?(*.)+(spec|test).ts'],
+  testMatch: [
+    '**/__tests__/**/*.test.ts',
+    '**/tests/**/*.e2e.ts',
+  ],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   collectCoverageFrom: [
     'lib/**/*.{ts,tsx}',
@@ -21,10 +24,6 @@ const config = {
   },
   setupFilesAfterEnv: [],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
-  extensionsToTreatAsEsm: ['.ts'],
-  // ts-jest configuration (modern way without globals)
-  preset: 'ts-jest',
-  testEnvironment: 'jsdom',
 };
 
 module.exports = config;
