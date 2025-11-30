@@ -129,7 +129,7 @@ jobs:
   # JOB 6: Build Check
   # ============================================================================
   build:
-    name: 🔨 Next.js build
+    name: Build Next.js build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -146,25 +146,22 @@ jobs:
 
       - name: Run build
         run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+        # Note: DATABASE_URL and NEXTAUTH_SECRET need to be added as GitHub Secrets
+        # in repo Settings > Secrets and variables > Actions
 
   # ============================================================================
   # JOB 7: Snyk (se token disponível)
   # ============================================================================
   snyk:
-    name: 🐍 Snyk vulnerability scan
+    name: Snyk vulnerability scan
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' }}
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Run Snyk scan
         uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         with:
           args: --severity-threshold=high
         continue-on-error: true
