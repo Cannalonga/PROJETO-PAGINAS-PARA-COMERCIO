@@ -48,7 +48,7 @@ interface SavedDraft {
 }
 
 export default function SetupPage() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(1);
