@@ -1,5 +1,3 @@
-import { PrismaClient } from '@prisma/client'
-
 /**
  * Prisma Middleware para enforçar isolamento multi-tenant
  * Automaticamente injeta tenantId em queries para Page, User, TenantData
@@ -43,7 +41,7 @@ export async function tenantMiddleware(
   params: any,
   next: (params: any) => Promise<any>
 ) {
-  const { model, action, args, dataPath } = params
+  const { model, action, args } = params
 
   // ============================================================================
   // 1. MODELOS NÃO TENANT-AWARE (ex: Session, Account, etc)
