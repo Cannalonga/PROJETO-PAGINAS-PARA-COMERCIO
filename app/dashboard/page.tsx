@@ -58,6 +58,12 @@ export default function DashboardPage() {
                         <span className="text-sm text-slate-400 hidden md:block">
                             Olá, {session?.user?.name}
                         </span>
+                        <Link
+                            href="/auth/change-password"
+                            className="text-sm text-sky-400 hover:text-sky-300 transition"
+                        >
+                            🔑 Alterar Senha
+                        </Link>
                         <button
                             onClick={() => signOut({ callbackUrl: '/' })}
                             className="text-sm text-red-400 hover:text-red-300 transition"

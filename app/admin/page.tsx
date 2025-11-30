@@ -95,6 +95,12 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-4">
+            <Link
+              href="/auth/change-password"
+              className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition text-sm"
+            >
+              🔑 Alterar Senha
+            </Link>
             <button
               onClick={loadStores}
               className="px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700 transition text-sm"
@@ -231,8 +237,32 @@ export default function AdminDashboard() {
         </div>
 
         {/* Footer Info */}
-        <div className="mt-8 text-center text-sm text-slate-500">
+        <div className="mt-8 text-center text-sm text-slate-500 space-y-3">
           <p>🔒 Dashboard seguro - Acesso restrito a administradores SUPERADMIN</p>
+          
+          <div className="pt-4 border-t border-slate-800 space-y-2">
+            <p className="font-medium text-slate-400">📞 Contato</p>
+            <div className="flex items-center justify-center gap-2">
+              <span>📧</span>
+              <a 
+                href="mailto:canna.vendasonline@gmail.com" 
+                className="text-sky-400 hover:text-sky-300"
+              >
+                canna.vendasonline@gmail.com
+              </a>
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <span>💬</span>
+              <a 
+                href="https://wa.me/5521990533886" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-sky-400 hover:text-sky-300"
+              >
+                (21) 99053-3886
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </main>
