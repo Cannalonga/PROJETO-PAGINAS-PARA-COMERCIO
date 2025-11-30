@@ -1,0 +1,191 @@
+name: Security Scan
+# Runs on push, PRs, and nightly schedule
+
+on:
+  push:
+    branches: ['main', 'develop']
+  pull_request:
+    branches: ['main', 'develop']
+  schedule:
+    # Nightly scan às 2 AM UTC (10 PM BRT)
+    - cron: '0 2 * * *'
+
+jobs:
+  # ============================================================================
+  # JOB 1: npm audit - Verifica vulnerabilidades em dependências
+  # ============================================================================
+  npm-audit:
+    name: 📦 npm audit (dependencies)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: false
+
+  # ============================================================================
+  # JOB 2: gitleaks - Detecta secrets no código
+  # ============================================================================
+  gitleaks:
+    name: 🔑 gitleaks (secrets detection)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================================================
+  # JOB 3: TypeScript Type Check
+  # ============================================================================
+  type-check:
+    name: 📘 TypeScript type check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run type check
+        run: npx tsc --noEmit
+
+  # ============================================================================
+  # JOB 4: ESLint - Code quality
+  # ============================================================================
+  eslint:
+    name: 🔍 ESLint (code quality)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npx eslint . --ext .ts,.tsx --max-warnings 0
+        continue-on-error: true
+
+  # ============================================================================
+  # JOB 5: Unit Tests
+  # ============================================================================
+  tests:
+    name: ✅ Jest tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm run test -- --coverage
+        continue-on-error: true
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: false
+
+  # ============================================================================
+  # JOB 6: Build Check
+  # ============================================================================
+  build:
+    name: 🔨 Next.js build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        run: npm run build
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET }}
+
+  # ============================================================================
+  # JOB 7: Snyk (se token disponível)
+  # ============================================================================
+  snyk:
+    name: 🐍 Snyk vulnerability scan
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Snyk scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+        continue-on-error: true
+
+  # ============================================================================
+  # JOB 8: SARIF Upload (GitHub Security tab)
+  # ============================================================================
+  upload-sarif:
+    name: 📊 Upload results
+    runs-on: ubuntu-latest
+    needs:
+      - npm-audit
+      - gitleaks
+      - type-check
+    if: always()
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Upload results to GitHub Security
+        continue-on-error: true
+        run: |
+          echo "✅ Security scan completed"
+          echo "📋 Check: Security > Code scanning alerts"

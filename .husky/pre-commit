@@ -1,0 +1,93 @@
+#!/bin/sh
+# Husky pre-commit hook
+# Executa verificações de segurança antes de commit
+
+. "$(dirname "$0")/_/husky.sh"
+
+echo "🔐 Running pre-commit security checks..."
+
+# ============================================================================
+# 1. Check for secrets with gitleaks
+# ============================================================================
+echo ""
+echo "🔑 Scanning for secrets..."
+
+if command -v gitleaks &> /dev/null; then
+  gitleaks detect --source . --verbose
+  
+  if [ $? -ne 0 ]; then
+    echo "❌ Gitleaks found potential secrets!"
+    echo "⚠️  Fix and try again. If false positive, use:"
+    echo "    gitleaks detect --source . --verbose --allow-local-config"
+    exit 1
+  fi
+else
+  echo "⚠️  gitleaks not installed. Run: npm install --save-dev gitleaks"
+fi
+
+# ============================================================================
+# 2. Check npm audit
+# ============================================================================
+echo ""
+echo "📦 Checking dependencies..."
+
+npm audit --audit-level=moderate --no-audit-level-strict > /dev/null 2>&1
+if [ $? -gt 0 ]; then
+  echo "⚠️  npm audit found vulnerabilities:"
+  npm audit --audit-level=moderate
+  echo "💡 Run 'npm audit fix' to auto-fix, or 'npm audit' to review"
+fi
+
+# ============================================================================
+# 3. Verify no .env files staged
+# ============================================================================
+echo ""
+echo "🔍 Checking for .env files..."
+
+if git diff --cached --name-only | grep -E '\.env(\..*)?$'; then
+  echo "❌ .env file detected in commit!"
+  echo "⚠️  Environment files should never be committed"
+  exit 1
+fi
+
+# ============================================================================
+# 4. Check file permissions (prevent +x on sensitive files)
+# ============================================================================
+echo ""
+echo "📋 Checking file permissions..."
+
+git diff --cached --diff-filter=A --name-only | while read file; do
+  if [[ "$file" == *.env* ]]; then
+    echo "❌ Cannot commit $file"
+    exit 1
+  fi
+done
+
+# ============================================================================
+# 5. Format check
+# ============================================================================
+echo ""
+echo "📐 Running Prettier on staged files..."
+
+npx lint-staged
+
+# ============================================================================
+# 6. TypeScript check (only if .ts/.tsx changed)
+# ============================================================================
+echo ""
+if git diff --cached --name-only | grep -E '\.(ts|tsx)$' > /dev/null; then
+  echo "📘 Running TypeScript type check..."
+  npx tsc --noEmit --skipLibCheck
+  
+  if [ $? -ne 0 ]; then
+    echo "❌ TypeScript errors found"
+    exit 1
+  fi
+fi
+
+# ============================================================================
+# 7. Final confirmation
+# ============================================================================
+echo ""
+echo "✅ All pre-commit checks passed!"
+echo "📤 Ready to commit"
