@@ -75,7 +75,7 @@ export const POST = withAuthHandler(async ({ req, session }) => {
 
     console.log('[API/STORES] Store created:', store.id);
 
-    // ✅ VINCULAR USUÁRIO À LOJA COM VALIDAÇÃO E TRANSAÇÃO ATÔMICA
+    // ✅ VINCULAR USUÁRIO À LOJA COM VALIDAÇÃO ATÔMICA
     // Verificar se usuário existe antes de atualizar
     const userExists = await prisma.user.findUnique({
       where: { id: session.id },
@@ -84,7 +84,7 @@ export const POST = withAuthHandler(async ({ req, session }) => {
 
     if (!userExists) {
       console.error(`[API/STORES] User ID ${session.id} not found in database`);
-      // Remover tenant criado se usuário não existir
+      // Remover tenant criado se usuário não existir (rollback)
       await prisma.tenant.delete({
         where: { id: store.id },
       }).catch(e => console.error('Failed to rollback tenant:', e));
@@ -100,7 +100,7 @@ export const POST = withAuthHandler(async ({ req, session }) => {
       where: { id: session.id },
       data: {
         tenantId: store.id,
-        role: 'SUPERADMIN', // O criador é o dono
+        role: 'SUPERADMIN',
       },
     });
 

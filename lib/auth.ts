@@ -19,8 +19,6 @@ export const authOptions: NextAuthOptions = {
         // ✅ SECURITY: Normalize email to lowercase
         const normalizedEmail = credentials.email.toLowerCase().trim();
 
-        console.log('[AUTH] Login attempt:', normalizedEmail);
-
         const user = await prisma.user.findFirst({
           where: {
             email: normalizedEmail,
