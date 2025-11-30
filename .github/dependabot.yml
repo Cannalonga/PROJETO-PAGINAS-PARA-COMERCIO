@@ -1,34 +1,50 @@
 version: 2
 updates:
-  # Enable version updates for npm
-  - package-ecosystem: 'npm'
+  # npm - Check weekly for vulnerabilities
+  - package-ecosystem: npm
     directory: '/'
     schedule:
-      interval: 'weekly'
-      day: 'monday'
+      interval: weekly
+      day: monday
       time: '03:00'
-    open-pull-requests-limit: 10
-    reviewers:
-      - 'Cannalonga'
     commit-message:
-      prefix: 'deps'
+      prefix: 'chore(deps)'
       include: 'scope'
+    pull-request-branch-name:
+      separator: '/'
     allow:
-      - dependency-type: 'all'
-    ignore:
-      # Ignore major version updates for stability
-      - dependency-name: 'next'
-        update-types: ['version-update:semver-major']
+      - dependency-type: 'direct'
+      - dependency-type: 'indirect'
+    reviewers:
+      - 'rafaelcannalonga'
+    labels:
+      - 'dependencies'
+      - 'security'
+    open-pull-requests-limit: 5
+    auto-commit: false
+    groups:
+      patch:
+        patterns:
+          - 'patch'
+      minor:
+        patterns:
+          - 'minor'
+      major:
+        patterns:
+          - 'major'
 
-  # Security updates (always apply)
-  - package-ecosystem: 'npm'
+  # GitHub Actions - Check weekly for updates
+  - package-ecosystem: github-actions
     directory: '/'
     schedule:
-      interval: 'daily'
-    open-pull-requests-limit: 5
-    reviewers:
-      - 'Cannalonga'
+      interval: weekly
+      day: monday
+      time: '03:00'
     commit-message:
-      prefix: 'security'
-      include: 'scope'
-    only-allow-prod-updates: false
+      prefix: 'ci(actions)'
+    reviewers:
+      - 'rafaelcannalonga'
+    labels:
+      - 'ci'
+    open-pull-requests-limit: 3
+
