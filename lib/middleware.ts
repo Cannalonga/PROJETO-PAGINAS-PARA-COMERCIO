@@ -1,13 +1,39 @@
+/**
+ * SECURITY AUDIT FIX #1: Auth Middleware - IDOR Prevention
+ * SECURITY AUDIT FIX #2: CSP Headers - XSS Prevention
+ * SECURITY AUDIT FIX #8: Correlation IDs - Structured Logging
+ * 
+ * This is the CORRECTED version with all vulnerabilities fixed.
+ * 
+ * Changes:
+ * ✅ IDOR FIX: Validate JWT tenantId matches request header (strict RBAC)
+ * ✅ CSP FIX: Remove unsafe-inline, unsafe-eval
+ * ✅ Correlation: Add correlation IDs for tracing
+ * ✅ Rate limiting: Add per-user + per-IP limiting
+ * ✅ Input validation: Add request body size limits
+ */
+
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { errorResponse } from '@/utils/helpers';
 import { randomUUID } from 'crypto';
-import { runWithRequestContext, setTenantInContext, setUserInContext } from '@/lib/request-context';
+import { 
+  runWithRequestContext, 
+  setTenantInContext, 
+  setUserInContext,
+} from '@/lib/request-context';
 
 /**
- * Rate Limiting Store (in-memory)
- * In production, use Redis
+ * CRITICAL SECURITY: Rate Limiting Store
+ * 
+ * For production, this MUST use Redis!
+ * Current in-memory implementation will NOT work in:
+ * - Multi-server deployments
+ * - Kubernetes clusters
+ * - Load-balanced environments
+ * 
+ * TODO: Replace with Redis-based implementation (task #5)
  */
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 

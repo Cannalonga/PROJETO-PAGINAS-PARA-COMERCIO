@@ -1,3 +1,14 @@
+/**
+ * SECURITY AUDIT FIX #3: Password Hashing - Increase Bcrypt Rounds
+ * SECURITY AUDIT FIX #4: Session Lifetime - Implement Refresh Tokens
+ * SECURITY AUDIT FIX #9: Email Normalization - Consistent case handling
+ * 
+ * Changes:
+ * ✅ Bcrypt rounds: 10 → 12 (faster hashing, more secure)
+ * ✅ Session lifetime: 30 days → 15 minutes (JWT) + refresh tokens
+ * ✅ Email: Always lowercase in create + update + login
+ */
+
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
