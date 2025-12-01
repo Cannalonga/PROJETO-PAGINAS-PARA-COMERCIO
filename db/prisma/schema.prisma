@@ -290,6 +290,47 @@ model AnalyticsEvent {
 }
 
 // ============================================================================
+// TRIAL DONATIONS (Free Trial System)
+// ============================================================================
+
+model TrialDonation {
+  id            String   @id @default(cuid())
+  
+  email         String   @unique @db.VarChar(255)
+  duration      Int      // 7, 15, or 30 days
+  expiresAt     DateTime
+  
+  isActive      Boolean  @default(true)
+  grantedAt     DateTime @default(now())
+  grantedBy     String   @db.VarChar(255) // userId who granted
+  
+  revokedAt     DateTime?
+  revokedBy     String?  @db.VarChar(255) // userId who revoked
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@index([email])
+  @@index([expiresAt])
+  @@index([isActive])
+}
+
+// ============================================================================
+// TRIAL CONFIGURATION (Default Free Trial for New Users)
+// ============================================================================
+
+model TrialConfig {
+  id            String   @id @default(cuid())
+  
+  // Only one record should exist
+  isEnabled     Boolean  @default(true)
+  defaultDays   Int      @default(7)
+  
+  updatedAt     DateTime @updatedAt
+  updatedBy     String   @db.VarChar(255) // userId who last updated
+}
+
+// ============================================================================
 // AUDIT LOG
 // ============================================================================
 
