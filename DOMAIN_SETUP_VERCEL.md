@@ -1,7 +1,7 @@
-# 🌐 APONTAR DOMÍNIO vitrinedigitalcc.online PARA VERCEL
+# 🌐 APONTAR DOMÍNIO vitrineweb.online PARA VERCEL
 
 **Data**: December 1, 2025  
-**Domínio**: vitrinedigitalcc.online  
+**Domínio**: vitrineweb.online  
 **Hosting**: Vercel  
 **Tempo estimado**: 10 minutos + 24-48h de espera
 
@@ -48,7 +48,7 @@ Menu esquerdo → Domains
 ### 5. Adicionar novo domínio
 ```
 Clique em "Add" ou "Add Domain"
-Escreva: vitrinedigitalcc.online
+Escreva: vitrineweb.online
 Clique em "Add"
 ```
 
@@ -147,7 +147,7 @@ TTL: 3600 (ou padrão)
 ### Voltar ao Vercel
 
 ```
-Settings → Domains → vitrinedigitalcc.online
+Settings → Domains → vitrineweb.online
 ```
 
 ### Status pode ser:
@@ -171,7 +171,7 @@ Settings → Domains → vitrinedigitalcc.online
 
 **Abra no navegador:**
 ```
-https://vitrinedigitalcc.online
+https://vitrineweb.online
 ```
 
 **Deve mostrar sua aplicação!**
@@ -197,7 +197,7 @@ URL antiga: https://seu-projeto.vercel.app/api/webhooks/mercadopago
 
 **Criar novo webhook:**
 ```
-URL nova: https://vitrinedigitalcc.online/api/webhooks/mercadopago
+URL nova: https://vitrineweb.online/api/webhooks/mercadopago
 Eventos: payment.created, payment.updated
 Salvar
 ```
@@ -231,7 +231,7 @@ process.env.NEXT_PUBLIC_APP_URL
 ## 📋 CHECKLIST
 
 ```
-☐ Registrou vitrinedigitalcc.online (✅ feito)
+☐ Registrou vitrineweb.online (✅ feito)
 ☐ Acessou Vercel → Settings → Domains
 ☐ Adicionou o domínio no Vercel
 ☐ Vercel gerou os DNS records
