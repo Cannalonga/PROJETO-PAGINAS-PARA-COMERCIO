@@ -59,7 +59,7 @@ MERCADOPAGO_ACCESS_TOKEN="APP_USR-[cole aqui o access token]"
 MERCADOPAGO_PUBLIC_KEY="APP_USR-pub-[cole aqui o public key]"
 
 # App URL (será usado no webhook)
-NEXT_PUBLIC_APP_URL="https://vitrinedigitalcc.online"
+NEXT_PUBLIC_APP_URL="https://vitrineweb.online"
 ```
 
 ### ⚠️ **NUNCA** commit `.env.local` no Git!
@@ -73,7 +73,7 @@ Ele já deve estar no .gitignore
 
 ### **IMPORTANTE**: Espere o domínio propagar primeiro!
 
-Quando `vitrinedigitalcc.online` estiver funcionando:
+Quando `vitrineweb.online` estiver funcionando:
 
 ### 1. Ir em Settings → Webhooks
 ```
@@ -93,7 +93,7 @@ Clique em "Create New Webhook" ou "Novo Webhook"
 
 ### 4. Preencher dados:
 ```
-URL: https://vitrinedigitalcc.online/api/webhooks/mercadopago
+URL: https://vitrineweb.online/api/webhooks/mercadopago
 
 Eventos:
 ☑️ payment.created
@@ -129,7 +129,7 @@ MERCADOPAGO_WEBHOOK_SECRET="[cole aqui o secret do webhook]"
 MERCADOPAGO_ACCESS_TOKEN="APP_USR-..."
 MERCADOPAGO_PUBLIC_KEY="APP_USR-pub-..."
 MERCADOPAGO_WEBHOOK_SECRET="webhook-secret-..."
-NEXT_PUBLIC_APP_URL="https://vitrinedigitalcc.online"
+NEXT_PUBLIC_APP_URL="https://vitrineweb.online"
 ```
 
 ---
@@ -143,7 +143,7 @@ Settings → Webhooks
 
 ### 2. Procurar pelo webhook novo
 ```
-https://vitrinedigitalcc.online/api/webhooks/mercadopago
+https://vitrineweb.online/api/webhooks/mercadopago
 ```
 
 ### 3. Clicar para ver detalhes
@@ -184,7 +184,7 @@ npm run dev
 
 ### 2. Abrir seu site
 ```
-https://vitrinedigitalcc.online
+https://vitrineweb.online
 ```
 
 ### 3. Testar checkout MercadoPago
@@ -252,7 +252,7 @@ git push origin main
 ```
 ☐ Nameservers do Vercel configurados no Hostinger (✅ feito)
 ☐ Esperou 24-48h para DNS propagar
-☐ Testou: https://vitrinedigitalcc.online (funciona)
+☐ Testou: https://vitrineweb.online (funciona)
 ☐ Vercel mostra "Valid Configuration"
 ☐ Copiou Access Token de produção do MercadoPago
 ☐ Copiou Public Key de produção do MercadoPago
@@ -273,7 +273,7 @@ git push origin main
 Quando tudo estiver pronto:
 
 ```
-✅ https://vitrinedigitalcc.online funciona
+✅ https://vitrineweb.online funciona
 ✅ MercadoPago conectado com credenciais PROD
 ✅ Webhook recebendo transações reais
 ✅ Beta Badge mostrando "Em Desenvolvimento"
@@ -287,7 +287,7 @@ Quando tudo estiver pronto:
 ### ❌ "Webhook não recebe eventos"
 ```
 1. Verificar se .env.local tem MERCADOPAGO_WEBHOOK_SECRET
-2. Verificar se URL no webhook é https://vitrinedigitalcc.online/...
+2. Verificar se URL no webhook é https://vitrineweb.online/...
 3. Verificar se deploy foi feito (git push)
 4. Testar: npm run dev (local)
 ```
