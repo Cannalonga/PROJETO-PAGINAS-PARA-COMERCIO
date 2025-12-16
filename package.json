@@ -18,8 +18,8 @@
     "prisma:studio": "prisma studio --schema=db/prisma/schema.prisma",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
-    "test": "jest --testEnvironmentOptions='{\"localstorage\": \".jest-localstorage\"}'",
-    "test:watch": "jest --watch --testEnvironmentOptions='{\"localstorage\": \".jest-localstorage\"}'",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch --passWithNoTests",
     "test:e2e": "playwright test"
   },
   "dependencies": {

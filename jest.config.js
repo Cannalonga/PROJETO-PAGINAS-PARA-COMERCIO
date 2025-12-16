@@ -1,7 +1,7 @@
 /** @type {import('jest').Config} */
 const config = {
   preset: 'ts-jest',
-  testEnvironment: 'node',
+  testEnvironment: 'jsdom',
   roots: ['<rootDir>'],
   testMatch: [
     '**/__tests__/**/*.test.ts',
@@ -24,9 +24,6 @@ const config = {
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/'],
-  testEnvironmentOptions: {
-    localstorage: '.jest-localstorage',
-  },
   globals: {
     'ts-jest': {
       tsconfig: {
