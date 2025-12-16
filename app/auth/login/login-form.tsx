@@ -128,7 +128,7 @@ export default function LoginFormContent() {
                 <div className="mt-6 pt-6 border-t border-slate-800 text-center">
                     <p className="text-slate-400 text-sm">
                         Não tem uma conta?{' '}
-                        <Link href="/auth/signup" className="text-sky-400 hover:text-sky-300 font-medium">
+                        <Link href="/auth/register" className="text-sky-400 hover:text-sky-300 font-medium">
                             Criar conta
                         </Link>
                     </p>
