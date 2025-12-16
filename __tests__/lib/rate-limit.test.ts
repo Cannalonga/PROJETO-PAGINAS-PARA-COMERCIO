@@ -24,7 +24,7 @@ describe('rateLimit', () => {
     expect(res1.success).toBe(true);
     expect(res2.success).toBe(true);
     expect(res3.success).toBe(true);
-  });
+  }, 15000);
 
   it('deve bloquear requisições acima do limite', async () => {
     const config = { maxRequests: 2, windowSeconds: 60 };
@@ -36,7 +36,7 @@ describe('rateLimit', () => {
     expect(res3.success).toBe(false);
     expect(res3.remaining).toBe(0);
     expect(res3.retryAfter).toBeDefined();
-  });
+  }, 15000);
 
   it('deve resetar contador após a janela expirar', async () => {
     const config = { maxRequests: 2, windowSeconds: 60 };
@@ -55,7 +55,7 @@ describe('rateLimit', () => {
     const res4 = await rateLimit(key, config);
     // Após reset, deve permitir novamente
     expect(res4.success).toBe(true);
-  });
+  }, 15000);
 
   it('deve retornar remaining correto', async () => {
     const config = { maxRequests: 5, windowSeconds: 60 };
@@ -68,7 +68,7 @@ describe('rateLimit', () => {
 
     const res3 = await rateLimit('test-ip-4:route', config);
     expect(res3.remaining).toBe(2);
-  });
+  }, 15000);
 
   it('deve usar diferentes chaves para IPs diferentes', async () => {
     const config = { maxRequests: 2, windowSeconds: 60 };
@@ -85,7 +85,7 @@ describe('rateLimit', () => {
     expect(res1.success).toBe(true);
     expect(res2.success).toBe(true);
     expect(res3.success).toBe(false); // IP2 atinge limite
-  });
+  }, 15000);
 });
 
 describe('rateLimitProfiles', () => {

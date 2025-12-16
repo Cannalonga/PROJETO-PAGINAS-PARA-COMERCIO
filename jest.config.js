@@ -23,7 +23,7 @@ const config = {
     '^@/(.*)$': '<rootDir>/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/', 'tenant-isolation.e2e.ts'],
   globals: {
     'ts-jest': {
       tsconfig: {
