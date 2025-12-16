@@ -3,8 +3,6 @@
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 import ImageCropper from '@/components/ImageCropper';
-import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 
 const PHOTO_SLOTS = [
@@ -48,8 +46,6 @@ interface SavedDraft {
 }
 
 export default function SetupPage() {
-  const router = useRouter();
-
   const [currentStep, setCurrentStep] = useState(1);
   const [pageTitle, setPageTitle] = useState('');
   const [pageDescription, setPageDescription] = useState('');
