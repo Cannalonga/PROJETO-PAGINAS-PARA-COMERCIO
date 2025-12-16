@@ -52,19 +52,23 @@ export default function LoginFormContent() {
         }
     };
 
+    const handleBack = () => {
+        router.back();
+    };
+
     return (
         <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
             {/* Botão Voltar - Canto Superior Esquerdo */}
             <div className="absolute top-6 left-6">
-                <Link 
-                    href="/" 
+                <button 
+                    onClick={handleBack}
                     className="inline-flex items-center gap-2 px-4 py-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                     <span className="text-sm font-medium">Voltar</span>
-                </Link>
+                </button>
             </div>
 
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 w-full max-w-md shadow-xl">
