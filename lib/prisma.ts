@@ -5,8 +5,14 @@ import { tenantMiddleware } from './prisma-middleware';
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
 const createPrismaClient = () => {
+  // Disable logging during static generation to avoid cluttering build logs
+  const isStaticGeneration = process.env.SKIP_ENV_VALIDATION === 'true' || 
+                              process.argv.includes('build') ||
+                              process.argv.some(arg => arg.includes('next'));
+  
   const client = new PrismaClient({
-    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+    log: isStaticGeneration ? [] : 
+          process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 
   // Apply tenant isolation middleware
