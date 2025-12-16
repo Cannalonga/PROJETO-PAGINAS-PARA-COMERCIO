@@ -16,6 +16,9 @@ const TENANT_AWARE_MODELS: TenantAwareModel[] = [
 // Stack de tenantIds ativa (para contexto aninhado)
 const tenantStack: string[] = []
 
+// Flag para desabilitar middleware temporariamente (ex: build time)
+let middlewareDisabled = false
+
 export function pushTenantContext(tenantId: string) {
   if (!tenantId) throw new Error('tenantId cannot be empty')
   tenantStack.push(tenantId)
@@ -27,6 +30,14 @@ export function popTenantContext() {
 
 export function getTenantContext(): string | null {
   return tenantStack[tenantStack.length - 1] || null
+}
+
+export function disableMiddleware() {
+  middlewareDisabled = true
+}
+
+export function enableMiddleware() {
+  middlewareDisabled = false
 }
 
 /**
@@ -48,6 +59,14 @@ export async function tenantMiddleware(
   // Passar direto sem modificação
   // ============================================================================
   if (!TENANT_AWARE_MODELS.includes(model)) {
+    return next(params)
+  }
+
+  // ============================================================================
+  // 0B. SE MIDDLEWARE ESTÁ DESABILITADO, PASSAR DIRETO
+  // (Permite queries read-only durante build time)
+  // ============================================================================
+  if (middlewareDisabled) {
     return next(params)
   }
 

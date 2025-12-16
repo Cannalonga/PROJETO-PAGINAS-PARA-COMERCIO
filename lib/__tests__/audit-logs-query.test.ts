@@ -2,8 +2,6 @@
  * GET /api/users/:id/audit-logs - Query User Audit Logs Tests
  */
 
-import { logAuditEvent } from '@/lib/audit';
-
 jest.mock('@/lib/audit', () => ({
   logAuditEvent: jest.fn().mockResolvedValue(undefined),
 }));

@@ -133,16 +133,16 @@ describe('Search Users API', () => {
     });
 
     it('should deny lower roles searching higher roles', () => {
-      const requestingRole = 'OPERADOR';
-      const filterRole = 'SUPERADMIN';
+      const requestingRole: string = 'OPERADOR';
+      const filterRole: string = 'SUPERADMIN';
       const canSearch = requestingRole === 'SUPERADMIN' ||
         ROLE_HIERARCHY[filterRole] < ROLE_HIERARCHY[requestingRole];
       expect(canSearch).toBe(false);
     });
 
     it('should allow searching lower or equal roles', () => {
-      const requestingRole = 'CLIENTE_ADMIN';
-      const filterRole = 'CLIENTE_USER';
+      const requestingRole: string = 'CLIENTE_ADMIN';
+      const filterRole: string = 'CLIENTE_USER';
       const canSearch = requestingRole === 'SUPERADMIN' ||
         ROLE_HIERARCHY[filterRole] < ROLE_HIERARCHY[requestingRole];
       expect(canSearch).toBe(true);

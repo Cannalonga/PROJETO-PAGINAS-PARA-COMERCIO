@@ -28,6 +28,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { prisma } from "@/lib/prisma";
+import { disableMiddleware, enableMiddleware } from "@/lib/prisma-middleware";
 import { buildSeoForPage, buildSeoForErrorPage } from "@/lib/seo/seo-engine";
 import type { BuildSeoParams } from "@/types/seo";
 
@@ -254,44 +255,52 @@ export default async function PublicPage({ params }: { params: PageParams }) {
  */
 export async function generateStaticParams(): Promise<PageParams[]> {
   try {
-    // Fetch recently published pages (top 100)
-    const pages = await prisma.page.findMany({
-      where: {
-        status: "PUBLISHED",
-      },
-      select: {
-        slug: true,
-        tenantId: true,
-      },
-      orderBy: {
-        updatedAt: "desc", // Most recently updated first
-      },
-      take: 100, // Limit to 100 pages for build time
-    });
+    // Disable middleware during build-time to allow queries without tenant context
+    disableMiddleware();
 
-    // Fetch tenant slugs
-    const tenants = await prisma.tenant.findMany({
-      select: {
-        id: true,
-        slug: true,
-      },
-    });
+    try {
+      // Fetch recently published pages (top 100)
+      const pages = await prisma.page.findMany({
+        where: {
+          status: "PUBLISHED",
+        },
+        select: {
+          slug: true,
+          tenantId: true,
+        },
+        orderBy: {
+          updatedAt: "desc", // Most recently updated first
+        },
+        take: 100, // Limit to 100 pages for build time
+      });
 
-    const tenantMap = Object.fromEntries(
-      tenants.map((t) => [t.id, t.slug])
-    );
+      // Fetch tenant slugs
+      const tenants = await prisma.tenant.findMany({
+        select: {
+          id: true,
+          slug: true,
+        },
+      });
 
-    // Map to [tenantSlug]/[pageSlug] format
-    const params = pages.map((page) => ({
-      tenantSlug: tenantMap[page.tenantId] || "",
-      pageSlug: page.slug,
-    }));
+      const tenantMap = Object.fromEntries(
+        tenants.map((t) => [t.id, t.slug])
+      );
 
-    console.info(
-      `[generateStaticParams] Generated ${params.length} static page routes`
-    );
+      // Map to [tenantSlug]/[pageSlug] format
+      const params = pages.map((page) => ({
+        tenantSlug: tenantMap[page.tenantId] || "",
+        pageSlug: page.slug,
+      }));
 
-    return params;
+      console.info(
+        `[generateStaticParams] Generated ${params.length} static page routes`
+      );
+
+      return params;
+    } finally {
+      // Re-enable middleware after build
+      enableMiddleware();
+    }
   } catch (error) {
     console.warn(
       "[generateStaticParams] Failed to generate static params",
