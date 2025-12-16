@@ -2,8 +2,6 @@
  * PATCH /api/users/:id/activate - Activate/Deactivate User Tests
  */
 
-import { logAuditEvent } from '@/lib/audit';
-
 jest.mock('@/lib/audit', () => ({
   logAuditEvent: jest.fn().mockResolvedValue(undefined),
 }));
@@ -251,7 +249,6 @@ describe('PATCH /api/users/:id/activate - Activation Endpoint', () => {
     });
 
     it('should prevent privilege escalation via activation', () => {
-      const currentStatus = false;
       const newStatus = true;
       // Status change doesn't grant new privileges, just activation state
       expect([true, false]).toContain(newStatus);
@@ -322,15 +319,15 @@ describe('PATCH /api/users/:id/activate - Activation Endpoint', () => {
     });
 
     it('should handle status update correctly', () => {
-      const currentStatus = false;
-      const newStatus = true;
+      const currentStatus: boolean | unknown = false;
+      const newStatus: boolean | unknown = true;
       const statusChanged = currentStatus !== newStatus;
       expect(statusChanged).toBe(true);
     });
 
     it('should handle idempotent update correctly', () => {
-      const currentStatus = true;
-      const newStatus = true;
+      const currentStatus: boolean | undefined = true;
+      const newStatus: boolean | undefined = true;
       const statusChanged = currentStatus !== newStatus;
       expect(statusChanged).toBe(false);
     });

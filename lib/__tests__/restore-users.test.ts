@@ -80,24 +80,24 @@ describe('Restore Users API', () => {
     });
 
     it('should deny lower role from restoring higher role', () => {
-      const requestingRole = 'OPERADOR';
-      const deletedRole = 'SUPERADMIN';
+      const requestingRole: string = 'OPERADOR';
+      const deletedRole: string = 'SUPERADMIN';
       const canRestore = requestingRole === 'SUPERADMIN' ||
         ROLE_HIERARCHY[deletedRole] < ROLE_HIERARCHY[requestingRole];
       expect(canRestore).toBe(false);
     });
 
     it('should allow restoring lower roles', () => {
-      const requestingRole = 'CLIENTE_ADMIN';
-      const deletedRole = 'CLIENTE_USER';
+      const requestingRole: string = 'CLIENTE_ADMIN';
+      const deletedRole: string = 'CLIENTE_USER';
       const canRestore = requestingRole === 'SUPERADMIN' ||
         ROLE_HIERARCHY[deletedRole] < ROLE_HIERARCHY[requestingRole];
       expect(canRestore).toBe(true);
     });
 
     it('should deny restoring equal privilege user', () => {
-      const requestingRole = 'OPERADOR';
-      const deletedRole = 'OPERADOR';
+      const requestingRole: string = 'OPERADOR';
+      const deletedRole: string = 'OPERADOR';
       const canRestore = requestingRole === 'SUPERADMIN' ||
         ROLE_HIERARCHY[deletedRole] < ROLE_HIERARCHY[requestingRole];
       expect(canRestore).toBe(false);
@@ -163,8 +163,8 @@ describe('Restore Users API', () => {
     });
 
     it('should reject cross-tenant restore', () => {
-      const requestingTenantId = 'tenant-123';
-      const userTenantId = 'tenant-456';
+      const requestingTenantId: string = 'tenant-123';
+      const userTenantId: string = 'tenant-456';
 
       expect(requestingTenantId === userTenantId).toBe(false);
     });

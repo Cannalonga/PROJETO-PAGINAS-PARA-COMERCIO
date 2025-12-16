@@ -95,8 +95,6 @@ function isValidUUID(id: string): boolean {
 
 describe('PUT /api/users/:id - Update User Endpoint (Business Logic)', () => {
   const validUUID = '550e8400-e29b-41d4-a716-446655440000';
-  const authenticatedUserId = '550e8400-e29b-41d4-a716-446655440001';
-  const tenantId = 'tenant-1';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -360,8 +358,8 @@ describe('PUT /api/users/:id - Update User Endpoint (Business Logic)', () => {
 
     it('OPERADOR: should be blocked from updating users in different tenant', () => {
       // Simulating tenant check - non-SUPERADMIN users should have tenantId in where clause
-      const authenticatedUserTenantId = 'tenant-1';
-      const targetUserTenantId = 'tenant-2';
+      const authenticatedUserTenantId: string = 'tenant-1';
+      const targetUserTenantId: string = 'tenant-2';
       expect(authenticatedUserTenantId === targetUserTenantId).toBe(false);
     });
 
@@ -455,6 +453,7 @@ describe('PUT /api/users/:id - Update User Endpoint (Business Logic)', () => {
     });
 
     it('should include safe fields in response', () => {
+      const testTenantId = 'tenant-1';
       const response = {
         id: validUUID,
         email: 'user@example.com',
@@ -462,7 +461,7 @@ describe('PUT /api/users/:id - Update User Endpoint (Business Logic)', () => {
         lastName: 'Doe',
         role: 'OPERADOR',
         isActive: true,
-        tenantId,
+        tenantId: testTenantId,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
@@ -504,7 +503,6 @@ describe('PUT /api/users/:id - Update User Endpoint (Business Logic)', () => {
 
     it('should allow empty updates to filter to no actual changes', () => {
       const requestedFields = { firstName: 'Same Value' };
-      const oldValues = { firstName: 'Same Value' };
       
       // Even if requested value equals old value, it was still requested
       expect(Object.keys(requestedFields).length).toBeGreaterThan(0);

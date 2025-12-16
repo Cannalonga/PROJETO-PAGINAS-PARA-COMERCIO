@@ -59,8 +59,6 @@ function isValidUUID(id: string): boolean {
 
 describe('DELETE /api/users/:id - Delete User Endpoint (Business Logic)', () => {
   const validUUID = '550e8400-e29b-41d4-a716-446655440000';
-  const authenticatedUserId = '550e8400-e29b-41d4-a716-446655440001';
-  const tenantId = 'tenant-1';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -211,8 +209,8 @@ describe('DELETE /api/users/:id - Delete User Endpoint (Business Logic)', () => 
     });
 
     it('should allow deletion of different users', () => {
-      const authenticatedId = 'user-123';
-      const targetId = 'user-456';
+      const authenticatedId: string = 'user-123';
+      const targetId: string = 'user-456';
       expect(targetId !== authenticatedId).toBe(true);
     });
   });
@@ -226,8 +224,8 @@ describe('DELETE /api/users/:id - Delete User Endpoint (Business Logic)', () => 
     });
 
     it('OPERADOR: should be blocked from deleting users in different tenant', () => {
-      const authenticatedUserTenantId = 'tenant-1';
-      const targetUserTenantId = 'tenant-2';
+      const authenticatedUserTenantId: string = 'tenant-1';
+      const targetUserTenantId: string = 'tenant-2';
       expect(authenticatedUserTenantId === targetUserTenantId).toBe(false);
     });
 
