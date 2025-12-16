@@ -254,59 +254,74 @@ export default async function PublicPage({ params }: { params: PageParams }) {
  * 3. Revalidate: Background regeneration every hour if requested
  */
 export async function generateStaticParams(): Promise<PageParams[]> {
+  // Disable middleware during build-time to allow queries without tenant context
+  disableMiddleware();
+
   try {
-    // Disable middleware during build-time to allow queries without tenant context
-    disableMiddleware();
-
-    try {
-      // Fetch recently published pages (top 100)
-      const pages = await prisma.page.findMany({
-        where: {
-          status: "PUBLISHED",
-        },
-        select: {
-          slug: true,
-          tenantId: true,
-        },
-        orderBy: {
-          updatedAt: "desc", // Most recently updated first
-        },
-        take: 100, // Limit to 100 pages for build time
+    // Suppress Prisma errors during build - database may not be available
+    // Errors will be silent (catch block will handle them)
+    const pages = await Promise.resolve()
+      .then(async () => {
+        try {
+          return await prisma.page.findMany({
+            where: {
+              status: "PUBLISHED",
+            },
+            select: {
+              slug: true,
+              tenantId: true,
+            },
+            orderBy: {
+              updatedAt: "desc", // Most recently updated first
+            },
+            take: 100, // Limit to 100 pages for build time
+          });
+        } catch {
+          // Silently fail - database not available during build
+          return [];
+        }
       });
 
-      // Fetch tenant slugs
-      const tenants = await prisma.tenant.findMany({
-        select: {
-          id: true,
-          slug: true,
-        },
+    // Fetch tenant slugs
+    const tenants = await Promise.resolve()
+      .then(async () => {
+        try {
+          return await prisma.tenant.findMany({
+            select: {
+              id: true,
+              slug: true,
+            },
+          });
+        } catch {
+          // Silently fail - database not available during build
+          return [];
+        }
       });
 
-      const tenantMap = Object.fromEntries(
-        tenants.map((t) => [t.id, t.slug])
-      );
-
-      // Map to [tenantSlug]/[pageSlug] format
-      const params = pages.map((page) => ({
-        tenantSlug: tenantMap[page.tenantId] || "",
-        pageSlug: page.slug,
-      }));
-
+    if (pages.length === 0) {
       console.info(
-        `[generateStaticParams] Generated ${params.length} static page routes`
+        `[generateStaticParams] Database unavailable during build - using on-demand generation`
       );
-
-      return params;
-    } finally {
-      // Re-enable middleware after build
-      enableMiddleware();
+      return [];
     }
-  } catch (error) {
-    console.warn(
-      "[generateStaticParams] Failed to generate static params",
-      error
+
+    const tenantMap = Object.fromEntries(
+      tenants.map((t) => [t.id, t.slug])
     );
-    // Fail gracefully - fallback to on-demand generation
-    return [];
+
+    // Map to [tenantSlug]/[pageSlug] format
+    const params = pages.map((page) => ({
+      tenantSlug: tenantMap[page.tenantId] || "",
+      pageSlug: page.slug,
+    }));
+
+    console.info(
+      `[generateStaticParams] Generated ${params.length} static page routes`
+    );
+
+    return params;
+  } finally {
+    // Re-enable middleware after build
+    enableMiddleware();
   }
 }
