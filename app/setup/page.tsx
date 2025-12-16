@@ -48,7 +48,6 @@ interface SavedDraft {
 }
 
 export default function SetupPage() {
-  const { status } = useSession();
   const router = useRouter();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -79,13 +78,11 @@ export default function SetupPage() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [contentError, setContentError] = useState('');
 
-  // Authentication check
+  // Authentication check - REMOVED to allow free access to setup
+  // Users can now start setup without logging in first
   useEffect(() => {
-    if (status === 'loading') return;
-    if (status === 'unauthenticated') {
-      router.push('/auth/login?callbackUrl=/setup');
-    }
-  }, [status, router]);
+    // This effect is now empty - setup is publicly accessible
+  }, []);
 
   // Load draft
   useEffect(() => {
