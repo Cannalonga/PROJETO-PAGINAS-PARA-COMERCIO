@@ -1,22 +1,6 @@
-/**
- * POST /api/auth/change-password
- * 
- * ✅ SECURITY: Change password with email verification
- * 
- * Step 1: User submits new password
- * Step 2: System sends token to BOTH emails
- * Step 3: User confirms em secondary email
- * Step 4: Password atualizada
- * 
- * Body:
- * {
- *   currentPassword: string
- *   newPassword: string
- * }
- */
-
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
+import { rateLimit, extractClientIp } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';
@@ -24,13 +8,35 @@ import { authOptions } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   try {
-    // ✅ SECURITY: Check authentication
+    // ✅ PATCH #5: Rate limiting - max 5 password changes per user per hour
     const session = await getServerSession(authOptions);
     
     if (!session?.user) {
       return NextResponse.json(
         { error: 'Não autenticado' },
         { status: 401 }
+      );
+    }
+
+    // Rate limit by user ID (not IP) for authenticated endpoints
+    const rateLimitKey = `change-password:${(session.user as any).id}`;
+    const limitResult = await rateLimit(rateLimitKey, {
+      maxRequests: 5,
+      windowSeconds: 3600, // 1 hour
+    });
+
+    if (!limitResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Too many password change attempts. Please try again later.',
+          retryAfter: limitResult.retryAfter,
+        },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': (limitResult.retryAfter || 60).toString(),
+          },
+        }
       );
     }
 
