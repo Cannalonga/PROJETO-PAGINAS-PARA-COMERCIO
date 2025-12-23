@@ -80,6 +80,8 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = (user as any).role;
         token.tenantId = (user as any).tenantId;
+        // ✅ PATCH #4: Track session creation time
+        token.iat = Math.floor(Date.now() / 1000);
       }
       return token;
     },
@@ -89,6 +91,16 @@ export const authOptions: NextAuthOptions = {
         (session.user as any).role = token.role;
         (session.user as any).tenantId = token.tenantId;
       }
+      // ✅ PATCH #4: Check session expiry
+      const now = Math.floor(Date.now() / 1000);
+      const sessionAge = now - (token.iat as number || 0);
+      const maxSessionAge = 15 * 60; // 15 minutes
+      
+      if (sessionAge > maxSessionAge) {
+        // Session expired, return null to force re-authentication
+        return null as any;
+      }
+      
       return session;
     },
   },
@@ -98,6 +110,6 @@ export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 15 * 60, // ✅ PATCH #4: 15 minutes (was 30 days)
   },
 };
