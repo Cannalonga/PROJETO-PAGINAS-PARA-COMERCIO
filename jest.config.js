@@ -17,21 +17,22 @@ const config = {
   ],
   coveragePathIgnorePatterns: ['/node_modules/', '/.next/'],
   transformIgnorePatterns: [
-    'node_modules/(?!(uuid)/)',
+    'node_modules/(?!(uuid|next-auth|@panva|openid-client|jose|nanoid)/)',
   ],
+  transform: {
+    '^.+\\.tsx?$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react',
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      },
+    }],
+  },
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['/node_modules/', '/.next/', 'tenant-isolation.e2e.ts'],
-  globals: {
-    'ts-jest': {
-      tsconfig: {
-        jsx: 'react',
-        esModuleInterop: true,
-      },
-    },
-  },
 };
 
 module.exports = config;
