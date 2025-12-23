@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { prisma } from '@/lib/prisma';
+import { createSafeWebhookErrorResponse } from '@/lib/security-patches-7-10';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2023-10-16',
@@ -86,11 +87,11 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ received: true });
   } catch (error) {
-    console.error('[WEBHOOK] Stripe webhook error:', error);
-    // Return 500 to let Stripe retry (don't silently fail)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+    // ✅ PATCH #7: Generic error response (prevent error disclosure)
+    return createSafeWebhookErrorResponse(
+      error,
+      'stripe_webhook_processing',
+      crypto.randomUUID()
     );
   }
 }
