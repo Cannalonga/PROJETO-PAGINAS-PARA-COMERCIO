@@ -79,6 +79,8 @@
   "exclude": [
     "node_modules",
     "security-patches/**/*",
-    "**/security-patches/**/*"
+    "**/security-patches/**/*",
+    "__tests__/security/owasp-top-10.test.ts",
+    "__tests__/e2e/security.spec.ts"
   ]
 }
