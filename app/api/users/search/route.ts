@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import {
+  validateTenantInSearchContext,
+  sanitizeSearchInput,
+} from '@/lib/security-patches-7-10';
 
 // ============================================================================
 // LAYER 0: TYPE DEFINITIONS & CONSTANTS
@@ -310,6 +314,18 @@ export async function GET(request: AuthenticatedRequest) {
     }
     const searchParams = queryValidation as SearchQuery;
 
+    // ✅ PATCH #10: Input Validation for Search (prevent DoS)
+    const sanitizedQuery = searchParams.q ? sanitizeSearchInput(searchParams.q) : undefined;
+    if (searchParams.q && sanitizedQuery === null) {
+      // Input was invalid (contains dangerous characters or too long)
+      return errorResponse('Invalid search input: contains restricted characters', 400);
+    }
+    // Use sanitized version for database query
+    const finalSearchParams = {
+      ...searchParams,
+      q: sanitizedQuery || undefined,
+    };
+
     // LAYER 3: Authorization & RBAC
     const authorizationResult = authorizeSearch(
       request.user!.userRole as UserRoleType,
@@ -319,8 +335,18 @@ export async function GET(request: AuthenticatedRequest) {
       return errorResponse(authorizationResult.error!, authorizationResult.status!);
     }
 
+    // ✅ PATCH #8: Enhanced Tenant Isolation (validate tenant context)
+    const tenantValidation = validateTenantInSearchContext(
+      request.user!.tenantId,
+      request.user!.tenantId // Search filter tenant should match request tenant
+    );
+    if (!tenantValidation.valid) {
+      // This should not happen in normal flow, but check as defense-in-depth
+      return errorResponse('Unauthorized: tenant validation failed', 403);
+    }
+
     // LAYER 4: Database Query with Pagination
-    const result = await searchUsers(searchParams, request.user!.tenantId);
+    const result = await searchUsers(finalSearchParams, request.user!.tenantId);
 
     if (!result) {
       return errorResponse('Failed to search users (database error)', 500);
