@@ -33,12 +33,13 @@ export function middleware(req: NextRequest) {
 
   // ============================================================================
   // 5. CSP - Content Security Policy (stricto)
+  // ✅ PATCH #6: Removed 'unsafe-inline' and 'unsafe-eval' for XSS protection
   // Ajuste conforme domínios reais: Stripe, Cloudinary, analytics, etc
   // ============================================================================
   const cspHeader = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://cdn.jsdelivr.net",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    "script-src 'self' https://js.stripe.com https://cdn.jsdelivr.net",
+    "style-src 'self' https://fonts.googleapis.com",
     "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https:",
