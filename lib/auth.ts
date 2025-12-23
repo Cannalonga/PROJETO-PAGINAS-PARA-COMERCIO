@@ -97,7 +97,8 @@ export const authOptions: NextAuthOptions = {
       const maxSessionAge = 15 * 60; // 15 minutes
       
       if (sessionAge > maxSessionAge) {
-        // Session expired, return null to force re-authentication
+        // Session expired - return null to invalidate session
+        // ✅ FIX: This won't cause login loop because login page checks status
         return null as any;
       }
       

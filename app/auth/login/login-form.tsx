@@ -9,17 +9,26 @@ import { useEffect } from 'react';
 export default function LoginFormContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const { data: session } = useSession();
+    const { data: session, status } = useSession();
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isRedirecting, setIsRedirecting] = useState(false);
 
     // Redirecionar baseado na role após login
+    // ✅ PATCH: Only redirect if session is loaded and user is authenticated
     useEffect(() => {
-        if (session?.user) {
+        // Don't check session while loading
+        if (status === 'loading') {
+            return;
+        }
+        
+        // Only redirect if user is authenticated AND not already redirecting
+        if (session?.user && !isRedirecting) {
+            setIsRedirecting(true);
             const role = (session.user as any).role;
             if (role === 'SUPERADMIN') {
                 router.push('/admin');
@@ -27,7 +36,7 @@ export default function LoginFormContent() {
                 router.push(callbackUrl);
             }
         }
-    }, [session, router, callbackUrl]);
+    }, [session, status, router, callbackUrl, isRedirecting]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
