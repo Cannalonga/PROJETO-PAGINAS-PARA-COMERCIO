@@ -1,17 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { requireAdmin } from '@/lib/admin-auth';
 
 const prisma = new PrismaClient();
-
-// Senha secreta para criar páginas VIP (mude isso!)
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'vitrinafast-admin-2024';
 
 // POST - Criar página VIP
 export async function POST(request: NextRequest) {
   try {
+    // ✅ SECURITY: Check admin authorization
+    const auth = await requireAdmin(request, ['SUPERADMIN']);
+    if (!auth.isAuthorized) {
+      return auth.response!;
+    }
+
     const body = await request.json();
     const { 
-      secret,
       slug,
       storeName,
       email,
@@ -28,14 +31,6 @@ export async function POST(request: NextRequest) {
       businessHours,
       photos = [],
     } = body;
-
-    // Validar senha admin
-    if (secret !== ADMIN_SECRET) {
-      return NextResponse.json(
-        { error: 'Acesso não autorizado' },
-        { status: 401 }
-      );
-    }
 
     // Validar campos obrigatórios
     if (!slug || !storeName || !email || !pageTitle) {
@@ -137,15 +132,10 @@ export async function POST(request: NextRequest) {
 // GET - Listar páginas VIP
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const secret = searchParams.get('secret');
-
-    // Validar senha admin
-    if (secret !== ADMIN_SECRET) {
-      return NextResponse.json(
-        { error: 'Acesso não autorizado' },
-        { status: 401 }
-      );
+    // ✅ SECURITY: Check admin authorization
+    const auth = await requireAdmin(request, ['SUPERADMIN', 'OPERADOR']);
+    if (!auth.isAuthorized) {
+      return auth.response!;
     }
 
     const vipTenants = await prisma.tenant.findMany({

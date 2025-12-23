@@ -15,6 +15,7 @@ import {
   updateDefaultTrialConfig,
   getTrialConfig,
 } from '@/lib/trial-system';
+import { requireAdmin } from '@/lib/admin-auth';
 
 const errorResponse = (message: string) => ({ error: message });
 
@@ -26,15 +27,10 @@ const errorResponse = (message: string) => ({ error: message });
 
 export async function POST(request: NextRequest) {
   try {
-    // Verificar se é SUPERADMIN ou DELEGATED_ADMIN
-    const userRole = request.headers.get('x-user-role');
-    const userId = request.headers.get('x-user-id');
-
-    if (userRole !== 'SUPERADMIN' && userRole !== 'DELEGATED_ADMIN') {
-      return NextResponse.json(
-        errorResponse('Apenas admin pode doar trials'),
-        { status: 403 }
-      );
+    // ✅ SECURITY: Check admin authorization
+    const auth = await requireAdmin(request, ['SUPERADMIN', 'OPERADOR']);
+    if (!auth.isAuthorized) {
+      return auth.response!;
     }
 
     const { email, days } = await request.json();
@@ -46,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await grantTrial(email, days, userId!);
+    const result = await grantTrial(email, days, auth.session!.userId);
 
     return NextResponse.json({
       success: result.success,
@@ -70,15 +66,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const userRole = request.headers.get('x-user-role');
-    const pathname = request.nextUrl.pathname;
-
-    if (userRole !== 'SUPERADMIN' && userRole !== 'DELEGATED_ADMIN') {
-      return NextResponse.json(
-        errorResponse('Apenas admin pode listar trials'),
-        { status: 403 }
-      );
+    // ✅ SECURITY: Check admin authorization
+    const auth = await requireAdmin(request, ['SUPERADMIN', 'OPERADOR']);
+    if (!auth.isAuthorized) {
+      return auth.response!;
     }
+
+    const pathname = request.nextUrl.pathname;
 
     // Check if this is a config request
     if (pathname.includes('/config')) {

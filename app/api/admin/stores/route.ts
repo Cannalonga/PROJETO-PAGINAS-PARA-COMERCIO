@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAllStores } from '@/lib/store-db';
-
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'vitrinafast-admin-2024';
+import { requireAdmin } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // Validar autenticação
-    const adminSecret = request.headers.get('x-admin-secret');
-    
-    if (adminSecret !== ADMIN_SECRET) {
-      return NextResponse.json(
-        { error: 'Não autorizado' },
-        { status: 401 }
-      );
+    // ✅ SECURITY: Check admin authorization
+    const auth = await requireAdmin(request);
+    if (!auth.isAuthorized) {
+      return auth.response!;
     }
 
     // Buscar todas as lojas
