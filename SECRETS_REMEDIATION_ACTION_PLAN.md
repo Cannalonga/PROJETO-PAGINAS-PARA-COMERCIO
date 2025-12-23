@@ -10,8 +10,8 @@
 
 ### 1. Novos Secrets Gerados (Criptograficamente Seguros)
 ```
-JWT_SECRET="1SyW0qdDtyLUQ/Uid0y8HOj1x1rbkpXv1ENyaCeP5cA="
-NEXTAUTH_SECRET="gpKQlwjBV6a7iWNhhNsB5D+8qJpwg6qi+HRkjT/H1YA="
+JWT_SECRET="<NEW_JWT_SECRET_GENERATED>"
+NEXTAUTH_SECRET="<NEW_NEXTAUTH_SECRET_GENERATED>"
 ```
 
 ### 2. Arquivo `.env.local` Atualizado
@@ -125,10 +125,10 @@ Se usar GitHub Enterprise:
      Value: postgresql://... (com nova senha)
    
    - Name: JWT_SECRET
-     Value: 1SyW0qdDtyLUQ/Uid0y8HOj1x1rbkpXv1ENyaCeP5cA=
+     Value: <NEW_JWT_SECRET_GENERATED>
    
    - Name: NEXTAUTH_SECRET
-     Value: gpKQlwjBV6a7iWNhhNsB5D+8qJpwg6qi+HRkjT/H1YA=
+     Value: <NEW_NEXTAUTH_SECRET_GENERATED>
 ```
 
 ### Passo 3: Atualizar Vercel
@@ -137,8 +137,8 @@ Se usar GitHub Enterprise:
 2. Remover antigos (opcionalmente)
 3. Adicionar novos:
    - DATABASE_URL: (novo do Supabase)
-   - JWT_SECRET: 1SyW0qdDtyLUQ/Uid0y8HOj1x1rbkpXv1ENyaCeP5cA=
-   - NEXTAUTH_SECRET: gpKQlwjBV6a7iWNhhNsB5D+8qJpwg6qi+HRkjT/H1YA=
+   - JWT_SECRET: <NEW_JWT_SECRET_GENERATED>
+   - NEXTAUTH_SECRET: <NEW_NEXTAUTH_SECRET_GENERATED>
 ```
 
 ### Passo 4: Fazer Deploy

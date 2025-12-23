@@ -122,14 +122,14 @@ if (!existingUser) {
 
 **`.env.local`** (Desenvolvimento):
 ```env
-DATABASE_URL="postgresql://postgres.cpkefbgvvtxguhedhoqi:E6gXqt9QnpBawVjH@aws-1-us-east-2.pooler.supabase.com:5432/postgres"
-DIRECT_URL="postgresql://postgres.cpkefbgvvtxguhedhoqi:E6gXqt9QnpBawVjH@aws-1-us-east-2.pooler.supabase.com:5432/postgres"
-NEXTAUTH_SECRET="vitrinafast-nextauth-secret-2024-super-seguro-32chars"
+DATABASE_URL="<SET_IN_ENVIRONMENT_VARIABLES>"
+DIRECT_URL="<SET_IN_ENVIRONMENT_VARIABLES>"
+NEXTAUTH_SECRET="<SET_IN_ENVIRONMENT_VARIABLES>"
 NEXTAUTH_URL="http://localhost:3000"
 REDIS_DISABLED="true"
-CLOUDINARY_CLOUD_NAME="dlf9pvoig"
-CLOUDINARY_API_KEY="992485127444799"
-CLOUDINARY_API_SECRET="b67Sp0fXjS5IWiqCOcPF-GrhpbY"
+CLOUDINARY_CLOUD_NAME="<SET_IN_ENVIRONMENT_VARIABLES>"
+CLOUDINARY_API_KEY="<SET_IN_ENVIRONMENT_VARIABLES>"
+CLOUDINARY_API_SECRET="<SET_IN_ENVIRONMENT_VARIABLES>"
 ```
 
 ### Arquivos Modificados na Sessão
@@ -146,7 +146,7 @@ CLOUDINARY_API_SECRET="b67Sp0fXjS5IWiqCOcPF-GrhpbY"
 **Pooler Host:** `aws-1-us-east-2.pooler.supabase.com`  
 **Porta Session:** `5432`  
 **Porta Transaction:** `6543`  
-**Senha Atual:** `E6gXqt9QnpBawVjH` (resetada em 29/11/2025)
+**Senha Atual:** `<REVOGADA - USE NOVA SENHA DO SUPABASE>`
 
 ### Tabelas Principais
 - `Tenant` - Lojas/Negócios
@@ -205,9 +205,9 @@ npx prisma migrate reset
 
 | Hora | Alteração | Status |
 |------|-----------|--------|
-| -- | Problema: `.env` exposto no GitHub | ✅ Resolvido |
+| -- | Problema: `.env` exposto no GitHub | ✅ Resolvido - Secrets removidos |
 | -- | Vercel deployment errors | ✅ Resolvido |
-| -- | Senha do banco resetada múltiplas vezes | ✅ Atual: E6gXqt9QnpBawVjH |
+| -- | Senha do banco resetada múltiplas vezes | ✅ Revogada - Use nova |
 | -- | ImageCropper com zoom/rotação | ✅ Funcionando |
 | -- | Conexão banco (pooler vs direct) | ✅ Usando porta 5432 |
 | -- | Erro 404/500 em /api/stores | 🔄 Em andamento |
