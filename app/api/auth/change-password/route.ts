@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
-import { rateLimit, extractClientIp } from '@/lib/rate-limit';
+import { rateLimit } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
 import { prisma } from '@/lib/prisma';

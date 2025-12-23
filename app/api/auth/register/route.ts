@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { rateLimit, extractClientIp } from '@/lib/rate-limit';
+import { rateLimit } from '@/lib/rate-limit';
 import bcrypt from 'bcryptjs';
 import { z } from 'zod';
 
@@ -13,7 +13,7 @@ const registerSchema = z.object({
 export async function POST(req: NextRequest) {
     try {
         // ✅ PATCH #5: Rate limiting - max 10 registrations per IP per hour
-        const clientIp = extractClientIp(req.headers);
+        const clientIp = req.headers.get('x-forwarded-for') || 'unknown';
         const rateLimitKey = `register:${clientIp}`;
         const limitResult = await rateLimit(rateLimitKey, {
             maxRequests: 10,
