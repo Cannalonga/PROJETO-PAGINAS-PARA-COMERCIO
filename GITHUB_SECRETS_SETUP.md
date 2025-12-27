@@ -8,7 +8,7 @@
 
 1. Abra seu repositório no GitHub:
    ```
-   https://github.com/Cannalonga/PROJETO-PAGINAS-PARA-COMERCIO
+  
    ```
 
 2. Clique em **Settings** (no topo)
@@ -39,7 +39,7 @@ Você deve ver uma tela assim:
    - **Name**: `DATABASE_URL`
    - **Secret**: Cole aqui sua connection string do Supabase
      ```
-     postgresql://user:password@db.supabase.co:5432/postgres?schema=public
+     
      ```
 
 3. Clique **"Add secret"** (botão verde)
@@ -59,7 +59,7 @@ Você deve ver uma tela assim:
    
    Exemplo de output:
    ```
-   x7dK9mL2pQ5wE8nR3sT6uV1a4bC7dE0fG3hI6jK9lM2n
+   
    ```
 
 3. Preencha:
