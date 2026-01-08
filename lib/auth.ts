@@ -77,40 +77,46 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
-        token.role = (user as any).role;
-        token.tenantId = (user as any).tenantId;
-        // ✅ PATCH #4: Track session creation time
-        token.iat = Math.floor(Date.now() / 1000);
+        token.id = user.id as string
+        token.role = (user as any).role
+        token.tenantId = (user as any).tenantId
+        token.iat = Math.floor(Date.now() / 1000)
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).id = token.id;
-        (session.user as any).role = token.role;
-        (session.user as any).tenantId = token.tenantId;
+        (session.user as any).id = token.id as string
+        (session.user as any).role = token.role as string
+        (session.user as any).tenantId = token.tenantId as string
       }
-      // ✅ PATCH #4: Check session expiry
-      const now = Math.floor(Date.now() / 1000);
-      const sessionAge = now - (token.iat as number || 0);
-      const maxSessionAge = 15 * 60; // 15 minutes
-      
+
+      const now = Math.floor(Date.now() / 1000)
+      const sessionAge = now - (token.iat as number || 0)
+      const maxSessionAge = 15 * 60
+
       if (sessionAge > maxSessionAge) {
-        // Session expired - return null to invalidate session
-        // ✅ FIX: This won't cause login loop because login page checks status
-        return null as any;
+        return null as any
       }
-      
-      return session;
+
+      return session
     },
   },
   pages: {
     signIn: '/auth/login',
+    error: '/auth/login',
   },
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
-    maxAge: 15 * 60, // ✅ PATCH #4: 15 minutes (was 30 days)
+    maxAge: 15 * 60,
+  },
+  events: {
+    async signIn({ user }) {
+      console.log(`[AUTH] User signed in: ${user.email}`)
+    },
+    async signOut() {
+      console.log(`[AUTH] User signed out`)
+    },
   },
 };

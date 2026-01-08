@@ -319,12 +319,9 @@ const nextConfig = {
         permanent: true,
       },
 
-      // Redirect root to dashboard
-      {
-        source: '/',
-        destination: '/dashboard',
-        permanent: false,
-      },
+      // ✅ REMOVED: Redirect from / to /dashboard
+      // Landing page is now PUBLIC and INERT - only redirects happen when user clicks a button
+      // No auto-redirects to /dashboard allowed
     ];
   },
 
