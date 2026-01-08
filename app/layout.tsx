@@ -1,4 +1,6 @@
 import React from 'react';
+import { Providers } from './providers';
+import '../styles/globals.css';
 
 export default function RootLayout({
   children,
@@ -14,7 +16,7 @@ export default function RootLayout({
         <title>Páginas para o Comércio</title>
       </head>
       <body>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
