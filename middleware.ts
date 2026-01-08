@@ -4,9 +4,19 @@ import type { NextRequest } from 'next/server'
 /**
  * Next.js Middleware para enforçar headers de segurança e isolamento multi-tenant
  * Executa antes de qualquer rota, adiciona headers HTTP e valida tenant context
+ * 
+ * ✅ PATCH: Dynamic nonce support para permitir scripts inline do Next.js
+ * CSP usa nonce em vez de 'unsafe-inline' para máxima segurança
  */
 export function middleware(req: NextRequest) {
   const res = NextResponse.next()
+
+  // ============================================================================
+  // NONCE GENERATION - Unique nonce for each request (for script-src)
+  // ============================================================================
+  // Gera um nonce aleatório (64 caracteres base64) para uso em CSP
+  // Permite que Next.js injete scripts inline com segurança
+  const nonce = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString('base64')
 
   // ============================================================================
   // 1. HSTS - Force HTTPS
@@ -34,11 +44,12 @@ export function middleware(req: NextRequest) {
   // ============================================================================
   // 5. CSP - Content Security Policy (stricto)
   // ✅ PATCH #6: Removed 'unsafe-inline' and 'unsafe-eval' for XSS protection
+  // ✅ PATCH: Dynamic nonce permite scripts inline do Next.js com segurança
   // Ajuste conforme domínios reais: Stripe, Cloudinary, analytics, etc
   // ============================================================================
   const cspHeader = [
     "default-src 'self'",
-    "script-src 'self' https://js.stripe.com https://cdn.jsdelivr.net",
+    `script-src 'self' 'nonce-${nonce}' https://js.stripe.com https://cdn.jsdelivr.net`,
     "style-src 'self' https://fonts.googleapis.com",
     "img-src 'self' data: https: blob:",
     "font-src 'self' https://fonts.gstatic.com",
@@ -49,6 +60,9 @@ export function middleware(req: NextRequest) {
   ].join('; ')
 
   res.headers.set('Content-Security-Policy', cspHeader)
+  
+  // ✅ Para Next.js ler o nonce: armazenar em custom header
+  res.headers.set('X-Nonce', nonce)
 
   // ============================================================================
   // 6. Permissions Policy (Feature-Policy)
