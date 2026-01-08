@@ -30,7 +30,8 @@ export default function LoginPage() {
         router.push('/dashboard');
         router.refresh();
       }
-    } catch {
+    } catch (error) {
+      console.error('Login error:', error);
       setError('Erro ao fazer login. Tente novamente.');
     } finally {
       setLoading(false);

@@ -65,7 +65,8 @@ export default function RegisterPage() {
 
       // Redirecionar para login
       router.push('/auth/login?registered=true');
-    } catch {
+    } catch (error) {
+      console.error('Registration error:', error);
       setError('Erro ao criar conta. Tente novamente.');
     } finally {
       setLoading(false);
